@@ -30,12 +30,13 @@ def run():
             # This vm is a template, ignore it
             continue
         for device in vm.config.hardware.device:
-            if isinstance(device, vim.vm.device.VirtualCdrom) \
+            if \
+              ( isinstance(device, vim.vm.device.VirtualCdrom) \
+              or isinstance(device, vim.vm.device.VirtualFloppy) ) \
             and device.connectable.connected:
                 match+=1
-            #print((vm,device))
         if match > 0:
-            result += [ f'{vm.name} has f{match} cdrom drives connected\n' ]
+            result += [ f'{vm.name} has {match} cdrom/floppy drives connected' ]
 
     if result:
         for r in result:
