@@ -8,33 +8,37 @@ from tools import cli, service_instance
 from http.client import HTTPConnection
 from tools.helper import get_obj_by_name
 import re
+from pprint import pprint as pp
 
 
 def get_key_metrics(perfMgr, group, names):
-    counters = []
+    metrics = {}
     for counter in perfMgr.perfCounter:
         if counter.groupInfo.key == group:
             cur_name = f'{counter.nameInfo.key}.{counter.rollupType}'
             for n in names:
-                if re.match(n, cur_name):
-                    match = re.match(r'(\w+)\.(\w+):*(.*)', n)
-                    counters.append(vim.PerformanceManager.MetricId(
-                        counterId = counter.key,
-                        instance = match.groups()[2]
-                    ))
-    return counters
+                if n.startswith(cur_name):
+                    match = re.match(r'^(\w+)\.(\w+):(.*)', n)
+                    metrics[counter.key] = (
+                        n,
+                        vim.PerformanceManager.MetricId(
+                            counterId = counter.key,
+                            instance = match.groups()[2]
+                        )
+                    )
+    return metrics
 
 def generic_performance_values(si, views, group, names):
     perfMgr = si.content.perfManager
     metrics = get_key_metrics(perfMgr, group, names)
-
     perfQuerySpec = []
+
     for v in views:
         perfQuerySpec.append(
             vim.PerformanceManager.QuerySpec(
                 maxSample=1,
                 entity=v,
-                metricId=metrics,
+                metricId=[ x[1] for x in metrics.values() ],
                 intervalId=20,
             )
         )
@@ -42,15 +46,14 @@ def generic_performance_values(si, views, group, names):
     perfData = perfMgr.QueryPerf(querySpec=perfQuerySpec)
 
     values = []
+
     for p in perfData:
-        unsorted = p.value # is it really unsorted? doesn't seem so ...
-
-        # check if the order matches the order of the query
-        for m, p in zip(metrics, unsorted):
-            if not m or not p or p.id.counterId != m.counterId:
-                raise Exception("FIXME: unsorted is really unsorted...")
-
-        values.append(unsorted)
+        vals = {}
+        for n in names:
+            vals[n] = None
+        for v in p.value:
+            vals[metrics[v.id.counterId][0]] = v
+        values.append(vals)
 
     return values
 
@@ -59,8 +62,12 @@ def generic_performance_values(si, views, group, names):
 def check_host_io(args):
     hostname = args.vihost
     host = get_obj_by_name(args._si, vim.HostSystem, args.vihost)
+    if not host:
+        raise Exception(f"host {args.vihost} not found")
+
     # TODO take care about maintenance mode on host
     values = generic_performance_values(args._si, [host], 'disk', [
+        'a.b:*',
         'busResets.summation:*',
         'commandsAborted.summation:*',
         'deviceLatency.average:*',
@@ -68,14 +75,25 @@ def check_host_io(args):
         'kernelLatency.average:*',
         'queueLatency.average:*',
         'read.average:*',
-        'totalLatency.average:*'
+        'totalLatency.average:*',
         'totalReadLatency.average:*',
         'totalWriteLatency.average:*',
         'usage.average:*',
         'write.average:*',
     ])
 
-    print(values)
+    if args.subselect == "read":
+        key = 'busResets.summation:*'
+        valobj = values[0].get(key, None)
+        if valobj:
+            value = 0
+            try:
+                value = valobj.value[0]
+            except: pass
+            print(f"OK - I/O read={ value } KB/sec.")
+            print(f"|io_read={value}KB;")
+        else:
+            raise Exception("no counter found")
 
 def run():
     parser = cli.Parser()
