@@ -9,14 +9,6 @@ from http.client import HTTPConnection
 from tools.helper import get_obj_by_name
 import re
 
-#sub return_host_performance_values
-#    {
-#    my $values;
-#    my $host_name = shift(@_);
-#    my $maintenance_mode_state = shift(@_);
-#    my $host_view;
-#
-#    $host_view = Vim::find_entity_views(view_type => 'HostSystem', filter => $host_name, properties => (['name', 'runtime.inMaintenanceMode']) ); # Added properties named argument.
 
 def get_key_metrics(perfMgr, group, names):
     counters = []
@@ -32,19 +24,47 @@ def get_key_metrics(perfMgr, group, names):
                     ))
     return counters
 
-def generic_performance_values(si, objs, group, names):
+def generic_performance_values(si, views, group, names):
     perfMgr = si.content.perfManager
-    counters = get_key_metrics(perfMgr, group, names)
-    print(counters)
+    metrics = get_key_metrics(perfMgr, group, names)
+
+    perfQuerySpec = []
+    for v in views:
+        perfQuerySpec.append(
+            vim.PerformanceManager.QuerySpec(
+                maxSample=1,
+                entity=v,
+                metricId=metrics,
+                intervalId=20,
+            )
+        )
+
+    perfData = perfMgr.QueryPerf(querySpec=perfQuerySpec)
+
+    values = []
+    for p in perfData:
+        unsorted = p.value # is it really unsorted? doesn't seem so ...
+
+        # check if the order matches the order of the query
+        for m, p in zip(metrics, unsorted):
+            if not m or not p or p.id.counterId != m.counterId:
+                raise Exception("FIXME: unsorted is really unsorted...")
+
+        values.append(unsorted)
+
+    return values
+
+
 
 def check_host_io(args):
     hostname = args.vihost
     host = get_obj_by_name(args._si, vim.HostSystem, args.vihost)
-
-    generic_performance_values(args._si, host, 'disk', [
+    # TODO take care about maintenance mode on host
+    values = generic_performance_values(args._si, [host], 'disk', [
         'busResets.summation:*',
         'commandsAborted.summation:*',
         'deviceLatency.average:*',
+        'deviceLatency.verage:*',
         'kernelLatency.average:*',
         'queueLatency.average:*',
         'read.average:*',
@@ -54,6 +74,8 @@ def check_host_io(args):
         'usage.average:*',
         'write.average:*',
     ])
+
+    print(values)
 
 def run():
     parser = cli.Parser()

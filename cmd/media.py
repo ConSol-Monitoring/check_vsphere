@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+"""
+checks if there are any vms on a host that have connected cd or floppy drives
+
+This is not good because vms cannot move hosts with mounted cds/floppies
+"""
+
 import omdp
 import logging
 from pyVmomi import vim
