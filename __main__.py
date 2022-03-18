@@ -7,6 +7,7 @@ def run():
     cmd = None
     try:
         cmd = sys.argv.pop(1)
+        sys.argv[0] = f'{sys.argv[0]} {cmd}'
     except:
         pass
 

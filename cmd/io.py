@@ -5,59 +5,10 @@ import logging
 from pyVmomi import vim
 from pyVim.task import WaitForTask
 from tools import cli, service_instance
+from tools.helper import generic_performance_values
 from http.client import HTTPConnection
 from tools.helper import get_obj_by_name
-import re
 from pprint import pprint as pp
-
-
-def get_key_metrics(perfMgr, group, names):
-    metrics = {}
-    for counter in perfMgr.perfCounter:
-        if counter.groupInfo.key == group:
-            cur_name = f'{counter.nameInfo.key}.{counter.rollupType}'
-            for n in names:
-                if n.startswith(cur_name):
-                    match = re.match(r'^(\w+)\.(\w+):(.*)', n)
-                    metrics[counter.key] = (
-                        n,
-                        vim.PerformanceManager.MetricId(
-                            counterId = counter.key,
-                            instance = match.groups()[2]
-                        )
-                    )
-    return metrics
-
-def generic_performance_values(si, views, group, names):
-    perfMgr = si.content.perfManager
-    metrics = get_key_metrics(perfMgr, group, names)
-    perfQuerySpec = []
-
-    for v in views:
-        perfQuerySpec.append(
-            vim.PerformanceManager.QuerySpec(
-                maxSample=1,
-                entity=v,
-                metricId=[ x[1] for x in metrics.values() ],
-                intervalId=20,
-            )
-        )
-
-    perfData = perfMgr.QueryPerf(querySpec=perfQuerySpec)
-
-    values = []
-
-    for p in perfData:
-        vals = {}
-        for n in names:
-            vals[n] = None
-        for v in p.value:
-            vals[metrics[v.id.counterId][0]] = v
-        values.append(vals)
-
-    return values
-
-
 
 def check_host_io(args):
     hostname = args.vihost
@@ -83,15 +34,27 @@ def check_host_io(args):
     ])
 
     if args.subselect == "read":
-        key = 'busResets.summation:*'
+        key = 'read.average:*'
         valobj = values[0].get(key, None)
         if valobj:
             value = 0
             try:
                 value = valobj.value[0]
             except: pass
-            print(f"OK - I/O read={ value } KB/sec.")
-            print(f"|io_read={value}KB;")
+            print(f"OK - I/O read={ value } kB.")
+            print(f"|io_read={value}kB;")
+        else:
+            raise Exception("no counter found")
+    elif args.subselect == "read_latency":
+        key = 'totalReadLatency.average:*'
+        valobj = values[0].get(key, None)
+        if valobj:
+            value = 0
+            try:
+                value = valobj.value[0]
+            except: pass
+            print(f"OK - I/O read_latency={ value } ms.")
+            print(f"|io_read_latency={ value }ms;")
         else:
             raise Exception("no counter found")
 
