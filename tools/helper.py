@@ -27,12 +27,12 @@ def get_key_metrics(perfMgr, group, names):
             cur_name = f'{counter.nameInfo.key}.{counter.rollupType}'
             for n in names:
                 if n.startswith(cur_name):
-                    match = re.match(r'^(\w+)\.(\w+):(.*)', n)
+                    match = re.match(r'^(\w+)\.(\w+)(?::(.*))?', n)
                     metrics[counter.key] = (
                         n,
                         vim.PerformanceManager.MetricId(
                             counterId = counter.key,
-                            instance = match.groups()[2]
+                            instance = (match.groups()[2] or "")
                         )
                     )
     return metrics
@@ -77,6 +77,3 @@ def generic_performance_values(si, views, group, names):
         values.append(vals)
 
     return values
-
-
-
