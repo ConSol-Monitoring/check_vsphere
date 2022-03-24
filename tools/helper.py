@@ -16,6 +16,15 @@ def get_obj_by_name(si, vimtype, name):
 
     return None
 
+def get_metric(perfMgr, perfCounterStr):
+    for counter in perfMgr.perfCounter:
+        if f'{counter.groupInfo.key}:{counter.nameInfo.key}:{counter.rollupType}' == perfCounterStr:
+            return ( counter, vim.PerformanceManager.MetricId(
+                counterId = counter.key,
+                instance = '*'
+            ))
+    return None
+
 def get_key_metrics(perfMgr, group, names):
     """
     Find MetricIds by metric group and metric names

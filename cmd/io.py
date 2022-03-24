@@ -18,11 +18,9 @@ def check_host_io(args):
 
     # TODO take care about maintenance mode on host
     values = generic_performance_values(args._si, [host], 'disk', [
-        'a.b:*',
         'busResets.summation:*',
         'commandsAborted.summation:*',
         'deviceLatency.average:*',
-        'deviceLatency.verage:*',
         'kernelLatency.average:*',
         'queueLatency.average:*',
         'read.average:*',
@@ -66,7 +64,7 @@ def run():
     parser.add_optional_arguments(cli.Argument.CLUSTER_NAME)
     parser.add_required_arguments({
         'name_or_flags': ['--subselect'],
-        'options': {'action': 'store', 'help': 'read/write/...'}
+        'options': {'action': 'store', 'help': 'read/write/...'} # TODO: fix help
     })
 
     args = parser.get_args()

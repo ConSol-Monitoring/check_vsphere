@@ -13,6 +13,7 @@ from pyVim.task import WaitForTask
 from tools import cli, service_instance
 from http.client import HTTPConnection
 from pprint import pprint as pp
+import textwrap
 
 
 def run():
@@ -37,9 +38,14 @@ def run():
         for name in metrics[group]:
             for rollup in metrics[group][name]:
                 counter = metrics[group][name][rollup]
-                print("{} {} {} {}\n  {}".format(
+                print("{:4d} {},{},{} ({})\n{}\n".format(
                     counter.key, group, name, rollup,
-                    counter.nameInfo.summary
+                    counter.unitInfo.summary,
+                    textwrap.fill(
+                        counter.nameInfo.summary,
+                        width=72,
+                        initial_indent='     ',
+                        subsequent_indent='     ')
                 ))
 
 if __name__ == "__main__":
