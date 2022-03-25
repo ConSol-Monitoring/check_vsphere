@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""
+TODO: deleteme
+"""
+
 import omdp
 import logging
 from pyVmomi import vim

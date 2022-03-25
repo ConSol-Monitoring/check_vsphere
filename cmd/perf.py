@@ -26,7 +26,7 @@ def get_perf_values(args, obj, metricId):
             maxSample=1,
             entity=obj,
             metricId=[metricId],
-            intervalId=20,
+            intervalId=args.interval,
         )
     )
 
@@ -57,6 +57,15 @@ def run():
                     'which is not always available but means an aggregated value over all instances'
         }
     })
+    parser.add_optional_arguments({
+        'name_or_flags': ['--interval'],
+        'options': {
+            'action': 'store',
+            'type': int,
+            'default': 20,
+            'help': 'The interval (in seconds) to aggregate over'
+        }
+    })
 
     args = parser.get_args()
 
@@ -81,6 +90,7 @@ def run():
         raise Exception(f"vim.{args.vimtype} not found with name {args.vimname}")
 
     values = get_perf_values(args, obj, metricId)[0]
+    print(values)
     for instance in values.value:
         if instance.id.instance == args.perfinstance:
             print(instance.value[0])
