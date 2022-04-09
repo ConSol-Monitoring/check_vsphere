@@ -18,9 +18,21 @@ This module implements simple helper functions for python samples
 """
 import argparse
 import getpass
+import os
 
 __author__ = "VMware, Inc."
 
+class EnvDefault(argparse.Action):
+    def __init__(self, envvar, required=True, default=None, **kwargs):
+        if not default and envvar:
+            if os.environ.get(envvar, None):
+                default = os.environ[envvar]
+        if required and default:
+            required = False
+        super(EnvDefault, self).__init__(default=default, required=required, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, values)
 
 class Parser:
     """
@@ -65,9 +77,12 @@ class Parser:
                                                help='User name to use when connecting to host')
 
         self._standard_args_group.add_argument('-p', '--password',
-                                               required=False,
-                                               action='store',
-                                               help='Password to use when connecting to host')
+                                               required=True,
+                                               action=EnvDefault,
+                                               envvar='VSPHERE_PASS',
+                                               help='Password to use when connecting to host, '
+                                                    'can also be set by env VSPHERE_PASS')
+
 
         self._standard_args_group.add_argument('-nossl', '--disable-ssl-verification',
                                                required=False,
@@ -79,7 +94,7 @@ class Parser:
         Supports the command-line arguments needed to form a connection to vSphere.
         """
         args = self._parser.parse_args()
-        return self._prompt_for_password(args)
+        return args
 
     def _add_sample_specific_arguments(self, is_required: bool, *args):
         """

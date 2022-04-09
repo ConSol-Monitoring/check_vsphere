@@ -17,16 +17,20 @@ from http.client import HTTPConnection
 def run():
     parser = cli.Parser()
     #parser.add_optional_arguments(cli.Argument.DATACENTER_NAME)
-    parser.add_required_arguments(cli.Argument.VIHOST)
+    parser.add_optional_arguments(cli.Argument.VIHOST)
     args = parser.get_args()
     si = service_instance.connect(args)
 
-    host_view = si.content.viewManager.CreateContainerView(si.content.rootFolder, [vim.HostSystem], True)
-    try:
-        host = next(x for x in  host_view.view if x.name.lower() == args.vihost.lower() )
-    except:
-        raise Exception(f"host {args.vihost} not found")
-    vm_view = si.content.viewManager.CreateContainerView(host, [vim.VirtualMachine], True)
+    if args.vihost:
+        host_view = si.content.viewManager.CreateContainerView(si.content.rootFolder, [vim.HostSystem], True)
+        try:
+            parentView = next(x for x in  host_view.view if x.name.lower() == args.vihost.lower() )
+        except:
+            raise Exception(f"host {args.vihost} not found")
+    else:
+        parentView = si.content.rootFolder
+
+    vm_view = si.content.viewManager.CreateContainerView(parentView, [vim.VirtualMachine], True)
 
     result = []
 
