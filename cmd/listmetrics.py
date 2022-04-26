@@ -8,12 +8,12 @@ This is not good because vms cannot move hosts with mounted cds/floppies
 
 import omdp
 import logging
+import textwrap
 from pyVmomi import vim
 from pyVim.task import WaitForTask
 from tools import cli, service_instance
 from http.client import HTTPConnection
 from pprint import pprint as pp
-import textwrap
 
 
 def run():
