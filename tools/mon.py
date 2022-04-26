@@ -1,7 +1,13 @@
-OK      = 0
-WARNING = 1
-ERROR   = 2
-UNKNOWN = 3
+import enum
+from distutils.log import WARN
+from logging import CRITICAL
+
+
+class Status(enum.Enum):
+    OK       = 0
+    WARNING  = 1
+    CRITICAL = 2
+    UNKNOWN  = 3
 
 class Range:
     def __init__(self, range_spec=None):
@@ -50,6 +56,9 @@ class Range:
         """
         r = False
 
+        if not self.range_spec:
+            return r
+
         if float(value) < self.start or float(value) > self.end:
             r = True
 
@@ -60,12 +69,20 @@ class Range:
 
 class Threshold:
     def __init__(self, warning=None, critical=None):
-        self.warning = warning
-        self.critical = critical
+        self.warning = warning if isinstance(warning, Range) else Range(warning)
+        self.critical = critical if isinstance(critical, Range) else Range(critical)
 
-    def get_status(values):
+    def get_status(self,values):
         for v in values:
-            pass
+            if self.critical and self.critical.is_set():
+                if self.critical.check(v):
+                    return Status.CRITICAL
+        for v in values:
+            if self.warning and self.warning.is_set():
+                if self.warning.check(v):
+                    return Status.WARNING
+
+        return Status.OK
 
 
 # @dataclass would be nice, but it's python >= 3.7
