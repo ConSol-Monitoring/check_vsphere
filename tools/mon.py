@@ -4,16 +4,22 @@ ERROR   = 2
 UNKNOWN = 3
 
 class Range:
-    """
-    Class to handle Range specs like :10 or ~:10 or 10:20 and the like
-    https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT
-    """
-    def __init__(self, range_spec):
+    def __init__(self, range_spec=None):
+        """
+        Handle Range specs like :10, ~:10, 10:20 or @1.0:1.5 and the like. See:
+        https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT
+        """
         self.range_spec = range_spec
         self.start = None
         self.end = None
         self.outside = True
         self._parse_range()
+
+    def __str__(self):
+        return self.range_spec or ""
+
+    def is_set(self):
+        return self.range_spec is not None
 
     def _parse_range(self):
         if not self.range_spec:
