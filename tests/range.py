@@ -16,7 +16,7 @@ class TestRange(unittest.TestCase):
         self.assertTrue(r.check(5.1))
 
     def test_no_end(self):
-        r = Range('5:')
+        r = Range('5.0:')
         self.assertTrue(isinstance(r, Range))
         self.assertEqual(r.start, 5)
         self.assertEqual(r.end, float('inf'))
@@ -27,7 +27,7 @@ class TestRange(unittest.TestCase):
         self.assertFalse(r.check(6))
 
     def test_no_start(self):
-        r = Range('~:5')
+        r = Range('~:5.0')
         self.assertTrue(isinstance(r, Range))
         self.assertEqual(r.start, float('-inf'))
         self.assertEqual(r.end, 5)
@@ -38,7 +38,7 @@ class TestRange(unittest.TestCase):
         self.assertTrue(r.check(6))
 
     def test_inside(self):
-        r = Range('@2:4')
+        r = Range('@2:4.0')
         self.assertTrue(isinstance(r, Range))
         self.assertEqual(r.start, float('2'))
         self.assertEqual(r.end, float('4'))
@@ -49,3 +49,18 @@ class TestRange(unittest.TestCase):
         self.assertTrue(r.check(3.5))
         self.assertTrue(r.check(4))
         self.assertFalse(r.check(4.1))
+
+    def test_invalid(self):
+        with self.assertRaises(Exception):
+            Range('a')
+        with self.assertRaises(Exception):
+            Range('a:b')
+        with self.assertRaises(Exception):
+            Range('~:b')
+        with self.assertRaises(Exception):
+            Range(':1')
+        with self.assertRaises(Exception):
+            Range('1:~')
+        with self.assertRaises(Exception):
+            Range('1,1:1,2')
+
