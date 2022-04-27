@@ -82,15 +82,16 @@ class Threshold:
                 if self.warning.check(v):
                     return Status.WARNING
 
+
         return Status.OK
 
 
 # @dataclass would be nice, but it's python >= 3.7
 # customers still have 3.6 a lot
-class PerformanceValue:
+class PerformanceLabel:
     def __init__(self, label, value, uom=None, threshold=None, warning=None, critical=None, min=None, max=None):
         self.label = label
-        self.value = value
+        self.value = float(value)
         self.uom = uom
         self.warning = warning
         self.critical = critical
@@ -103,3 +104,15 @@ class PerformanceValue:
             self.critical = threshold.critical
         else:
             self.threshold = Threshold(warning, critical)
+
+        self.label = self.label.replace('\n', ' ')
+
+        if "'" in label or "=" in label:
+            raise ValueError("label contains illegal characters: " + label)
+
+    def __str__(self):
+        d = dict()
+        for k,v in self.__dict__.items():
+            d[k] = v if v is not None else ''
+
+        return "'{label}'={value}{uom};{warning};{critical};{min};{max}".format( **d )

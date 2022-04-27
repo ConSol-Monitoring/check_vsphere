@@ -1,4 +1,4 @@
-.PHONY: all clean
+.PHONY: all clean test
 
 all:
 	zip -9 check_pyvmomi.zip $$( find . -name \*.py )
@@ -8,3 +8,6 @@ all:
 
 clean:
 	rm -f check_pyvmomi
+
+test:
+	python3 -m unittest discover -v
