@@ -24,6 +24,9 @@ class Range:
     def __str__(self):
         return self.range_spec or ""
 
+    def __repr__(self):
+        return f'Range({self.range_spec})'
+
     def is_set(self):
         return self.range_spec is not None
 
@@ -72,16 +75,18 @@ class Threshold:
         self.warning = warning if isinstance(warning, Range) else Range(warning)
         self.critical = critical if isinstance(critical, Range) else Range(critical)
 
-    def get_status(self,values):
-        for v in values:
+    def __repr__(self):
+        return f'Threshold(critical={self.critical}, warning={self.warning})'
+
+    def get_status(self, *args):
+        for v in args:
             if self.critical and self.critical.is_set():
                 if self.critical.check(v):
                     return Status.CRITICAL
-        for v in values:
+        for v in args:
             if self.warning and self.warning.is_set():
                 if self.warning.check(v):
                     return Status.WARNING
-
 
         return Status.OK
 
@@ -122,14 +127,24 @@ class PerformanceLabel:
 
 
 class Check:
-    def __init__(self, shortname='unknown'):
+    def __init__(self, shortname='unknown', threshold=None):
         self.shortname = shortname
+        self.set_threshold(threshold)
         self._perfdata = []
         self._messages = {
             Status.OK: [],
             Status.WARNING: [],
             Status.CRITICAL: [],
         }
+
+    def set_threshold(self, threshold=None, **kwargs):
+        if threshold:
+            if isinstance(threshold, Threshold):
+                self._threshold = threshold
+            else:
+                raise ValueError('threshold must be a Threshold object')
+        else:
+            self._threshold = Threshold(**kwargs)
 
     def add_message(self, status, *messages):
         if isinstance(status, str):
@@ -151,3 +166,6 @@ class Check:
             code = Status.WARNING
 
         return (code, separator.join(self._messages[code]))
+
+    def check_threshold(self, *values):
+        return self._threshold.get_status(*values)
