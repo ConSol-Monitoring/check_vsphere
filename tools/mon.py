@@ -116,3 +116,38 @@ class PerformanceLabel:
             d[k] = v if v is not None else ''
 
         return "'{label}'={value}{uom};{warning};{critical};{min};{max}".format( **d )
+
+    def __repr__(self):
+        return f'PerformanceLabel({str(self)})'
+
+
+class Check:
+    def __init__(self, shortname='unknown'):
+        self.shortname = shortname
+        self._perfdata = []
+        self._messages = {
+            Status.OK: [],
+            Status.WARNING: [],
+            Status.CRITICAL: [],
+        }
+
+    def add_message(self, status, *messages):
+        if isinstance(status, str):
+            status = Status[status]
+
+        for m in messages:
+            self._messages[status].append(m)
+
+    def add_perfdata(self, **kwargs):
+        self._perfdata.append( PerformanceLabel(**kwargs) )
+
+
+    def check_messages(self, separator=' '):
+        code = Status.OK
+
+        if self._messages[Status.CRITICAL]:
+            code = Status.CRITICAL
+        elif self._messages[Status.WARNING]:
+            code = Status.WARNING
+
+        return (code, separator.join(self._messages[code]))
