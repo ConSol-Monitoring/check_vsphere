@@ -21,9 +21,9 @@ def get_metric(perfMgr, perfCounterStr):
         if f'{counter.groupInfo.key}:{counter.nameInfo.key}:{counter.rollupType}' == perfCounterStr:
             return ( counter, vim.PerformanceManager.MetricId(
                 counterId = counter.key,
-                instance = '*'
+                instance = ''
             ))
-    return None
+    return (None, None)
 
 def get_key_metrics(perfMgr, group, names):
     """

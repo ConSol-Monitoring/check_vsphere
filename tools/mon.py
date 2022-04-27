@@ -167,5 +167,18 @@ class Check:
 
         return (code, separator.join(self._messages[code]))
 
-    def check_threshold(self, *values):
-        return self._threshold.get_status(*values)
+    def check_threshold(self, *args):
+        return self._threshold.get_status(*args)
+
+    def exit(self, code=Status.OK, message="OK"):
+        print('ooo')
+        if isinstance(code, str):
+            code = Status[code]
+
+        print("{name} {code} - {text}".format(
+            name=self.shortname,
+            code=code.name,
+            text=message
+        ))
+
+        raise SystemExit(code.value)

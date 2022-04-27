@@ -12,10 +12,20 @@ from tools import cli, service_instance
 from http.client import HTTPConnection
 from tools.helper import get_obj_by_name, get_metric
 from pprint import pprint as pp
+from tools.mon import Check, Status, Threshold
 
 def run():
     parser = get_argparser()
     args = parser.get_args()
+
+    if not (args.warning or args.critical):
+        raise Exception("at least one of --warning or --critical is required")
+
+    check = Check(shortname=f"PYVMOMI-PERFCOUNTER")
+    check.set_threshold(
+        warning=args.warning,
+        critical=args.critical
+    )
 
     args._si = service_instance.connect(args)
 
@@ -38,11 +48,14 @@ def run():
         raise Exception(f"vim.{args.vimtype} not found with name {args.vimname}")
 
     values = get_perf_values(args, obj, metricId)[0]
-    print(values)
+
     for instance in values.value:
         if instance.id.instance == args.perfinstance:
-            print(instance.value[0])
-            print(instance.value[0] > 80)
+            check.exit(
+                code=check.check_threshold(instance.value[0]),
+                message=f'Counter {args.perfcounter} on {args.vimtype}:{args.vimname} reported {instance.value[0]}'
+            )
+
 
 
 def get_perf_values(args, obj, metricId):
@@ -95,6 +108,20 @@ def get_argparser():
             'type': int,
             'default': 20,
             'help': 'The interval (in seconds) to aggregate over'
+        }
+    })
+    parser.add_optional_arguments({
+        'name_or_flags': ['--critical'],
+        'options': {
+            'action': 'store',
+            'help': 'critical threshold'
+        }
+    })
+    parser.add_optional_arguments({
+        'name_or_flags': ['--warning'],
+        'options': {
+            'action': 'store',
+            'help': 'warning threshold'
         }
     })
     return parser
