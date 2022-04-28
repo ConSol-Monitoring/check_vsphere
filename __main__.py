@@ -2,6 +2,7 @@
 
 import sys
 import importlib
+from tools import mon
 
 def run():
     cmd = None
@@ -26,8 +27,11 @@ def run():
 if __name__ == "__main__":
     try:
         run()
+    except SystemExit as e:
+        if e.code > 3:
+            sys.exit(3)
     except Exception as e:
         import traceback
-        print("Unhandled exception:")
+        print("UNKNOWN - Unhandled exception:")
         traceback.print_exc()
         sys.exit(3)

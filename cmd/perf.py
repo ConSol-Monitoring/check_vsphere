@@ -40,6 +40,14 @@ def run():
         raise Exception("perfcounter must be composed as groupName:perfName:rollupType")
 
     (counter, metricId) = get_metric(args._si.content.perfManager, args.perfcounter)
+
+    # I hate you so much vmware
+    # https://vdc-download.vmware.com/vmwb-repository/dcr-public/bf660c0a-f060-46e8-a94d-4b5e6ffc77ad/208bc706-e281-49b6-a0ce-b402ec19ef82/SDK/vsphere-ws/docs/ReferenceGuide/cpu_counters.html
+    if counter.unitInfo.key == 'percent':
+        factor = 0.01
+    else:
+        factor = 1
+
     obj = get_obj_by_name(args._si, vimtype, args.vimname)
 
     if not metricId:
@@ -47,14 +55,26 @@ def run():
     if not obj:
         raise Exception(f"vim.{args.vimtype} not found with name {args.vimname}")
 
-    values = get_perf_values(args, obj, metricId)[0]
+    try:
+        values = get_perf_values(args, obj, metricId)[0]
+    except IndexError:
+        check.exit(Status.UNKNOWN, f"Cannot find {args.perfcounter} for the queried resources")
 
-    for instance in values.value:
-        if instance.id.instance == args.perfinstance:
-            check.exit(
-                code=check.check_threshold(instance.value[0]),
-                message=f'Counter {args.perfcounter} on {args.vimtype}:{args.vimname} reported {instance.value[0]}'
-            )
+    if args.perfinstance == '':
+        for instance in values.value:
+            val = instance.value[0] * factor
+            if instance.id.instance == args.perfinstance:
+                check.add_perfdata(
+                    label = args.perfcounter,
+                    value = val,
+                    threshold = check.threshold,
+                )
+                check.exit(
+                    code=check.check_threshold(val),
+                    message=f'Counter {args.perfcounter} on {args.vimtype}:{args.vimname} reported {val}'
+                )
+    else:
+        raise NotImplementedError("only perfinstance '' is currently supported")
 
 
 
@@ -128,4 +148,12 @@ def get_argparser():
 
 
 if __name__ == "__main__":
-    run()
+    try:
+        run()
+    except SystemExit as e:
+        if e.code > 3 or e.code < 0:
+            print("UNKNOWN EXIT CODE")
+            raise SystemExit(Status.UNKNOWN)
+    except Exception as e:
+        print("UNKNOWN - " + str(e))
+        raise SystemExit(Status.UNKNOWN)

@@ -1,6 +1,7 @@
 import re
 from pyVmomi import vim
 
+# TODO: this might be slow, probably speed this up with
 def get_obj_by_name(si, vimtype, name):
     """
     ex: get_obj_by_name(serviceinstance, vim.HostSystem, "foo.example.com")

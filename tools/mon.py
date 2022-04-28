@@ -140,11 +140,11 @@ class Check:
     def set_threshold(self, threshold=None, **kwargs):
         if threshold:
             if isinstance(threshold, Threshold):
-                self._threshold = threshold
+                self.threshold = threshold
             else:
                 raise ValueError('threshold must be a Threshold object')
         else:
-            self._threshold = Threshold(**kwargs)
+            self.threshold = Threshold(**kwargs)
 
     def add_message(self, status, *messages):
         if isinstance(status, str):
@@ -168,10 +168,9 @@ class Check:
         return (code, separator.join(self._messages[code]))
 
     def check_threshold(self, *args):
-        return self._threshold.get_status(*args)
+        return self.threshold.get_status(*args)
 
     def exit(self, code=Status.OK, message="OK"):
-        print('ooo')
         if isinstance(code, str):
             code = Status[code]
 
@@ -180,5 +179,9 @@ class Check:
             code=code.name,
             text=message
         ))
+
+        if self._perfdata:
+            print("| ", end='')
+            print('\n'.join([ str(x) for x in self._perfdata ]))
 
         raise SystemExit(code.value)
