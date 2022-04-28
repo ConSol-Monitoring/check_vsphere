@@ -14,9 +14,9 @@ def run():
 
     if cmd:
         try:
-            runner = importlib.import_module(f'cmd.{cmd}')
+            runner = importlib.import_module(f'vcmd.{cmd}')
         except ModuleNotFoundError as e:
-            if not e.name.startswith("cmd."):
+            if not e.name.startswith("vcmd."):
                 raise e
             print(f"command not found: {cmd}")
             sys.exit(3)
