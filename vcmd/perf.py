@@ -39,7 +39,7 @@ def run():
     except:
         raise Exception("perfcounter must be composed as groupName:perfName:rollupType")
 
-    (counter, metricId) = get_metric(args._si.content.perfManager, args.perfcounter)
+    (counter, metricId) = get_metric(args._si.content.perfManager, args.perfcounter, args.perfinstance)
 
     # I hate you so much vmware
     # https://vdc-download.vmware.com/vmwb-repository/dcr-public/bf660c0a-f060-46e8-a94d-4b5e6ffc77ad/208bc706-e281-49b6-a0ce-b402ec19ef82/SDK/vsphere-ws/docs/ReferenceGuide/cpu_counters.html
@@ -74,6 +74,28 @@ def run():
                     message=f'Counter {args.perfcounter} on {args.vimtype}:{args.vimname} reported {val}'
                 )
     else:
+        for instance in values.value:
+            if instance.id.instance == '':
+                # ignore the aggregate if we query a specific or all instances
+                continue
+            if args.perfinstance == '*' or args.perfinstance == instance.id.instance:
+                val = instance.value[0] * factor
+                check.add_perfdata(
+                    label = f'{args.perfcounter}_{instance.id.instance}',
+                    value = val,
+                    threshold = check.threshold,
+                )
+                check.add_message(
+                    check.threshold.get_status(val),
+                    f"{args.perfcounter}_{instance.id.instance} has value {val}"
+                )
+
+        (code, message) = check.check_messages(separator='\n  ')
+        check.exit(
+            code=code,
+            message=message
+        )
+
         raise NotImplementedError("only perfinstance '' is currently supported")
 
 

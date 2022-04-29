@@ -17,12 +17,12 @@ def get_obj_by_name(si, vimtype, name):
 
     return None
 
-def get_metric(perfMgr, perfCounterStr):
+def get_metric(perfMgr, perfCounterStr, perfInstance):
     for counter in perfMgr.perfCounter:
         if f'{counter.groupInfo.key}:{counter.nameInfo.key}:{counter.rollupType}' == perfCounterStr:
             return ( counter, vim.PerformanceManager.MetricId(
                 counterId = counter.key,
-                instance = ''
+                instance = perfInstance
             ))
     return (None, None)
 
