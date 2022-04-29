@@ -21,7 +21,7 @@ def run():
     if not (args.warning or args.critical):
         raise Exception("at least one of --warning or --critical is required")
 
-    check = Check(shortname=f"PYVMOMI-PERFCOUNTER")
+    check = Check(shortname="PYVMOMI-PERFCOUNTER")
     check.set_threshold(
         warning=args.warning,
         critical=args.critical
@@ -51,7 +51,8 @@ def run():
     obj = get_obj_by_name(args._si, vimtype, args.vimname)
 
     if not metricId:
-        raise Exception(f"metric not found by {args.perfcounter}")
+        raise Exception(f"metric not found by {args.perfcounter}:{args.perfinstance}, "
+                        "maybe --perfinstance='*' helps to examine the available instances")
     if not obj:
         raise Exception(f"vim.{args.vimtype} not found with name {args.vimname}")
 
