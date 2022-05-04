@@ -21,7 +21,7 @@ def run():
     if not (args.warning or args.critical):
         raise Exception("at least one of --warning or --critical is required")
 
-    check = Check(shortname="PYVMOMI-PERFCOUNTER")
+    check = Check(shortname="VSPHERE-PERFCOUNTER")
     check.set_threshold(
         warning=args.warning,
         critical=args.critical
