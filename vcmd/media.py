@@ -11,6 +11,7 @@ import logging
 from pyVmomi import vim
 from pyVim.task import WaitForTask
 from tools import cli, service_instance
+from tools.mon import Check, Status
 from http.client import HTTPConnection
 
 
@@ -20,6 +21,8 @@ def run():
     parser.add_optional_arguments(cli.Argument.VIHOST)
     args = parser.get_args()
     si = service_instance.connect(args)
+
+    check = Check(shortname='VSPHERE-MEDIA')
 
     if args.vihost:
         host_view = si.content.viewManager.CreateContainerView(si.content.rootFolder, [vim.HostSystem], True)
@@ -34,6 +37,11 @@ def run():
 
     result = []
 
+    check.add_message(
+        Status.OK,
+        "no connected cdrom/floppy drives found"
+    )
+
     for vm in vm_view.view:
         match = 0
         if vm.config.template:
@@ -46,15 +54,16 @@ def run():
             and device.connectable.connected:
                 match+=1
         if match > 0:
-            result += [ f'{vm.name} has {match} cdrom/floppy drives connected' ]
+            check.add_message(
+                Status.CRITICAL,
+                f'{vm.name} has cdrom/floppy drives connected'
+            )
 
-    if result:
-        for r in result:
-            print(r)
-    else:
-        print('OK - no CD/DVDs connected')
-    #for ds in object_view.view:
-    #    print(ds)
+    (code, message) = check.check_messages(separator=' - ')
+    check.exit(
+        code=code,
+        message=message
+    )
 
 if __name__ == "__main__":
     run()
