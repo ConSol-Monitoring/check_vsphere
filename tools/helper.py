@@ -1,5 +1,5 @@
 import re
-from pyVmomi import vim
+from pyVmomi import vim, vmodl
 
 # TODO: this might be slow, probably speed this up with
 def get_obj_by_name(si, vimtype, name):
@@ -16,6 +16,129 @@ def get_obj_by_name(si, vimtype, name):
             return obj
 
     return None
+
+def find_entity_views(service_instance, view_type, begin_entity=None, sieve=None, properties=None):
+    assert service_instance is not None
+    assert view_type is not None
+    if not begin_entity:
+        begin_entity = service_instance.content.rootFolder
+    if not sieve:
+        sieve = dict()
+    assert isinstance(sieve, dict)
+
+    propertySpec = vmodl.query.PropertyCollector.PropertySpec(
+        pathSet=list(sieve.keys()),
+        type=view_type,
+        all=False
+    )
+
+    property_filter_spec = get_search_filter_spec(view_type, begin_entity, [propertySpec])
+
+def get_search_filter_spec(view_type, begin_entity, property_specs):
+    TraversalSpec = vmodl.query.PropertyCollector.TraversalSpec
+    SelectionSpec = vmodl.query.PropertyCollector.SelectionSpec
+    ObjectSpec = vmodl.query.PropertyCollector.ObjectSpec
+    resourcePoolTraversalSpec = TraversalSpec(
+        name='resourcePoolTraversalSpec',
+        type=vim.ResourcePool,
+        path='resourcePool',
+        skip=False,
+        selectSet=[
+            SelectionSpec(name='resourcePoolTraversalSpec'),
+            SelectionSpec(name='resourcePoolVmTraversalSpec')
+        ],
+    )
+
+    resourcePoolVmTraversalSpec = TraversalSpec(
+        name='resourcePoolVmTraversalSpec',
+        type=vim.ResourcePool,
+        path='vm',
+        skip=False,
+    )
+
+    computeResourceRpTraversalSpec = TraversalSpec(
+        name='computeResourceRpTraversalSpec',
+        type=vim.ComputeResource,
+        path='resourcePool',
+        skip=False,
+        selectSet=[
+            SelectionSpec(name='resourcePoolTraversalSpec'),
+            SelectionSpec(name='resourcePoolVmTraversalSpec')
+        ],
+    )
+
+    computeResourceHostTraversalSpec = TraversalSpec(
+        name='computeResourceHostTraversalSpec',
+        type=vim.ComputeResource,
+        path='host',
+        skip=False,
+    )
+
+    datacenterHostTraversalSpec = TraversalSpec(
+        name='datacenterHostTraversalSpec',
+        type=vim.Datacenter,
+        path='hostFolder',
+        skip=False,
+        selectSet=[
+            SelectionSpec(name='folderTraversalSpec'),
+        ],
+    )
+
+    datacenterVmTraversalSpec = TraversalSpec(
+        name='datacenterVmTraversalSpec',
+        type=vim.Datacenter,
+        path='vmFolder',
+        skip=False,
+        selectSet=[
+            SelectionSpec(name='folderTraversalSpec'),
+        ],
+    )
+
+    hostVmTraversalSpec = TraversalSpec(
+        name='hostVmTraversalSpec',
+        type=vim.HostSystem,
+        path='vm',
+        skip=False,
+        selectSet=[
+            SelectionSpec(name='folderTraversalSpec'),
+        ],
+    )
+
+    folderTraversalSpec = TraversalSpec(
+        name='folderTraversalSpec',
+        type=vim.Folder,
+        path='childEntity',
+        skip=False,
+        selectSet=[
+            SelectionSpec(name='folderTraversalSpec'),
+            SelectionSpec(name='datacenterHostTraversalSpec'),
+            SelectionSpec(name='datacenterVmTraversalSpec'),
+            SelectionSpec(name='computeResourceRpTraversalSpec'),
+            SelectionSpec(name='computeResourceHostTraversalSpec'),
+            SelectionSpec(name='hostVmTraversalSpec'),
+            SelectionSpec(name='resourcePoolVmTraversalSpec'),
+        ],
+    )
+
+    obj_spec = ObjectSpec(
+        obj=begin_entity,
+        skip=False,
+        selectSet=[
+            folderTraversalSpec,
+            datacenterVmTraversalSpec,
+            computeResourceHostTraversalSpec,
+            computeResourceRpTraversalSpec,
+            resourcePoolTraversalSpec,
+            hostVmTraversalSpec,
+            resourcePoolVmTraversalSpec
+        ]
+    )
+
+    return vmodl.query.PropertyCollector.FilterSpec(
+        propSet=property_specs,
+        objectSet=[ obj_spec ],
+    )
+
 
 def get_metric(perfMgr, perfCounterStr, perfInstance):
     for counter in perfMgr.perfCounter:
