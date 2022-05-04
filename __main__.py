@@ -28,7 +28,7 @@ if __name__ == "__main__":
     try:
         run()
     except SystemExit as e:
-        if e.code > 3:
+        if not isinstance(e.code, int) or e.code > 3:
             sys.exit(3)
     except Exception as e:
         import traceback
