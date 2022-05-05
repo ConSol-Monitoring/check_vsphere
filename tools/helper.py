@@ -35,18 +35,6 @@ def find_entity_views(service_instance, view_type, begin_entity=None, sieve=None
     property_filter_spec = get_search_filter_spec(view_type, begin_entity, [propertySpec])
     obj_contents = service_instance.content.propertyCollector.RetrieveContents([property_filter_spec])
 
-    # WHAT NOW VMWARE?! KILL YOURSELF!
-    '''
-    pyVmomi.VmomiSupport.InvalidArgument: (vmodl.fault.InvalidArgument) {
-       dynamicType = <unset>,
-       dynamicProperty = (vmodl.DynamicProperty) [],
-       msg = 'A specified parameter was not correct: undefined TraversalSpec name',
-       faultCause = <unset>,
-       faultMessage = (vmodl.LocalizableMessage) [],
-       invalidProperty = 'undefined TraversalSpec name'
-    }
-    '''
-
 
 def get_search_filter_spec(view_type, begin_entity, property_specs):
     TraversalSpec = vmodl.query.PropertyCollector.TraversalSpec
@@ -141,6 +129,7 @@ def get_search_filter_spec(view_type, begin_entity, property_specs):
         selectSet=[
             folderTraversalSpec,
             datacenterVmTraversalSpec,
+            datacenterHostTraversalSpec,
             computeResourceHostTraversalSpec,
             computeResourceRpTraversalSpec,
             resourcePoolTraversalSpec,
