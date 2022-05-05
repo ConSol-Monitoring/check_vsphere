@@ -24,7 +24,10 @@ def find_entity_views(service_instance, view_type, begin_entity=None, sieve=None
         begin_entity = service_instance.content.rootFolder
     if not sieve:
         sieve = dict()
+    if not properties:
+        properties = []
     assert isinstance(sieve, dict)
+    assert isinstance(properties, list)
 
     propertySpec = vmodl.query.PropertyCollector.PropertySpec(
         pathSet=list(sieve.keys()),
@@ -34,6 +37,7 @@ def find_entity_views(service_instance, view_type, begin_entity=None, sieve=None
 
     property_filter_spec = get_search_filter_spec(view_type, begin_entity, [propertySpec])
     obj_contents = service_instance.content.propertyCollector.RetrieveContents([property_filter_spec])
+    print(obj_contents)
 
 
 def get_search_filter_spec(view_type, begin_entity, property_specs):
