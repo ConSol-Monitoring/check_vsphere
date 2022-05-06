@@ -105,7 +105,6 @@ def get_perf_values(args, obj, metricId):
     si = args._si
 
     perfMgr = si.content.perfManager
-#    metrics = get_key_metrics(perfMgr, group, names)
 
     perfQuerySpec = []
     perfQuerySpec.append(
