@@ -35,17 +35,19 @@ def find_entity_views(service_instance, view_type, begin_entity=None, sieve=None
         all=False
     )
 
-    property_filter_spec = get_search_filter_spec(view_type, begin_entity, [propertySpec])
+    property_filter_spec = get_search_filter_spec(begin_entity, [propertySpec])
     obj_contents = service_instance.content.propertyCollector.RetrieveContents([property_filter_spec])
-    print(obj_contents)
-    return obj_contents
+
+    for obj in obj_contents:
+        print(obj)
 
 
-def get_search_filter_spec(view_type, begin_entity, property_specs):
+def get_search_filter_spec(begin_entity, property_specs):
     # What's wrong with you VMWARE?
     TraversalSpec = vmodl.query.PropertyCollector.TraversalSpec
     SelectionSpec = vmodl.query.PropertyCollector.SelectionSpec
     ObjectSpec = vmodl.query.PropertyCollector.ObjectSpec
+    FilterSpec = vmodl.query.PropertyCollector.FilterSpec
 
     resourcePoolTraversalSpec = TraversalSpec(
         name='resourcePoolTraversalSpec',
@@ -144,7 +146,7 @@ def get_search_filter_spec(view_type, begin_entity, property_specs):
         ]
     )
 
-    return vmodl.query.PropertyCollector.FilterSpec(
+    return FilterSpec(
         propSet=property_specs,
         objectSet=[ obj_spec ],
     )

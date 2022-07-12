@@ -2,7 +2,6 @@
 
 import sys
 import importlib
-from tools import mon
 
 def run():
     cmd = None
@@ -14,7 +13,7 @@ def run():
 
     if cmd:
         try:
-            runner = importlib.import_module(f'vcmd.{cmd}')
+            runner = importlib.import_module(f'CheckVsphere.vcmd.{cmd}')
         except ModuleNotFoundError as e:
             if not e.name.startswith("vcmd."):
                 raise e

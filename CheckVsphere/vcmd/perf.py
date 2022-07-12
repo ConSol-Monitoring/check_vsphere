@@ -4,15 +4,14 @@
 check performance values from Vsphere
 """
 
-import omdp
 import logging
 from pyVmomi import vim
 from pyVim.task import WaitForTask
-from tools import cli, service_instance
 from http.client import HTTPConnection
-from tools.helper import get_obj_by_name, get_metric
+from ..tools import cli, service_instance
+from ..tools.helper import get_obj_by_name, get_metric
 from pprint import pprint as pp
-from tools.mon import Check, Status, Threshold
+from monplugin import Check, Status, Threshold
 
 def run():
     parser = get_argparser()
@@ -43,10 +42,6 @@ def run():
 
     # I hate you so much vmware
     # https://vdc-download.vmware.com/vmwb-repository/dcr-public/bf660c0a-f060-46e8-a94d-4b5e6ffc77ad/208bc706-e281-49b6-a0ce-b402ec19ef82/SDK/vsphere-ws/docs/ReferenceGuide/cpu_counters.html
-    if counter.unitInfo.key == 'percent':
-        factor = 0.01
-    else:
-        factor = 1
 
     obj = get_obj_by_name(args._si, vimtype, args.vimname)
 
@@ -55,6 +50,11 @@ def run():
                         "maybe --perfinstance='*' helps to examine the available instances")
     if not obj:
         raise Exception(f"vim.{args.vimtype} not found with name {args.vimname}")
+
+    if counter.unitInfo.key == 'percent':
+        factor = 0.01
+    else:
+        factor = 1
 
     try:
         values = get_perf_values(args, obj, metricId)[0]
