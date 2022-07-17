@@ -46,21 +46,31 @@ def find_entity_views(service_instance, view_type, begin_entity=None, sieve=None
     filtered_objs = []
 
     for obj in obj_contents:
+        props = {}
+        for p in obj.propSet:
+            props[p.name] = p.val
+
         if not sieve:
-            filtered_objs.append(obj)
+            filtered_objs.append({ "obj":obj, "props": props})
             continue
         else:  # FIXME: implement sieve here
-            matched = 0
-            props = {}
-            for p in obj.propSet:
-                props[p.name] = p.val
 
+            matched = True
 
-            filtered_objs.append(obj)
-            continue
+            try:
+                for property_name, property_value in sieve.items():
+                    #print((property_name, property_value, props))
+                    if property_name in props:
+                        if props[property_name] != property_value:
+                            raise Exception("Not Matched")
+            except:
+                matched = False
+
+            if matched:
+                filtered_objs.append({ "obj":obj, "props": props})
 
     return filtered_objs
-
+    #return service_instance.content.viewManager.CreateListView( obj = filtered_objs )
 
 
 def get_search_filter_spec(begin_entity, property_specs):
@@ -166,7 +176,6 @@ def get_search_filter_spec(begin_entity, property_specs):
             resourcePoolVmTraversalSpec
         ]
     )
-    print("HALLO")
 
     return FilterSpec(
         propSet=property_specs,

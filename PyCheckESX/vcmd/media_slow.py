@@ -7,7 +7,6 @@ This is not good because vms cannot move hosts with mounted cds/floppies
 """
 
 import logging
-from ..tools.helper import find_entity_views
 from pyVmomi import vim
 from pyVim.task import WaitForTask
 from ..tools import cli, service_instance
@@ -33,12 +32,7 @@ def run():
     else:
         parentView = si.content.rootFolder
 
-    #vm_view = si.content.viewManager.CreateContainerView(parentView, [vim.VirtualMachine], True)
-    vms = find_entity_views(
-        si,
-        vim.VirtualMachine,
-        properties=['name', 'config.hardware.device', 'config.template']
-    )
+    vm_view = si.content.viewManager.CreateContainerView(parentView, [vim.VirtualMachine], True)
 
     result = []
 
@@ -47,12 +41,12 @@ def run():
         "no connected cdrom/floppy drives found"
     )
 
-    for vm in vms:
+    for vm in vm_view.view:
         match = 0
-        if vm['props']['config.template']:
+        if vm.config.template:
             # This vm is a template, ignore it
             continue
-        for device in vm['props']['config.hardware.device']:
+        for device in vm.config.hardware.device:
             if \
               ( isinstance(device, vim.vm.device.VirtualCdrom) \
               or isinstance(device, vim.vm.device.VirtualFloppy) ) \
@@ -61,7 +55,7 @@ def run():
         if match > 0:
             check.add_message(
                 Status.CRITICAL,
-                f'{vm["props"]["name"]} has cdrom/floppy drives connected'
+                f'{vm.name} has cdrom/floppy drives connected'
             )
 
     (code, message) = check.check_messages(separator=' - ')
