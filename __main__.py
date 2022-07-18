@@ -14,7 +14,7 @@ def run():
 
     if cmd:
         try:
-            runner = importlib.import_module(f"PyCheckESX.vcmd.{cmd}")
+            runner = importlib.import_module(f"checkvsphere.vcmd.{cmd}")
         except ModuleNotFoundError as e:
             if not e.name.startswith("vcmd."):
                 raise e
