@@ -37,6 +37,7 @@ def run():
     vms = find_entity_views(
         si,
         vim.VirtualMachine,
+        begin_entity=parentView,
         properties=['name', 'config.hardware.device', 'config.template']
     )
 
