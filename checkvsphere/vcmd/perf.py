@@ -10,9 +10,52 @@ from pyVim.task import WaitForTask
 from http.client import HTTPConnection
 from ..tools import cli, service_instance
 from ..tools.helper import get_obj_by_name, get_metric
-from ..tools.helper import find_entity_views,get_obj_by_name, get_metric
+from ..tools.helper import find_entity_views, get_obj_by_name, get_metric
 from pprint import pprint as pp
 from monplugin import Check, Status, Threshold
+
+'''
+[kiloBytes]
+[megaBytes]
+[teraBytes]
+[percent]
+[microsecond]
+[millisecond]
+[second]
+[celsius]
+[joule]
+[kiloBytesPerSecond]
+[megaHertz]
+[number]
+[watt]
+'''
+
+
+def get_counter_info(counter):
+    info = {}
+    info['factor'] = 1
+    info['unit'] = counter.unitInfo.summary
+    info['perfUnit'] = None
+    unit = counter.unitInfo.key
+    if unit == 'percent':
+        # percent is actually ‱ (permyriad)
+        info['factor'] = 0.01
+        info['unit'] = '%'
+        info['perfUnit'] = '%'
+    elif unit.endswith('Bytes'):
+        unit = unit.capitalize()
+        info['perfUnit'] = unit[0] + 'B'
+        info['unit'] = info['perfUnit'] + 'ytes'
+    elif unit.endswith('second'):
+        if unit.startswith('milli'):
+            info['perfUnit'] = 'ms'
+        elif unit.startswith('micro'):
+            info['perfUnit'] = 'us'
+        elif unit == 'second':
+            info['perfUnit'] = 's'
+
+    return info
+
 
 def run():
     parser = get_argparser()
@@ -22,10 +65,7 @@ def run():
         raise Exception("at least one of --warning or --critical is required")
 
     check = Check(shortname="VSPHERE-PERFCOUNTER")
-    check.set_threshold(
-        warning=args.warning,
-        critical=args.critical
-    )
+    check.set_threshold(warning=args.warning, critical=args.critical)
 
     args._si = service_instance.connect(args)
 
@@ -39,7 +79,9 @@ def run():
     except:
         raise Exception("perfcounter must be composed as groupName:perfName:rollupType")
 
-    (counter, metricId) = get_metric(args._si.content.perfManager, args.perfcounter, args.perfinstance)
+    (counter, metricId) = get_metric(
+        args._si.content.perfManager, args.perfcounter, args.perfinstance
+    )
 
     # I hate you so much vmware
     # https://vdc-download.vmware.com/vmwb-repository/dcr-public/bf660c0a-f060-46e8-a94d-4b5e6ffc77ad/208bc706-e281-49b6-a0ce-b402ec19ef82/SDK/vsphere-ws/docs/ReferenceGuide/cpu_counters.html
@@ -48,38 +90,40 @@ def run():
         args._si,
         vimtype,
         begin_entity=args._si.content.rootFolder,
-        sieve={'name': args.vimname}
+        sieve={'name': args.vimname},
     )
     obj = vms[0]['obj'].obj
 
     if not metricId:
-        raise Exception(f"metric not found by {args.perfcounter}:{args.perfinstance}, "
-                        "maybe --perfinstance='*' helps to examine the available instances")
+        raise Exception(
+            f"metric not found by {args.perfcounter}:{args.perfinstance}, "
+            "maybe --perfinstance='*' helps to examine the available instances"
+        )
     if not obj:
         raise Exception(f"vim.{args.vimtype} not found with name {args.vimname}")
 
-    if counter.unitInfo.key == 'percent':
-        factor = 0.01
-    else:
-        factor = 1
+    counterInfo = get_counter_info(counter)
 
     try:
         values = get_perf_values(args, obj, metricId)[0]
     except IndexError:
-        check.exit(Status.UNKNOWN, f"Cannot find {args.perfcounter} for the queried resources")
+        check.exit(
+            Status.UNKNOWN, f"Cannot find {args.perfcounter} for the queried resources"
+        )
 
     if args.perfinstance == '':
         for instance in values.value:
-            val = instance.value[0] * factor
+            val = instance.value[0] * counterInfo['factor']
             if instance.id.instance == args.perfinstance:
                 check.add_perfdata(
-                    label = args.perfcounter,
-                    value = val,
-                    threshold = check.threshold,
+                    label=args.perfcounter,
+                    value=val,
+                    threshold=check.threshold,
+                    uom=counterInfo['perfUnit'],
                 )
                 check.exit(
                     code=check.check_threshold(val),
-                    message=f'Counter {args.perfcounter} on {args.vimtype}:{args.vimname} reported {val}'
+                    message=f'Counter {args.perfcounter} on {args.vimtype}:{args.vimname} reported {val} {counterInfo["unit"]}',
                 )
     else:
         for instance in values.value:
@@ -87,25 +131,22 @@ def run():
                 # ignore the aggregate if we query a specific or all instances
                 continue
             if args.perfinstance == '*' or args.perfinstance == instance.id.instance:
-                val = instance.value[0] * factor
+                val = instance.value[0] * counterInfo['factor']
                 check.add_perfdata(
-                    label = f'{args.perfcounter}_{instance.id.instance}',
-                    value = val,
-                    threshold = check.threshold,
+                    label=f'{args.perfcounter}_{instance.id.instance}',
+                    value=val,
+                    threshold=check.threshold,
+                    uom=counterInfo['perfUnit'],
                 )
                 check.add_message(
                     check.threshold.get_status(val),
-                    f"{args.perfcounter}_{instance.id.instance} has value {val}"
+                    f"{args.perfcounter}_{instance.id.instance} has value {val} {counterInfo['unit']}",
                 )
 
         (code, message) = check.check_messages(separator='\n  ')
-        check.exit(
-            code=code,
-            message=message
-        )
+        check.exit(code=code, message=message)
 
         raise NotImplementedError("only perfinstance '' is currently supported")
-
 
 
 def get_perf_values(args, obj, metricId):
@@ -126,53 +167,68 @@ def get_perf_values(args, obj, metricId):
     perfData = perfMgr.QueryPerf(querySpec=perfQuerySpec)
     return perfData
 
+
 def get_argparser():
     parser = cli.Parser()
-    #parser.add_optional_arguments(cli.Argument.DATACENTER_NAME)
-    parser.add_required_arguments({
-        'name_or_flags': ['--vimtype'],
-        'options': {'action': 'store', 'help': 'the object type to check, i.e. HostSystem, Datacenter or VirtualMachine'}
-    })
-    parser.add_required_arguments({
-        'name_or_flags': ['--vimname'],
-        'options': {'action': 'store', 'help': 'name of the vimtype object'}
-    })
-    parser.add_required_arguments({
-        'name_or_flags': ['--perfcounter'],
-        'options': {'action': 'store', 'help': 'a colon separated string composed of groupInfo.key:nameInfo.key:rollupType'}
-    })
-    parser.add_optional_arguments({
-        'name_or_flags': ['--perfinstance'],
-        'options': {
-            'action': 'store',
-            'default': '',
-            'help': 'the instance of of the metric to monitor. defaults to empty string, '
-                    'which is not always available but means an aggregated value over all instances'
+    # parser.add_optional_arguments(cli.Argument.DATACENTER_NAME)
+    parser.add_required_arguments(
+        {
+            'name_or_flags': ['--vimtype'],
+            'options': {
+                'action': 'store',
+                'help': 'the object type to check, i.e. HostSystem, Datacenter or VirtualMachine',
+            },
         }
-    })
-    parser.add_optional_arguments({
-        'name_or_flags': ['--interval'],
-        'options': {
-            'action': 'store',
-            'type': int,
-            'default': 20,
-            'help': 'The interval (in seconds) to aggregate over'
+    )
+    parser.add_required_arguments(
+        {
+            'name_or_flags': ['--vimname'],
+            'options': {'action': 'store', 'help': 'name of the vimtype object'},
         }
-    })
-    parser.add_optional_arguments({
-        'name_or_flags': ['--critical'],
-        'options': {
-            'action': 'store',
-            'help': 'critical threshold'
+    )
+    parser.add_required_arguments(
+        {
+            'name_or_flags': ['--perfcounter'],
+            'options': {
+                'action': 'store',
+                'help': 'a colon separated string composed of groupInfo.key:nameInfo.key:rollupType',
+            },
         }
-    })
-    parser.add_optional_arguments({
-        'name_or_flags': ['--warning'],
-        'options': {
-            'action': 'store',
-            'help': 'warning threshold'
+    )
+    parser.add_optional_arguments(
+        {
+            'name_or_flags': ['--perfinstance'],
+            'options': {
+                'action': 'store',
+                'default': '',
+                'help': 'the instance of of the metric to monitor. defaults to empty string, '
+                'which is not always available but means an aggregated value over all instances',
+            },
         }
-    })
+    )
+    parser.add_optional_arguments(
+        {
+            'name_or_flags': ['--interval'],
+            'options': {
+                'action': 'store',
+                'type': int,
+                'default': 20,
+                'help': 'The interval (in seconds) to aggregate over',
+            },
+        }
+    )
+    parser.add_optional_arguments(
+        {
+            'name_or_flags': ['--critical'],
+            'options': {'action': 'store', 'help': 'critical threshold'},
+        }
+    )
+    parser.add_optional_arguments(
+        {
+            'name_or_flags': ['--warning'],
+            'options': {'action': 'store', 'help': 'warning threshold'},
+        }
+    )
     return parser
 
 

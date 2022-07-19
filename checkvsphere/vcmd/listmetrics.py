@@ -37,9 +37,9 @@ def run():
         for name in metrics[group]:
             for rollup in metrics[group][name]:
                 counter = metrics[group][name][rollup]
-                print("{:4d} {}:{}:{} ({})\n{}\n".format(
+                print("{:4d} {}:{}:{} ({} [{}])\n{}\n".format(
                     counter.key, group, name, rollup,
-                    counter.unitInfo.summary,
+                    counter.unitInfo.summary, counter.unitInfo.key,
                     textwrap.fill(
                         counter.nameInfo.summary,
                         width=72,
