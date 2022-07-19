@@ -10,6 +10,7 @@ from pyVim.task import WaitForTask
 from http.client import HTTPConnection
 from ..tools import cli, service_instance
 from ..tools.helper import get_obj_by_name, get_metric
+from ..tools.helper import find_entity_views,get_obj_by_name, get_metric
 from pprint import pprint as pp
 from monplugin import Check, Status, Threshold
 
@@ -43,7 +44,13 @@ def run():
     # I hate you so much vmware
     # https://vdc-download.vmware.com/vmwb-repository/dcr-public/bf660c0a-f060-46e8-a94d-4b5e6ffc77ad/208bc706-e281-49b6-a0ce-b402ec19ef82/SDK/vsphere-ws/docs/ReferenceGuide/cpu_counters.html
 
-    obj = get_obj_by_name(args._si, vimtype, args.vimname)
+    vms = find_entity_views(
+        args._si,
+        vimtype,
+        begin_entity=args._si.content.rootFolder,
+        sieve={'name': args.vimname}
+    )
+    obj = vms[0]['obj'].obj
 
     if not metricId:
         raise Exception(f"metric not found by {args.perfcounter}:{args.perfinstance}, "
