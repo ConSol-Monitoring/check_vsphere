@@ -1,3 +1,4 @@
 * [Commands](/cmd/)
-  * [perf](/cmd/perf.md)
+  * [listmetrics](/cmd/listmetrics.md)
   * [media](/cmd/media.md)
+  * [perf](/cmd/perf.md)
