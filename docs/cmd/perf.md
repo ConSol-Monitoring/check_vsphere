@@ -2,7 +2,7 @@
 
 ## Options
 
-Besides the [general options][/cmd/] this command supports the following
+Besides the [general options](/cmd/) this command supports the following
 options:
 
 | options | description |
