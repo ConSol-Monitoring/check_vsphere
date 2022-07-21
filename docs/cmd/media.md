@@ -1,3 +1,3 @@
 # media
 
-This command checks 
+This command checks if 
