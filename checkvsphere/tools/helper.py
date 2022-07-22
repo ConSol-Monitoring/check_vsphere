@@ -3,6 +3,8 @@ from pyVmomi import vim, vmodl
 from . import serviceutil
 
 # TODO: this might be slow, probably speed this up with
+
+
 def get_obj_by_name(si, vimtype, name):
     """
     ex: get_obj_by_name(serviceinstance, vim.HostSystem, "foo.example.com")
@@ -51,7 +53,7 @@ def find_entity_views(service_instance, view_type, begin_entity=None, sieve=None
             props[p.name] = p.val
 
         if not sieve:
-            filtered_objs.append({ "obj":obj, "props": props})
+            filtered_objs.append({"obj": obj, "props": props})
             continue
         else:  # FIXME: implement sieve here
 
@@ -67,10 +69,10 @@ def find_entity_views(service_instance, view_type, begin_entity=None, sieve=None
                 matched = False
 
             if matched:
-                filtered_objs.append({ "obj":obj, "props": props})
+                filtered_objs.append({"obj": obj, "props": props})
 
     return filtered_objs
-    #return service_instance.content.viewManager.CreateListView( obj = filtered_objs )
+    # return service_instance.content.viewManager.CreateListView( obj = filtered_objs )
 
 
 def get_search_filter_spec(begin_entity, property_specs):

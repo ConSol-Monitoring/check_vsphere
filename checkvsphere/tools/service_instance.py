@@ -57,4 +57,3 @@ def connect(args):
         raise SystemExit("Unable to connect to host with supplied credentials.")
 
     return service_instance
-

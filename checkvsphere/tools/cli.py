@@ -22,6 +22,7 @@ import os
 
 __author__ = "VMware, Inc."
 
+
 class EnvDefault(argparse.Action):
     def __init__(self, envvar, required=True, default=None, **kwargs):
         if not default and envvar:
@@ -33,6 +34,7 @@ class EnvDefault(argparse.Action):
 
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, values)
+
 
 class Parser:
     """
@@ -82,7 +84,6 @@ class Parser:
                                                envvar='VSPHERE_PASS',
                                                help='Password to use when connecting to host, '
                                                     'can also be set by env VSPHERE_PASS')
-
 
         self._standard_args_group.add_argument('-nossl', '--disable-ssl-verification',
                                                required=False,
@@ -155,6 +156,7 @@ class Argument:
         parser.add_optional_arguments(cli.Argument.VM_NAME)
         parser.add_optional_arguments(cli.Argument.DATACENTER_NAME, cli.Argument.NIC_NAME)
     """
+
     def __init__(self):
         pass
 
@@ -426,4 +428,3 @@ def prompt_y_n_question(question, default="no"):
             return valid[choice]
         else:
             print("Please, respond with 'yes' or 'no' or 'y' or 'n'.")
-

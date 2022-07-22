@@ -11,12 +11,14 @@ from http.client import HTTPConnection
 
 si = None
 
+
 def run():
     global si
     parser = cli.Parser()
-    #parser.add_optional_arguments(cli.Argument.DATACENTER_NAME)
+    # parser.add_optional_arguments(cli.Argument.DATACENTER_NAME)
     args = parser.get_args()
     si = service_instance.connect(args)
+
 
 if __name__ == "__main__":
     run()
