@@ -9,7 +9,7 @@ from pyVmomi import vim
 from pyVim.task import WaitForTask
 from http.client import HTTPConnection
 from ..tools import cli, service_instance
-from ..tools.helper import get_obj_by_name, get_metric
+from ..tools.helper import get_obj_by_name, get_metric, CheckArgument
 from ..tools.helper import find_entity_views, get_obj_by_name, get_metric
 from pprint import pprint as pp
 from monplugin import Check, Status, Threshold
@@ -170,7 +170,17 @@ def get_perf_values(args, obj, metricId):
 
 def get_argparser():
     parser = cli.Parser()
+
+    parser.add_optional_arguments( CheckArgument.CRITICAL_THRESHOLD )
+    parser.add_optional_arguments( CheckArgument.WARNING_THRESHOLD )
+
     # parser.add_optional_arguments(cli.Argument.DATACENTER_NAME)
+    parser.add_required_arguments(
+        {
+            'name_or_flags': ['--vimname'],
+            'options': {'action': 'store', 'help': 'name of the vimtype object'},
+        }
+    )
     parser.add_required_arguments(
         {
             'name_or_flags': ['--vimtype'],
@@ -178,12 +188,6 @@ def get_argparser():
                 'action': 'store',
                 'help': 'the object type to check, i.e. HostSystem, Datacenter or VirtualMachine',
             },
-        }
-    )
-    parser.add_required_arguments(
-        {
-            'name_or_flags': ['--vimname'],
-            'options': {'action': 'store', 'help': 'name of the vimtype object'},
         }
     )
     parser.add_required_arguments(
@@ -217,18 +221,7 @@ def get_argparser():
             },
         }
     )
-    parser.add_optional_arguments(
-        {
-            'name_or_flags': ['--critical'],
-            'options': {'action': 'store', 'help': 'critical threshold'},
-        }
-    )
-    parser.add_optional_arguments(
-        {
-            'name_or_flags': ['--warning'],
-            'options': {'action': 'store', 'help': 'warning threshold'},
-        }
-    )
+
     return parser
 
 

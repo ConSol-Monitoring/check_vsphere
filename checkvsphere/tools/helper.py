@@ -101,3 +101,17 @@ def get_metric(perfMgr, perfCounterStr, perfInstance):
                 instance=perfInstance
             ))
     return (None, None)
+
+
+class CheckArgument:
+    def __init__(self):
+        pass
+
+    WARNING_THRESHOLD = {
+        'name_or_flags': ['--warning'],
+        'options': {'action': 'store', 'help': 'warning threshold'},
+    }
+    CRITICAL_THRESHOLD = {
+        'name_or_flags': ['--critical'],
+        'options': {'action': 'store', 'help': 'critical threshold'},
+    }
