@@ -24,8 +24,7 @@ def run():
     else:
         print("Specify cmd")
 
-
-if __name__ == "__main__":
+def main():
     try:
         run()
     except SystemExit as e:
@@ -39,3 +38,6 @@ if __name__ == "__main__":
         print("UNKNOWN - Unhandled exception:")
         traceback.print_exc()
         sys.exit(3)
+
+if __name__ == "__main__":
+    main()

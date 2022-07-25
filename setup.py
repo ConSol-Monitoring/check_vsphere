@@ -6,5 +6,17 @@ setup(
     description="",
     author="Danijel Tasov",
     author_email="m@rbfh.de",
-    packages=["monplugin"],
+    requires = [
+        "monplugin",
+    ],
+    packages = [
+        "checkvsphere",
+        "checkvsphere.vcmd",
+        "checkvsphere.tools"
+    ],
+    entry_points = {
+        "console_scripts": [
+            'check_vsphere = checkvsphere.cli:main',
+        ]
+    }
 )
