@@ -12,6 +12,7 @@
 
 | option | description |
 |---|---|
+| `--vihost VIHOST`   | name of the ESXi Host as seen by the vCenter |
 | `--vimtype VIMTYPE` | the object type to check,<br/>it's a [managed object](https://vdc-repo.vmware.com/vmwb-repository/dcr-public/1ef6c336-7bef-477d-b9bb-caa1767d7e30/82521f49-9d9a-42b7-b19b-9e6cd9b30db1/vim.ManagedEntity.html) like: HostSystem, Datacenter or VirtualMachine |
 | `--vimname VIMNAME` | the name of the ManagedObject of vimtype  |
 | `--warning WARNING`     | warning [threshold](https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT) |
