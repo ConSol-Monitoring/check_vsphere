@@ -18,7 +18,7 @@ options:
 ## Examples
 
 ``` bash
-check_vmware media -nossl \
+check_vsphere media -nossl \
   -s vcenter.example.com \
   -u naemon@vsphere.local \
   --vihost esx1.int.example.com

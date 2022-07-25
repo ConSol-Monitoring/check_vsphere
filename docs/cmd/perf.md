@@ -24,7 +24,7 @@ options:
 ## Examples
 
 ``` bash
-check_vmware perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
+check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
   --vimtype HostSystem  --vimname esx1.int.example.com \
   --perfcounter cpu:usage:average --perfinstance '' \
   --critical 80
