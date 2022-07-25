@@ -10,4 +10,4 @@ all:
 	rm -rf check_vsphere.zip zip
 
 clean:
-	rm -rf check_vsphere zip check_vsphere.zip
+	rm -rf check_vsphere zip check_vsphere.zip build check_vsphere.egg-info
