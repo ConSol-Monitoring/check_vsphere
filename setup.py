@@ -6,13 +6,14 @@ setup(
     description="",
     author="Danijel Tasov",
     author_email="m@rbfh.de",
-    requires = [
-        "monplugin",
+    install_requires = [
+        "monplugin @ git+https://github.com/datamuc/py-monplugin@v0.1",
+        "pyvmomi",
     ],
     packages = [
         "checkvsphere",
         "checkvsphere.vcmd",
-        "checkvsphere.tools"
+        "checkvsphere.tools",
     ],
     entry_points = {
         "console_scripts": [
