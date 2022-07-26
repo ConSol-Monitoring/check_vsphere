@@ -53,6 +53,8 @@ def get_counter_info(counter):
             info['perfUnit'] = 'us'
         elif unit == 'second':
             info['perfUnit'] = 's'
+    elif unit.endswith('number'):
+        info['unit'] = ''
 
     return info
 
