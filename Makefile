@@ -1,13 +1,19 @@
 .PHONY: all clean test
 
-all:
-	mkdir zip
-	find checkvsphere -type f | cpio -vmdup zip
-	mv zip/checkvsphere/cli.py zip/__main__.py
-	( cd zip && zip -9 ../check_vsphere.zip $$( find . -name \*.py -print ) )
-	{ echo '#!/usr/bin/env python3' ; cat check_vsphere.zip ; } > check_vsphere
-	chmod a+rx check_vsphere
-	rm -rf check_vsphere.zip zip
+all: check_vsphere_bundle check_vsphere
+
+check_vsphere_bundle:
+	pip install --no-compile --target allinone .
+	mv allinone/bin/check_vsphere allinone/__main__.py
+	python -m zipapp  -c -p '/usr/bin/env python3' allinone
+	rm -rf allinone
+	mv allinone.pyz check_vsphere_bundle
+
+check_vsphere:
+	python setup.py build
+	mv build/lib/checkvsphere/cli.py build/lib/__main__.py
+	( cd build/lib; python -m zipapp -c --output ../../check_vsphere -p '/usr/bin/env python3' . )
+	rm -rf build
 
 clean:
-	rm -rf check_vsphere zip check_vsphere.zip build check_vsphere.egg-info
+	rm -rf build allinone check_vsphere_bundle check_vsphere zip check_vsphere.zip build check_vsphere.egg-info
