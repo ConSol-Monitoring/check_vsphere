@@ -19,5 +19,10 @@ setup(
         "console_scripts": [
             'check_vsphere = checkvsphere.cli:main',
         ]
-    }
+    },
+    classifiers = [
+        'Development Status :: 3 - Alpha',
+        'Topic :: System :: Monitoring',
+        'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
+    ],
 )
