@@ -7,7 +7,7 @@ setup(
     author="Danijel Tasov",
     author_email="m@rbfh.de",
     install_requires = [
-        "monplugin @ git+https://github.com/datamuc/py-monplugin@v0.1",
+        "monplugin @ https://github.com/datamuc/py-monplugin/archive/refs/tags/v0.1.zip",
         "pyvmomi",
     ],
     packages = [

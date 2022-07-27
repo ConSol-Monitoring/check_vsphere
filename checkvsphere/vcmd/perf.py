@@ -94,7 +94,12 @@ def run():
         begin_entity=args._si.content.rootFolder,
         sieve={'name': args.vimname},
     )
-    obj = vms[0]['obj'].obj
+
+    try:
+        obj = vms[0]['obj'].obj
+        props = vms[0]['props']
+    except IndexError:
+        check.exit(Status.UNKNOWN, f"{args.vimtype} {args.vimname} not found")
 
     if not metricId:
         raise Exception(
@@ -104,14 +109,17 @@ def run():
     if not obj:
         raise Exception(f"vim.{args.vimtype} not found with name {args.vimname}")
 
+    if 'runtime.inMaintenanceMode' in props:
+        status = getattr(Status, args.maintenance_state)
+        if props['runtime.inMaintenanceMode']:
+            check.exit(status, f"{args.vimname} is in maintenance")
+
     counterInfo = get_counter_info(counter)
 
     try:
         values = get_perf_values(args, obj, metricId)[0]
     except IndexError:
-        check.exit(
-            Status.UNKNOWN, f"Cannot find {args.perfcounter} for the queried resources"
-        )
+        check.exit(Status.UNKNOWN, f"Cannot find {args.perfcounter} for the queried resources")
 
     if args.perfinstance == '':
         for instance in values.value:
@@ -175,6 +183,15 @@ def get_argparser():
 
     parser.add_optional_arguments( CheckArgument.CRITICAL_THRESHOLD )
     parser.add_optional_arguments( CheckArgument.WARNING_THRESHOLD )
+    parser.add_optional_arguments( {
+        'name_or_flags': ['--maintenance-state'],
+        'options': {
+            'action': 'store',
+            'choices': ['OK', 'WARNING', 'CRITICAL', 'UNKNOWN'],
+            'default': 'UNKNOWN',
+            'help': 'exit with this status if the host is in maintenance, only does something with --vimtype HostSystem'
+        }
+    })
 
     # parser.add_optional_arguments(cli.Argument.DATACENTER_NAME)
     parser.add_required_arguments(

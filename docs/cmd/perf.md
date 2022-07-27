@@ -20,6 +20,7 @@ options:
 | `--warning WARNING`     | warning threshold, see [common options](/cmd/?id=common-options) |
 | `--perfcounter PERFCOUNTER` | a colon separated string composed of groupInfo.key:nameInfo.key:rollupType |
 | `--perfinstance PERFINSTANCE` | the instance of of the metric to monitor.<br/>defaults to empty string, which is not always available but means an aggregated value over all instances.<br/>Can also be `*` meaning all instances, in this case the threshold is checked against each of the instances |
+| `--maintenance-state` | exit state if the host is in maintenance,<br/> one of OK,WARNING,CRITICAL,UNKNOWN (only has a meaning with `--vimtype HostSystem` |
 
 ## Examples
 

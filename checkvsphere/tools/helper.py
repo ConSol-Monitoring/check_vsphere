@@ -20,7 +20,6 @@ def get_obj_by_name(si, vimtype, name):
 
     return None
 
-
 def find_entity_views(service_instance, view_type, begin_entity=None, sieve=None, properties=None):
     """
     find_entity_views(si, vim.HostSystem, sieve={"name": "esx1.vsphere.example.com"})
@@ -33,6 +32,10 @@ def find_entity_views(service_instance, view_type, begin_entity=None, sieve=None
         sieve = dict()
     if not properties:
         properties = []
+    if view_type == vim.HostSystem:
+        properties += ['runtime.inMaintenanceMode', 'runtime.powerState']
+    if view_type == vim.VirtualMachine:
+        properties += ['runtime.powerState']
     assert isinstance(sieve, dict)
     assert isinstance(properties, list)
 
@@ -55,7 +58,7 @@ def find_entity_views(service_instance, view_type, begin_entity=None, sieve=None
         if not sieve:
             filtered_objs.append({"obj": obj, "props": props})
             continue
-        else:  # FIXME: implement sieve here
+        else:  # FIXME: implement sieve here, currently it only works with one search pattern
 
             matched = True
 
