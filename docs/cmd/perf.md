@@ -25,10 +25,23 @@ options:
 ## Examples
 
 ``` bash
+# check for too much cpu usage
 check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
   --vimtype HostSystem  --vimname esx1.int.example.com \
   --perfcounter cpu:usage:average --perfinstance '' \
   --critical 80
+
+# check for too less cpu usage (application died?)
+check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
+  --vimtype HostSystem  --vimname esx1.int.example.com \
+  --perfcounter cpu:usage:average --perfinstance '' \
+  --critical 5:
+
+# check if there was a reboot within the last 10 minutes
+check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
+  --vimtype HostSystem  --vimname esx1.int.example.com \
+  --perfcounter sys:uptime:latest --perfinstance '' \
+  --critical 600:
 ```
 
 
