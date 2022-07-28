@@ -70,4 +70,5 @@ check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
 | `--select disk --subselect total_latency` | `perf --perfcounter disk:totalLatency:average` |
 | `--select net --subselect usage` | `perf --perfcounter net:usage:average` |
 | `--select net --subselect receive` | `perf --perfcounter net:received:average` |
+| `--select net --subselect send` | `perf --perfcounter net:transmitted:average` |
 | `--select uptime` | `perf --perfcounter sys:uptime:latest` |
