@@ -12,7 +12,7 @@ provided by the API) with the [listmetrics](/cmd/listmetrics) command.
 Besides the [general options](/cmd/) this command supports the following
 options:
 
-| options | description |
+|e options | description |
 |---|---|
 | `--vimtype VIMTYPE` | the object type to check, see [common options](/cmd/?id=common-options) |
 | `--vimname VIMNAME` | name of the vimtype object, see [common options](/cmd/?id=common-options) |
@@ -44,3 +44,17 @@ check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
 | `--select mem --subselect swapused` | `perf --perfcounter mem:swapused:average`   |
 | `--select mem --subselect overhead` | `perf --perfcounter mem:overhead:average`   |
 | `--select mem --subselect memctl`   | `perf --perfcounter mem:vmmemctl:average`   |
+| `--select disk --subselect aborted` | `perf --perfcounter disk:commandsAborted:summation` |
+| `--select disk --subselect resets` | `perf --perfcounter disk:busResets:summation` |
+| `--select disk --subselect read` | `perf --perfcounter disk:read:average` |
+| `--select disk --subselect read_latency` | `perf --perfcounter disk:totalReadLatency:average` |
+| `--select disk --subselect write` | `perf --perfcounter disk:write:average` |
+| `--select disk --subselect write_latency` | `perf --perfcounter disk:totalWriteLatency:average` |
+| `--select disk --subselect usage` | `perf --perfcounter disk:usage:average` |
+| `--select disk --subselect kernel_latency` | `perf --perfcounter disk:kernelLatency:average` |
+| `--select disk --subselect device_latency` | `perf --perfcounter disk:deviceLatency:average` |
+| `--select disk --subselect queue_latency` | `perf --perfcounter disk:queueLatency:average` |
+| `--select disk --subselect total_latency` | `perf --perfcounter disk:totalLatency:average` |
+| `--select net --subselect usage` | `perf --perfcounter net:usage:average` |
+| `--select net --subselect receive` | `perf --perfcounter net:received:average` |
+| `--select uptime` | `perf --perfcounter sys:uptime:latest` |

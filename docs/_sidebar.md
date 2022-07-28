@@ -1,3 +1,4 @@
+* [Home](/?id=check_vsphere)
 * [Commands](/cmd/)
   * [listmetrics](/cmd/listmetrics.md)
   * [media](/cmd/media.md)
