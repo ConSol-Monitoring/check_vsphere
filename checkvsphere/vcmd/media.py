@@ -13,6 +13,7 @@ from pyVim.task import WaitForTask
 from ..tools import cli, service_instance
 from monplugin import Check, Status
 from http.client import HTTPConnection
+from .. import CheckVsphereException
 
 
 def run():
@@ -30,7 +31,7 @@ def run():
         try:
             parentView = next(x for x in host_view.view if x.name.lower() == args.vihost.lower())
         except:
-            raise Exception(f"host {args.vihost} not found")
+            raise CheckVsphereException(f"host {args.vihost} not found")
     else:
         parentView = si.content.rootFolder
 

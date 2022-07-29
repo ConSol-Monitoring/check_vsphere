@@ -1,0 +1,2 @@
+class CheckVsphereException(Exception):
+    pass
