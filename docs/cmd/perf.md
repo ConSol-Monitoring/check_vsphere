@@ -20,7 +20,8 @@ options:
 | `--warning WARNING`     | warning threshold, see [common options](/cmd/?id=common-options) |
 | `--perfcounter PERFCOUNTER` | a colon separated string composed of groupInfo.key:nameInfo.key:rollupType |
 | `--perfinstance PERFINSTANCE` | the instance of of the metric to monitor.<br/>defaults to empty string, which is not always available but means an aggregated value over all instances.<br/>Can also be `*` meaning all instances, in this case the threshold is checked against each of the instances |
-| `--maintenance-state` | exit state if the host is in maintenance,<br/> one of OK,WARNING,CRITICAL,UNKNOWN (only has a meaning with `--vimtype HostSystem` |
+| `--maintenance-state` | exit state if the host is in maintenance,<br/> one of `OK, WARNING, CRITICAL, UNKNOWN` (only has a meaning with `--vimtype HostSystem` |
+| `--interval INTERVALID` | defaults to `20` which works in most cases, other possible values `300, 1800, 7200, 86400` and maybe more ...|
 
 ## Examples
 
@@ -47,28 +48,33 @@ check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
 
 ## Rosetta
 
-| check\_vmware\_esx | check\_vsphere |
-|---|---|
-| `--select cpu --subselect usage` | `perf --perfcounter cpu:usage:average`   |
-| `--select cpu --subselect ready` | `perf --perfcounter cpu:ready:summation` |
-| `--select cpu --subselect wait`  | `perf --perfcounter cpu:wait:summation`  |
-| `--select mem --subselect usage` | `perf --perfcounter mem:usage:average`   |
-| `--select mem --subselect consumed` | `perf --perfcounter mem:consumed:average`   |
-| `--select mem --subselect swapused` | `perf --perfcounter mem:swapused:average`   |
-| `--select mem --subselect overhead` | `perf --perfcounter mem:overhead:average`   |
-| `--select mem --subselect memctl`   | `perf --perfcounter mem:vmmemctl:average`   |
-| `--select disk --subselect aborted` | `perf --perfcounter disk:commandsAborted:summation` |
-| `--select disk --subselect resets` | `perf --perfcounter disk:busResets:summation` |
-| `--select disk --subselect read` | `perf --perfcounter disk:read:average` |
-| `--select disk --subselect read_latency` | `perf --perfcounter disk:totalReadLatency:average` |
-| `--select disk --subselect write` | `perf --perfcounter disk:write:average` |
-| `--select disk --subselect write_latency` | `perf --perfcounter disk:totalWriteLatency:average` |
-| `--select disk --subselect usage` | `perf --perfcounter disk:usage:average` |
-| `--select disk --subselect kernel_latency` | `perf --perfcounter disk:kernelLatency:average` |
-| `--select disk --subselect device_latency` | `perf --perfcounter disk:deviceLatency:average` |
-| `--select disk --subselect queue_latency` | `perf --perfcounter disk:queueLatency:average` |
-| `--select disk --subselect total_latency` | `perf --perfcounter disk:totalLatency:average` |
-| `--select net --subselect usage` | `perf --perfcounter net:usage:average` |
-| `--select net --subselect receive` | `perf --perfcounter net:received:average` |
-| `--select net --subselect send` | `perf --perfcounter net:transmitted:average` |
-| `--select uptime` | `perf --perfcounter sys:uptime:latest` |
+| check\_vmware\_esx | check\_vsphere | vimtypes |
+|---|---|---|
+| `--select cpu --subselect usage` | `perf --perfcounter cpu:usage:average`   | HostSystem, VirtualMachine |
+| `--select cpu --subselect ready` | `perf --perfcounter cpu:ready:summation` | HostSystem, VirtualMachine |
+| `--select cpu --subselect wait`  | `perf --perfcounter cpu:wait:summation`  | HostSystem, VirtualMachine |
+| `--select mem --subselect usage` | `perf --perfcounter mem:usage:average`   | HostSystem, VirtualMachine |
+| `--select mem --subselect consumed` | `perf --perfcounter mem:consumed:average`   | HostSystem, VirtualMachine |
+| `--select mem --subselect swapused` | `perf --perfcounter mem:swapused:average`   | HostSystem, VirtualMachine |
+| `--select mem --subselect overhead` | `perf --perfcounter mem:overhead:average`   | HostSystem, VirtualMachine |
+| `--select mem --subselect memctl`   | `perf --perfcounter mem:vmmemctl:average`   | HostSystem, VirtualMachine |
+| `--select disk --subselect aborted` | `perf --perfcounter disk:commandsAborted:summation` | HostSystem, VirtualMachine |
+| `--select disk --subselect resets` | `perf --perfcounter disk:busResets:summation` | HostSystem, VirtualMachine |
+| `--select disk --subselect read` | `perf --perfcounter disk:read:average` | HostSystem, VirtualMachine |
+| `--select disk --subselect read_latency` | `perf --perfcounter disk:totalReadLatency:average` | HostSystem, VirtualMachine |
+| `--select disk --subselect write` | `perf --perfcounter disk:write:average` | HostSystem, VirtualMachine |
+| `--select disk --subselect write_latency` | `perf --perfcounter disk:totalWriteLatency:average` | HostSystem, VirtualMachine |
+| `--select disk --subselect usage` | `perf --perfcounter disk:usage:average` | HostSystem, VirtualMachine |
+| `--select disk --subselect kernel_latency` | `perf --perfcounter disk:kernelLatency:average` | HostSystem, VirtualMachine |
+| `--select disk --subselect device_latency` | `perf --perfcounter disk:deviceLatency:average` | HostSystem, VirtualMachine |
+| `--select disk --subselect queue_latency` | `perf --perfcounter disk:queueLatency:average` | HostSystem, VirtualMachine |
+| `--select disk --subselect total_latency` | `perf --perfcounter disk:totalLatency:average` | HostSystem, VirtualMachine |
+| `--select net --subselect usage` | `perf --perfcounter net:usage:average` | HostSystem, VirtualMachine |
+| `--select net --subselect receive` | `perf --perfcounter net:received:average` | HostSystem, VirtualMachine |
+| `--select net --subselect send` | `perf --perfcounter net:transmitted:average` | HostSystem, VirtualMachine |
+| `--select uptime` | `perf --perfcounter sys:uptime:latest` | HostSystem,VirtualMachine |
+| `--select cluster --subselect effectivecpu` | `perf --perfcounter clusterservices:effectivecpu:average` | ClusterComputeResource |
+| `--select cluster --subselect effectivemem` | `perf --perfcounter clusterservices:effectivemem:average` | ClusterComputeResource |
+| `--select cluster --subselect failover` | `perf --perfcounter clusterservices:failover:latest` | ClusterComputeResource |
+| `--select cluster --subselect cpufairness` | `perf --perfcounter clusterservices:cpufairness:latest` | ClusterComputeResource |
+| `--select cluster --subselect memfairness` | `perf --perfcounter clusterservices:memfairness:latest` | ClusterComputeResource |
