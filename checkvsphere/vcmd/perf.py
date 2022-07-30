@@ -4,6 +4,8 @@
 check performance values from Vsphere
 """
 
+__cmd__ = 'perf'
+
 import logging
 from pyVmomi import vim
 from pyVim.task import WaitForTask

@@ -6,6 +6,8 @@ checks if there are any vms on a host that have connected cd or floppy drives
 This is not good because vms cannot move hosts with mounted cds/floppies
 """
 
+__cmd__ = 'media'
+
 import logging
 from ..tools.helper import find_entity_views
 from pyVmomi import vim

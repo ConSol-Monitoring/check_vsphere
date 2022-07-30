@@ -1,4 +1,4 @@
-# listmetrics
+# list-metrics
 
 ## Description
 
