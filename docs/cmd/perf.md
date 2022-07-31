@@ -12,7 +12,7 @@ provided by the API) with the [list-metrics](/cmd/list-metrics) command.
 Besides the [general options](/cmd/) this command supports the following
 options:
 
-|e options | description |
+| option | description |
 |---|---|
 | `--vimtype VIMTYPE` | the object type to check, see [common options](/cmd/?id=common-options) |
 | `--vimname VIMNAME` | name of the vimtype object, see [common options](/cmd/?id=common-options) |
