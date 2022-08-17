@@ -135,7 +135,7 @@ def isallowed(args, name):
     checks name against regexes in args.allowed
     '''
     if args.allowed:
-        for pattern in args.banned:
+        for pattern in args.allowed:
             p = re.compile(pattern)
             if p.search(name):
                 return True
