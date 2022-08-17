@@ -2,9 +2,8 @@ import re
 from pyVmomi import vim, vmodl
 from . import serviceutil
 
+
 # TODO: this might be slow, probably speed this up with
-
-
 def get_obj_by_name(si, vimtype, name):
     """
     ex: get_obj_by_name(serviceinstance, vim.HostSystem, "foo.example.com")
@@ -118,3 +117,28 @@ class CheckArgument:
         'name_or_flags': ['--critical'],
         'options': {'action': 'store', 'help': 'critical threshold'},
     }
+
+def isbanned(args, name):
+    '''
+    checks name against regexes in args.banned
+    '''
+    if args.banned:
+        for pattern in args.banned:
+            p = re.compile(pattern)
+            if p.search(name):
+                return True
+
+    return False
+
+def isallowed(args, name):
+    '''
+    checks name against regexes in args.allowed
+    '''
+    if args.allowed:
+        for pattern in args.banned:
+            p = re.compile(pattern)
+            if p.search(name):
+                return True
+        return False
+
+    return True
