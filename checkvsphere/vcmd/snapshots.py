@@ -38,22 +38,13 @@ def get_argparser():
         }
     })
 
-    parser.add_optional_arguments( {
-        'name_or_flags': ['--banned'],
-        'options': {
-            'default': [],
-            'help': 'regex, checked against <vm-name>;<snapshot-name>',
-            'action': 'append',
-        }
-    })
-    parser.add_optional_arguments( {
-        'name_or_flags': ['--allowed'],
-        'options': {
-            'default': [],
-            'help': 'regex, checked against <vm-name>;<snapshot-name>',
-            'action': 'append',
-        }
-    })
+    parser.add_optional_arguments(CheckArgument.BANNED(
+        'regex, checked against <vm-name>;<snapshot-name>',
+    ))
+    parser.add_optional_arguments(CheckArgument.ALLOWED(
+        'regex, checked against <vm-name>;<snapshot-name>',
+    ))
+
     return parser
 
 def check_by_age(vm, snaplist):
@@ -74,8 +65,9 @@ def check_by_age(vm, snaplist):
         now = datetime.now(timezone.utc)
         age = (now - snap.createTime) / timedelta(days=1)
         code = check.check_threshold(age)
-        check.add_message(code, f"«{snapname}» on «{vmname}» is {age:.2f} days old")
-        print((code, f"«{snapname}» on «{vmname}» is {age:.2f} days old"))
+        if code != Status.OK:
+            check.add_message(code, f"«{snapname}» on «{vmname}» is {age:.2f} days old")
+        #print((code, f"«{snapname}» on «{vmname}» is {age:.2f} days old"))
 
 def run():
     global check
@@ -102,6 +94,12 @@ def run():
 
         if args.mode == 'age':
             check_by_age(vm, vm['props']['snapshot'].rootSnapshotList)
+
+    (code, message) = check.check_messages(separator=', ')
+    check.exit(
+        code=code,
+        message=message,
+    )
 
 if __name__ == "__main__":
     try:

@@ -117,6 +117,24 @@ class CheckArgument:
         'name_or_flags': ['--critical'],
         'options': {'action': 'store', 'help': 'critical threshold'},
     }
+    def ALLOWED(help):
+        return {
+            'name_or_flags': ['--allowed'],
+            'options': {
+                'default': [],
+                'help': help,
+                'action': 'append',
+            }
+        }
+    def BANNED(help):
+        return {
+            'name_or_flags': ['--banned'],
+            'options': {
+                'default': [],
+                'help': help,
+                'action': 'append',
+            }
+        }
 
 def isbanned(args, name):
     '''
