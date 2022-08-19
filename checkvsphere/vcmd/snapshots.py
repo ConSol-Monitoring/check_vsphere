@@ -127,11 +127,14 @@ def run():
         else:
             raise RuntimeError("Unknown mode {args.mode}")
 
-    (code, message) = check.check_messages(separator=', ')
-    check.exit(
-        code=code,
-        message=message,
-    )
+    (code, message) = check.check_messages(separator=', ', separator_all='; ')
+    if code != Status.OK:
+        check.exit(
+            code=code,
+            message=message,
+        )
+    else:
+        check.exit(code=Status.OK, message='snapshots ok')
 
 if __name__ == "__main__":
     try:
