@@ -27,8 +27,8 @@ args = None
 
 def get_argparser():
     parser = cli.Parser()
-    parser.add_required_arguments( CheckArgument.CRITICAL_THRESHOLD )
-    parser.add_required_arguments( CheckArgument.WARNING_THRESHOLD )
+    parser.add_optional_arguments( CheckArgument.CRITICAL_THRESHOLD )
+    parser.add_optional_arguments( CheckArgument.WARNING_THRESHOLD )
     parser.add_required_arguments( {
         'name_or_flags': ['--mode'],
         'options': {
@@ -46,6 +46,28 @@ def get_argparser():
     ))
 
     return parser
+
+def count_snapshots(vm, snaplist):
+    count = 0
+    vmname = vm['props']['name']
+
+    for snap in snaplist:
+
+        if snap.childSnapshotList:
+            count+=count_snapshots(vm, snap.childSnapshotList)
+
+        snapname = snap.name
+
+        if isbanned(args, f'{vmname};{snapname}'):
+            print(('banned', f'{vmname};{snapname}'))
+            continue
+        if not isallowed(args, f'{vmname};{snapname}'):
+            print(('not allowed', f'{vmname};{snapname}'))
+            continue
+
+        count+=1
+
+    return count
 
 def check_by_age(vm, snaplist):
     vmname = vm['props']['name']
@@ -75,6 +97,9 @@ def run():
     parser = get_argparser()
     args = parser.get_args()
 
+    if not (args.warning or args.critical):
+        raise Exception("at least one of --warning or --critical is required")
+
     check = Check(shortname="VSPHERE-SNAPSHOTS")
     check.set_threshold(warning=args.warning, critical=args.critical)
 
@@ -94,6 +119,13 @@ def run():
 
         if args.mode == 'age':
             check_by_age(vm, vm['props']['snapshot'].rootSnapshotList)
+        elif args.mode == 'count':
+            count = count_snapshots(vm, vm['props']['snapshot'].rootSnapshotList)
+            code = check.check_threshold(count)
+            if code != Status.OK:
+                check.add_message(code, f"«{name}» has {count} snapshots")
+        else:
+            raise RuntimeError("Unknown mode {args.mode}")
 
     (code, message) = check.check_messages(separator=', ')
     check.exit(
