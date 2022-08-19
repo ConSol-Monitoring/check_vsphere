@@ -3,3 +3,4 @@
   * [list-metrics](/cmd/list-metrics.md)
   * [media](/cmd/media.md)
   * [perf](/cmd/perf.md)
+  * [snapshots](/cmd/snapshots.md)
