@@ -1,5 +1,6 @@
 * [Home](/?id=check_vsphere)
 * [Commands](/cmd/)
+  * [about](/cmd/about.md)
   * [list-metrics](/cmd/list-metrics.md)
   * [media](/cmd/media.md)
   * [perf](/cmd/perf.md)
