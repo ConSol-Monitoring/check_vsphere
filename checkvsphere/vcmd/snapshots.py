@@ -59,10 +59,10 @@ def count_snapshots(vm, snaplist):
         snapname = snap.name
 
         if isbanned(args, f'{vmname};{snapname}'):
-            print(('banned', f'{vmname};{snapname}'))
+            logging.debug(('banned', f'{vmname};{snapname}'))
             continue
         if not isallowed(args, f'{vmname};{snapname}'):
-            print(('not allowed', f'{vmname};{snapname}'))
+            logging.debug(('not allowed', f'{vmname};{snapname}'))
             continue
 
         count+=1
@@ -78,10 +78,10 @@ def check_by_age(vm, snaplist):
         snapname = snap.name
 
         if isbanned(args, f'{vmname};{snapname}'):
-            print(('banned', f'{vmname};{snapname}'))
+            logging.debug(('banned', f'{vmname};{snapname}'))
             continue
         if not isallowed(args, f'{vmname};{snapname}'):
-            print(('not allowed', f'{vmname};{snapname}'))
+            logging.debug(('not allowed', f'{vmname};{snapname}'))
             continue
 
         now = datetime.now(timezone.utc)
