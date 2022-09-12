@@ -65,9 +65,6 @@ def run():
     parser = get_argparser()
     args = parser.get_args()
 
-    if not (args.warning or args.critical):
-        raise Exception("at least one of --warning or --critical is required")
-
     check = Check(shortname="VSPHERE-PERFCOUNTER")
     check.set_threshold(warning=args.warning, critical=args.critical)
 
