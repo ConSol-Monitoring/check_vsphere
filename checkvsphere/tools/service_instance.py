@@ -22,7 +22,10 @@ This module implements simple helper functions for managing service instance obj
 __author__ = "VMware, Inc."
 
 import atexit
+import os
 from pyVim.connect import SmartConnect, Disconnect
+from .. import VsphereConnectException
+
 
 
 def connect(args):
@@ -35,17 +38,23 @@ def connect(args):
     service_instance = None
 
     # form a connection...
-    if args.disable_ssl_verification:
-        service_instance = SmartConnect(host=args.host,
-                                        user=args.user,
-                                        pwd=args.password,
-                                        port=args.port,
-                                        disableSslCertValidation=True)
-    else:
-        service_instance = SmartConnect(host=args.host,
-                                        user=args.user,
-                                        pwd=args.password,
-                                        port=args.port)
+    try:
+        if args.disable_ssl_verification:
+            service_instance = SmartConnect(host=args.host,
+                                            user=args.user,
+                                            pwd=args.password,
+                                            port=args.port,
+                                            disableSslCertValidation=True)
+        else:
+            service_instance = SmartConnect(host=args.host,
+                                            user=args.user,
+                                            pwd=args.password,
+                                            port=args.port)
+    except Exception as e:
+        if os.environ.get("CONNECT_NOFAIL", None):
+            raise VsphereConnectException("cannot connect: " + str(e))
+        else:
+            raise e
 
     # doing this means you don't need to remember to disconnect your script/objects
     atexit.register(Disconnect, service_instance)

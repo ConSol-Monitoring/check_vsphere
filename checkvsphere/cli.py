@@ -4,6 +4,7 @@ import sys
 import pkgutil
 import importlib
 import checkvsphere.vcmd
+from . import VsphereConnectException
 
 def run():
     cmd = None
@@ -42,18 +43,22 @@ def run():
 
 
 def main():
+    import traceback
+
     try:
         run()
+    except VsphereConnectException as e:
+        print("Cannot connect")
+        traceback.print_exc(file=sys.stdout)
+        sys.exit(0)
     except SystemExit as e:
         if not isinstance(e.code, int) or e.code > 3:
             sys.exit(3)
         else:
             sys.exit(e.code)
     except Exception as e:
-        import traceback
-
         print("UNKNOWN - Unhandled exception:")
-        traceback.print_exc()
+        traceback.print_exc(file=sys.stdout)
         sys.exit(3)
 
 if __name__ == "__main__":

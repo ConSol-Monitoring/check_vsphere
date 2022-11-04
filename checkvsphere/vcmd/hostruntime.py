@@ -27,7 +27,11 @@ def run():
         'name_or_flags': ['--mode'],
         'options': {
             'action': 'store',
-            'choices': ['health', 'status'],
+            'choices': [
+                'health',
+                'status',
+                'con',
+            ],
             'help': 'which runtime mode to check'
         }
     })
@@ -73,6 +77,8 @@ def run():
         check_health(check, vm, args, result)
     elif args.mode == "status":
         check_status(check, vm, args, result)
+    elif args.mode == "con":
+        check_con(check, vm, args, result)
 
     (code, message) = check.check_messages(separator="\n", separator_all='\n', allok='All sensors ok')
     check.exit(
@@ -80,10 +86,22 @@ def run():
         message=( message or  "everything ok" )
     )
 
+def check_con(check, vm, args, result):
+    con = vm['props']['runtime'].connectionState
+    status = Status.OK
+    if con == "disconnected":
+        status = Status.WARNING
+    elif con == "notResponding":
+        status = Status.CRITICAL
+    check.exit(
+        status,
+        message = f"connection state is '{con}'"
+    )
+
 def check_status(check, vm, args, result):
     color = vm['props']['overallStatus']
     status = health2state(color)
-    check.exit(status, f"overall status is {str(color).upper()}")
+    check.exit(status, f"overall status is {str(color).upper}")
 
 def check_health(check, vm, args, result):
     runtime = vm['props']['runtime']
