@@ -72,7 +72,7 @@ def run():
     if args.mode == "health":
         check_health(check, vm, args, result)
 
-    (code, message) = check.check_messages(separator="\n")
+    (code, message) = check.check_messages(separator="\n", separator_all='\n', allok='All sensors ok')
     check.exit(
         code=code,
         message=( message or  "everything ok" )
@@ -96,7 +96,16 @@ def check_health(check, vm, args, result):
             check.add_message(state, f"{state.name} [Type: Memory] [Name: { info.name }] [Summary: { info.status.summary }]")
 
     if cpustatus:
-        pass
+        for info in cpustatus:
+            state = health2state(info.status.key)
+            if state == Status.UNKNOWN:
+                # I don't know if this is true
+                check.exit(Status.CRITICAL,
+                    "No result from CIM server regarding health state. "
+                    "CIM server is probably not running or not running correctly! "
+                    "Please restart!"
+                )
+            check.add_message(state, f"{state.name} [Type: CPU] [Name: { info.name }] [Summary: { info.status.summary }]")
 
     if storagestatus:
         for info in storagestatus:
