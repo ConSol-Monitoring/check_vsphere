@@ -28,9 +28,12 @@ def run():
         'options': {
             'action': 'store',
             'choices': [
-                'health',
-                'status',
                 'con',
+                'health',
+                'issues',
+                'status',
+                'temp',
+                'version',
             ],
             'help': 'which runtime mode to check'
         }
@@ -73,14 +76,21 @@ def run():
             f"host {args.vihost} is in maintenance mode, check skipped"
         )
 
+    okmessage = "No errors"
+
     if args.mode == "health":
-        check_health(check, vm, args, result)
+        okmessage = check_health(check, vm, args, result)
     elif args.mode == "status":
         check_status(check, vm, args, result)
     elif args.mode == "con":
         check_con(check, vm, args, result)
+    elif args.mode == "temp":
+        okmessage = check_temp(check, vm, args, result)
+    elif args.mode == "version":
+        version = vm['obj'].obj.summary.config.product.fullName
+        check.exit(Status.OK, version)
 
-    (code, message) = check.check_messages(separator="\n", separator_all='\n', allok='All sensors ok')
+    (code, message) = check.check_messages(separator="\n", separator_all='\n', allok=okmessage)
     check.exit(
         code=code,
         message=( message or  "everything ok" )
@@ -98,10 +108,31 @@ def check_con(check, vm, args, result):
         message = f"connection state is '{con}'"
     )
 
+
 def check_status(check, vm, args, result):
     color = vm['props']['overallStatus']
     status = health2state(color)
-    check.exit(status, f"overall status is {str(color).upper}")
+    check.exit(status, f"overall status is {str(color).upper()}")
+
+def check_temp(check, vm, args, result):
+    runtime = vm['props']['runtime']
+    systemRuntime = runtime.healthSystemRuntime
+    if not systemRuntime:
+        check.exit(
+            Status.UNKNOWN,
+            "Temperature status unavailable"
+        )
+
+    numericinfo = systemRuntime.systemHealthInfo.numericSensorInfo
+    for info in numericinfo:
+        if info.sensorType != "temperature":
+            continue
+        state = health2state(info.healthState.key)
+        name = info.name.rstrip(' Temp')
+        check.add_perfdata(label=name, value=info.currentReading * (10 ** info.unitModifier))
+        check.add_message(state, f"{name} is {info.healthState.key}")
+
+    return "All temperature sensors green"
 
 def check_health(check, vm, args, result):
     runtime = vm['props']['runtime']
@@ -112,31 +143,37 @@ def check_health(check, vm, args, result):
     memorystatus = list(filter(filterunknown, healthsystem.hardwareStatusInfo.memoryStatusInfo))
     numericsensor = healthsystem.systemHealthInfo.numericSensorInfo
 
+    count = {}
+
     # "[$status2text{$fstate}] [Type: $type] [Name: $item_ref->{name}] [Label: $item_ref->{label}] [Summary: $item_ref->{summary}]$multiline";
     if memorystatus:
         for info in memorystatus:
             state = health2state(info.status.key)
             #print((state, f"{state.name} [Type: Memory] [Name: { info.name }] [Summary: { info.status.summary }]"))
             check.add_message(state, f"{state.name} [Type: Memory] [Name: { info.name }] [Summary: { info.status.summary }]")
+            count.setdefault('memory', 0)
+            count['memory'] += 1
 
     if cpustatus:
         for info in cpustatus:
             state = health2state(info.status.key)
             if state == Status.UNKNOWN:
-                # I don't know if this is true
+                # I don't know if this is true, check_vmware_esx said that
                 check.exit(Status.CRITICAL,
                     "No result from CIM server regarding health state. "
                     "CIM server is probably not running or not running correctly! "
                     "Please restart!"
                 )
             check.add_message(state, f"{state.name} [Type: CPU] [Name: { info.name }] [Summary: { info.status.summary }]")
+            count.setdefault('cpu', 0)
+            count['cpu'] += 1
 
     if storagestatus:
         for info in storagestatus:
             state = health2state(info.status.key)
-            #print(info)
-            #print((state, f"{state.name} [Type: Memory] [Name: { info.name }] [Summary: { info.status.summary }]"))
             check.add_message(state, f"{state.name} [Type: Memory] [Name: { info.name }] [Summary: { info.status.summary }]")
+            count.setdefault('storage', 0)
+            count['storage'] += 1
 
 
     if numericsensor:
@@ -155,7 +192,14 @@ def check_health(check, vm, args, result):
                 f"[Name: {info.name}] [Label: {info.healthState.label}] "
                 f"[Summary: {info.healthState.summary}]"
             )
+            count.setdefault(str(info.sensorType), 0)
+            count[str(info.sensorType)] += 1
 
+    okmessage = (
+        f"All {sum(count.values())} health checks are GREEN: " +
+        (', '.join(list( f"{x}: {count[x]}" for x in count )))
+    )
+    return okmessage
 
 def health2state(color):
     return {
