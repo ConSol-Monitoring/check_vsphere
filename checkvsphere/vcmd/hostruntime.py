@@ -86,6 +86,8 @@ def run():
         check_con(check, vm, args, result)
     elif args.mode == "temp":
         okmessage = check_temp(check, vm, args, result)
+    elif args.mode == "issues":
+        okmessage = check_issues(check, vm, args, result)
     elif args.mode == "version":
         version = vm['obj'].obj.summary.config.product.fullName
         check.exit(Status.OK, version)
@@ -95,6 +97,41 @@ def run():
         code=code,
         message=( message or  "everything ok" )
     )
+
+def format_issue(issue):
+    things = [
+        # checkfor, name, how to get value
+        ('datacenter', lambda x: 'Datacenter ' + x.datacenter.name),
+        ('host', lambda x: 'Host ' + x.host.name),
+        ('vm', lambda x: 'VM ' + x.vm.name),
+        ('computeResource', lambda x: 'Compute Resource' + x.computeResource.name),
+        ('dvs', lambda x: 'Virtual Switch ' + x.dvs.name),
+        ('ds', lambda x: 'Datastore ' + x.ds.name),
+        ('net', lambda x: 'Network ' + x.net.name),
+        (None, lambda x: 'Message ' + x.fullFormattedMessage),
+        ('userName', lambda x: f'(caused by {x.userName})' if x.userName != "" else None),
+    ]
+
+    formattedThings = []
+    for thing in things:
+        if thing[0]:
+            if not ( getattr(issue, thing[0], None) and getattr(issue, thing[0]) ):
+                continue
+
+        formattedThing = thing[1](issue)
+        if formattedThing:
+            formattedThings.append( formattedThing )
+
+    return ", ".join(formattedThings)
+
+
+def check_issues(check, vm, args, result):
+    issues = vm['props']['configIssue']
+    for issue in issues:
+        check.add_message(Status.CRITICAL, "str(issue)")
+
+    return "No issues found"
+
 
 def check_con(check, vm, args, result):
     con = vm['props']['runtime'].connectionState
@@ -107,7 +144,6 @@ def check_con(check, vm, args, result):
         status,
         message = f"connection state is '{con}'"
     )
-
 
 def check_status(check, vm, args, result):
     color = vm['props']['overallStatus']
