@@ -101,14 +101,14 @@ def run():
 def format_issue(issue):
     things = [
         # checkfor, name, how to get value
-        ('datacenter', lambda x: 'Datacenter ' + x.datacenter.name),
-        ('host', lambda x: 'Host ' + x.host.name),
-        ('vm', lambda x: 'VM ' + x.vm.name),
-        ('computeResource', lambda x: 'Compute Resource' + x.computeResource.name),
-        ('dvs', lambda x: 'Virtual Switch ' + x.dvs.name),
-        ('ds', lambda x: 'Datastore ' + x.ds.name),
-        ('net', lambda x: 'Network ' + x.net.name),
-        (None, lambda x: 'Message ' + x.fullFormattedMessage),
+        ('datacenter', lambda x: 'Datacenter: ' + x.datacenter.name),
+        ('host', lambda x: 'Host: ' + x.host.name),
+        ('vm', lambda x: 'VM: ' + x.vm.name),
+        ('computeResource', lambda x: 'Compute Resource: ' + x.computeResource.name),
+        ('dvs', lambda x: 'Virtual Switch: ' + x.dvs.name),
+        ('ds', lambda x: 'Datastore: ' + x.ds.name),
+        ('net', lambda x: 'Network: ' + x.net.name),
+        (None, lambda x: 'Message: ' + x.fullFormattedMessage),
         ('userName', lambda x: f'(caused by {x.userName})' if x.userName != "" else None),
     ]
 
@@ -128,7 +128,7 @@ def format_issue(issue):
 def check_issues(check, vm, args, result):
     issues = vm['props']['configIssue']
     for issue in issues:
-        check.add_message(Status.CRITICAL, "str(issue)")
+        check.add_message(Status.CRITICAL, format_issue(issue))
 
     return "No issues found"
 
