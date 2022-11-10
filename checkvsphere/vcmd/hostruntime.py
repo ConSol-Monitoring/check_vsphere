@@ -185,7 +185,8 @@ def check_health(check, vm, args, result):
     if memorystatus:
         for info in memorystatus:
             state = health2state(info.status.key)
-            #print((state, f"{state.name} [Type: Memory] [Name: { info.name }] [Summary: { info.status.summary }]"))
+            if state == Status.UNKNOWN:
+                continue
             check.add_message(state, f"{state.name} [Type: Memory] [Name: { info.name }] [Summary: { info.status.summary }]")
             count.setdefault('memory', 0)
             count['memory'] += 1
@@ -207,6 +208,9 @@ def check_health(check, vm, args, result):
     if storagestatus:
         for info in storagestatus:
             state = health2state(info.status.key)
+            if state == Status.UNKNOWN:
+                continue
+
             check.add_message(state, f"{state.name} [Type: Memory] [Name: { info.name }] [Summary: { info.status.summary }]")
             count.setdefault('storage', 0)
             count['storage'] += 1
@@ -223,6 +227,9 @@ def check_health(check, vm, args, result):
                 continue
 
             state = health2state(info.healthState.key)
+            if state == Status.UNKNOWN:
+                continue
+
             check.add_message(state,
                 f"{state.name} [Type: {info.sensorType}] "
                 f"[Name: {info.name}] [Label: {info.healthState.label}] "
