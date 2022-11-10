@@ -3,7 +3,7 @@
 all: check_vsphere_bundle check_vsphere
 
 check_vsphere_bundle:
-	pip install --no-compile --target allinone .
+	pip install --no-cache-dir --no-compile --target allinone .
 	mv allinone/bin/check_vsphere allinone/__main__.py
 	python -m zipapp  -c -p '/usr/bin/env python3' allinone
 	rm -rf allinone
