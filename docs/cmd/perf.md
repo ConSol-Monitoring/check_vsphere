@@ -25,7 +25,7 @@ options:
 
 ## Examples
 
-``` bash
+```
 # check for too much cpu usage
 check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
   --vimtype HostSystem  --vimname esx1.int.example.com \
