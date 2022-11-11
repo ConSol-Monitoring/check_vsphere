@@ -68,6 +68,11 @@ VSPHERE-PERFCOUNTER OK - disk:totalLatency:average_naa.6000eb3810d42640000000000
 $ check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
 	--vimname esx1.int.example.com --vimtype HostSystem \
 	--perfcounter disk:totalLatency:average --perfinstance 'naa.600605b00ba8cb0022564867b8c8cc32'
+
+$ check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
+    --vimname esx1.int.example.com --vimtype HostSystem --perfcounter power:power:average
+VSPHERE-PERFCOUNTER OK - Counter power:power:average on HostSystem:esx1.int.example.com reported 227 Watt
+| 'power:power:average'=227.0;;;;
 ```
 
 ## Rosetta
