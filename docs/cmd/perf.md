@@ -35,16 +35,40 @@ check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
 # check for too less cpu usage (application died?)
 check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
   --vimtype HostSystem  --vimname esx1.int.example.com \
-  --perfcounter cpu:usage:average --perfinstance '' \
+  --perfcounter cpu:usage:average \
   --critical 5:
 
 # check if there was a reboot within the last 10 minutes
 check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
   --vimtype HostSystem  --vimname esx1.int.example.com \
-  --perfcounter sys:uptime:latest --perfinstance '' \
+  --perfcounter sys:uptime:latest \
   --critical 600:
-```
 
+# check disk latency
+$ check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
+	--vimname esx1.int.example.com --vimtype HostSystem \
+	--perfcounter disk:totalLatency:average
+VSPHERE-PERFCOUNTER UNKNOWN - Cannot find disk:totalLatency:average for the queried resources
+
+# On that error you may want to try --perfinstance '*'
+
+$ check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
+	--vimname esx1.int.example.com --vimtype HostSystem \
+	--perfcounter disk:totalLatency:average --perfinstance '*'
+VSPHERE-PERFCOUNTER OK - disk:totalLatency:average_naa.6000eb3810d426400000000000000277 has value 0 Millisecond
+  disk:totalLatency:average_naa.600605b00ba8cb0022564867b8c8cc32 has value 2 Millisecond
+  disk:totalLatency:average_naa.6000eb3810d4264000000000000000b2 has value 0 Millisecond
+  disk:totalLatency:average_naa.600605b00ba8cb001fd947850523e56d has value 0 Millisecond
+  disk:totalLatency:average_naa.600605b00ba8cb0029700b163217244e has value 6 Millisecond
+  disk:totalLatency:average_naa.6000eb3810d4264000000000000002b3 has value 1 Millisecond
+| 'disk:totalLatency:average_naa.6000eb3810d426400000000000000277'=0.0ms;;;;
+'disk:totalLatency:average_naa.600605b00ba8cb0022564867b8c8cc32'=2.0ms;;;;
+...
+
+$ check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
+	--vimname esx1.int.example.com --vimtype HostSystem \
+	--perfcounter disk:totalLatency:average --perfinstance 'naa.600605b00ba8cb0022564867b8c8cc32'
+```
 
 ## Rosetta
 
