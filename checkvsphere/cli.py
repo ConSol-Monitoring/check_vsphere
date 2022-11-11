@@ -4,7 +4,7 @@ import sys
 import pkgutil
 import importlib
 import checkvsphere.vcmd
-from . import VsphereConnectException
+from checkvsphere import VsphereConnectException
 
 def run():
     cmd = None
