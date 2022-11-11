@@ -155,8 +155,6 @@ def run():
         (code, message) = check.check_messages(separator='\n  ')
         check.exit(code=code, message=message)
 
-        raise NotImplementedError("only perfinstance '' is currently supported")
-
 
 def get_perf_values(args, obj, metricId):
     si = args._si
