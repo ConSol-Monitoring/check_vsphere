@@ -1,4 +1,4 @@
-[Documentation](https://datamuc.github.io/check_vsphere/)
+[Documentation](https://consol.github.io/check_vsphere/#/)
 
 # Installation
 
