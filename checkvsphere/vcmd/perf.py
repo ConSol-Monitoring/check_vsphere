@@ -120,6 +120,9 @@ def run():
     except IndexError:
         check.exit(Status.UNKNOWN, f"Cannot find {args.perfcounter} for the queried resources")
 
+    if not values.value:
+        check.exit(code=Status.UNKNOWN, message="No data returned")
+
     if args.perfinstance == '':
         for instance in values.value:
             val = instance.value[0] * counterInfo['factor']
