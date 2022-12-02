@@ -6,8 +6,6 @@ Until we are on pypi, it's a bit complicated:
 
 ```
 pip install --upgrade pip
-pip install wheel
-pip install git+https://github.com/datamuc/py-monplugin@v0.3
 pip install git+https://github.com/consol/check_vsphere
 ```
 
