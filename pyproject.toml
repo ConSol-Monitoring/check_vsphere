@@ -21,3 +21,6 @@ classifiers = [
 
 [project.scripts]
 check_vsphere = "checkvsphere.cli:main"
+
+[tool.flit.sdist]
+exclude = ["docs/", "stuff/"]

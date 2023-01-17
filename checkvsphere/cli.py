@@ -1,10 +1,21 @@
 #!/usr/bin/env python3
 
+import os
+import signal
 import sys
 import pkgutil
 import importlib
 import checkvsphere.vcmd
-from checkvsphere import VsphereConnectException
+from checkvsphere import VsphereConnectException, CheckVsphereTimeout
+
+def timeout_handler(signum, frame):
+    raise CheckVsphereTimeout("Timeout reached")
+
+def set_timeout(seconds=None, handler=None):
+    if seconds is None:
+        seconds = int(os.environ.get("TIMEOUT", "30"))
+    signal.signal(signal.SIGALRM, (handler or timeout_handler))
+    signal.alarm(seconds)
 
 def run():
     cmd = None
@@ -12,6 +23,8 @@ def run():
         cmd = sys.argv.pop(1)
     except:
         pass
+
+    set_timeout()
 
     if cmd:
         mod = "".join(c for c in cmd if c.isalnum())
@@ -56,6 +69,10 @@ def main():
             sys.exit(3)
         else:
             sys.exit(e.code)
+    except CheckVsphereTimeout as e:
+        print("UNKOWN - Timout reached")
+        traceback.print_exc(file=sys.stdout)
+        sys.exit(3)
     except Exception as e:
         print("UNKNOWN - Unhandled exception:")
         traceback.print_exc(file=sys.stdout)
