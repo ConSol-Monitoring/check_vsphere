@@ -2,11 +2,8 @@
 
 # Installation
 
-Until we are on pypi, it's a bit complicated:
-
 ```
-pip install --upgrade pip
-pip install git+https://github.com/consol/check_vsphere
+pip install checkvsphere
 ```
 
 # LICENSE

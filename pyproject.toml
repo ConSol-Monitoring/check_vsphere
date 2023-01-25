@@ -4,14 +4,15 @@ requires = ["flit_core >=3.2,<4"]
 
 [project]
 name = "checkvsphere"
+readme = "README.md"
 description = "check_vsphere monitoring plugin"
-version = "0.1a2"
+version = "0.1a4"
 authors = [
     { name = "Danijel Tasov", email = "danijel.tasov@consol.de" }
 ]
 dependencies = [
-    "pyvmomi",
-    "monplugin @ https://github.com/datamuc/py-monplugin/archive/refs/tags/v0.3.tar.gz",
+    "pyvmomi >= 8.0.0.1, < 9",
+    "monplugin >= 0.4",
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -23,4 +24,4 @@ classifiers = [
 check_vsphere = "checkvsphere.cli:main"
 
 [tool.flit.sdist]
-exclude = ["docs/", "stuff/"]
+exclude = ["docs/", "stuff/", "dist/"]

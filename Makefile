@@ -10,10 +10,24 @@ check_vsphere_bundle:
 	mv allinone.pyz check_vsphere_bundle
 
 check_vsphere:
-	python setup.py build
-	mv build/lib/checkvsphere/cli.py build/lib/__main__.py
-	( cd build/lib; python -m zipapp -c --output ../../check_vsphere -p '/usr/bin/env python3' . )
+	mkdir build
+	cp -av checkvsphere build/checkvsphere
+	mv build/checkvsphere/cli.py build/__main__.py
+	( cd build/; python -m zipapp -c --output ../check_vsphere -p '/usr/bin/env python3' . )
 	rm -rf build
 
+dist: pyproject.toml
+	python3 -m build
+
+.PHONY: clean
 clean:
-	rm -rf build allinone check_vsphere_bundle check_vsphere zip check_vsphere.zip build check_vsphere.egg-info
+	rm -rf build allinone check_vsphere_bundle check_vsphere zip check_vsphere.zip build check_vsphere.egg-info dist
+
+.PHONY: upload-test
+upload-test: dist
+	python3 -m twine upload --repository testpypi dist/*
+
+.PHONY: upload-prod
+upload-prod: dist
+	python3 -m twine upload dist/*
+
