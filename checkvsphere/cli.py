@@ -78,7 +78,7 @@ def main():
         raise SystemExit(2)
     except vim.fault.VimFault as e:
         if hasattr(e, 'msg'):
-            print(f"VSPHERE-ABOUT - ERROR - {e.msg}")
+            print(f"ERROR - {e.msg}")
         else:
             # in case there is no msg attribute
             # According to the docs there is
@@ -86,7 +86,7 @@ def main():
             # but there is a msg attribute (which is not in the docs)
             # i don't know if it is set always
             # so fall back to the normal string representation
-            print(f"VSPHERE-ABOUT - ERROR - {e}")
+            print(f"ERROR - {e}")
         if int(os.environ.get("VSPHERE_DEBUG", "0")) > 0:
             traceback.print_exc(file=sys.stdout)
         raise SystemExit(3)
