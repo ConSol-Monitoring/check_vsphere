@@ -71,7 +71,7 @@ def get_perf_values(args, obj, metricId):
 
 def get_argparser():
     parser = cli.Parser()
-    parser.add_optional_arguments(cli.Argument.VIHOST)
+    parser.add_required_arguments(cli.Argument.VIHOST)
     parser.add_optional_arguments( {
         'name_or_flags': ['--maintenance-state'],
         'options': {
