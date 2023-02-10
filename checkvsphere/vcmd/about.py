@@ -30,6 +30,12 @@ def run():
             f'api: { about.apiType }/{ about.apiVersion }, '
             f'product: { about.licenseProductName } { about.licenseProductVersion }'
         )
+    except vim.fault.VimFault as e:
+        if hasattr(e, 'msg'):
+            print(f"VSPHERE-ABOUT - ERROR - {e.msg}")
+        else:
+            print(f"VSPHERE-ABOUT - ERROR - {e}")
+        raise SystemExit(2)
     except Exception as e:
         print(f"VSPHERE-ABOUT - ERROR - {e}")
         raise SystemExit(2)

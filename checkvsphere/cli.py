@@ -7,6 +7,7 @@ import pkgutil
 import importlib
 import checkvsphere.vcmd
 from checkvsphere import VsphereConnectException, CheckVsphereTimeout
+from pyVmomi import vim
 
 def timeout_handler(signum, frame):
     raise CheckVsphereTimeout("Timeout reached")
@@ -62,7 +63,6 @@ def main():
         run()
     except VsphereConnectException as e:
         print("Cannot connect")
-        traceback.print_exc(file=sys.stdout)
         sys.exit(0)
     except SystemExit as e:
         if not isinstance(e.code, int) or e.code > 3:
@@ -73,10 +73,28 @@ def main():
         print("UNKOWN - Timout reached")
         traceback.print_exc(file=sys.stdout)
         sys.exit(3)
+    except ConnectionRefusedError as e:
+        print(f"UNKNOWN - Connection refused")
+        raise SystemExit(2)
+    except vim.fault.VimFault as e:
+        if hasattr(e, 'msg'):
+            print(f"VSPHERE-ABOUT - ERROR - {e.msg}")
+        else:
+            # in case there is no msg attribute
+            # According to the docs there is
+            # faultCause and faultMessage, but they are empty
+            # but there is a msg attribute (which is not in the docs)
+            # i don't know if it is set always
+            # so fall back to the normal string representation
+            print(f"VSPHERE-ABOUT - ERROR - {e}")
+        if int(os.environ.get("VSPHERE_DEBUG", "0")) > 0:
+            traceback.print_exc(file=sys.stdout)
+        raise SystemExit(3)
     except Exception as e:
-        print("UNKNOWN - Unhandled exception:")
-        traceback.print_exc(file=sys.stdout)
-        sys.exit(3)
+        print(f"UNKNOWN - Unhandled exception: {e}")
+        if int(os.environ.get("VSPHERE_DEBUG", "0")) > 0:
+            traceback.print_exc(file=sys.stdout)
+        raise SystemExit(3)
 
 if __name__ == "__main__":
     main()
