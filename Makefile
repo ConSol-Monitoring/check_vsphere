@@ -18,6 +18,7 @@ check_vsphere:
 
 dist: pyproject.toml
 	python3 -m build
+	chmod a+r dist/*
 
 .PHONY: clean
 clean:
@@ -31,3 +32,6 @@ upload-test: dist
 upload-prod: dist
 	python3 -m twine upload dist/*
 
+.PHONY: upload-private
+upload-private: dist
+	rsync -avH dist/* cb:~/public_html/simple/checkvsphere
