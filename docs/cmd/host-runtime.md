@@ -13,8 +13,8 @@ options:
 | option | description |
 |---|---|
 | `--vihost HOSTNAME` | the name of the HostSystem to check |
-| `--mode MODE` | what to check to perform, one of `con`, `health`, `issues`, `status`, `temp`, `version` |
-| `--maintenance-state STATE` | one of OK, WARNING, CRITICAL, UNKNOWN. The status to use when the host is in maintenance mode |
+| `--mode MODE` | what to check to perform, one of `con`, `health`, `issues`, `status`, `temp`, `version`, `maintenance` |
+| `--maintenance-state STATE` | one of OK, WARNING, CRITICAL, UNKNOWN. The status to use when the host is in maintenance mode, this defaults to UNKKNOWN except when --mode maintenance, then the default is CRITICAL |
 
 ## Examples
 
