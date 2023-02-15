@@ -31,6 +31,7 @@ def run():
                 'con',
                 'health',
                 'issues',
+                'maintenance',
                 'status',
                 'temp',
                 'version',
@@ -44,13 +45,17 @@ def run():
         'options': {
             'action': 'store',
             'choices': ['OK', 'WARNING', 'CRITICAL', 'UNKNOWN'],
-            'default': 'UNKNOWN',
-            'help': 'exit with this status if the host is in maintenance, only does something with --vimtype HostSystem'
+            'help': 'exit with this status if the host is in maintenance, '
+                    'default UNKNOWN, or CRITICAL if --mode maintenance'
         }
     })
 
-
     args = parser.get_args()
+
+    # default value differs if mode == maintenance
+    if not args.maintenance_state:
+        args.maintenance_state = 'CRITICAL' if args.mode == 'maintenance' else 'UNKNOWN'
+
     si = service_instance.connect(args)
 
     check = Check(shortname='VSPHERE-RUNTIME')
@@ -73,7 +78,7 @@ def run():
         status = getattr(Status, args.maintenance_state)
         check.exit(
             status,
-            f"host {args.vihost} is in maintenance mode, check skipped"
+            f"host {args.vihost} is in maintenance"
         )
 
     okmessage = "No errors"
@@ -91,6 +96,8 @@ def run():
     elif args.mode == "version":
         version = vm['obj'].obj.summary.config.product.fullName
         check.exit(Status.OK, version)
+    elif args.mode == 'maintenance':
+        check.exit(Status.OK, "Host is not in maintenance")
 
     (code, message) = check.check_messages(separator="\n", separator_all='\n', allok=okmessage)
     check.exit(
