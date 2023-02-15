@@ -24,5 +24,11 @@ classifiers = [
 [project.scripts]
 check_vsphere = "checkvsphere.cli:main"
 
+[project.urls]
+"homepage" = "https://github.com/consol/check_vsphere"
+"documentation" = "https://consol.github.io/check_vsphere"
+"repository" = "https://github.com/consol/check_vsphere.git"
+"issues" = "https://github.com/consol/check_vsphere/issues"
+
 [tool.flit.sdist]
 exclude = ["docs/", "stuff/", "dist/"]
