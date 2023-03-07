@@ -105,14 +105,18 @@ def run():
             if isbanned(args, pnics[str(nic)].device):
                 continue
             if not pnics[nic].linkSpeed:
-                check.add_message(getattr(Status, args.unplugged_state), f"{pnics[str(nic)].device} is unplugged")
+                status = getattr(Status, args.unplugged_state)
+                appendix=""
+                if status == Status.OK:
+                    appendix = " , but ok due to `--unplugged_state OK`"
+                check.add_message(status, f"{pnics[str(nic)].device} is unplugged{appendix}")
             else:
                 check.add_message(Status.OK, f"{pnics[str(nic)].device} is ok")
 
 
     okmessage = "All nics connected"
 
-    (code, message) = check.check_messages(separator="\n", separator_all='\n', allok=okmessage)
+    (code, message) = check.check_messages(separator="\n", separator_all='\n')#, allok=okmessage)
     check.exit(
         code=code,
         message=( message or "everything ok" )
