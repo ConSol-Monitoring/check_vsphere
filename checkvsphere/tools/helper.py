@@ -109,14 +109,29 @@ class CheckArgument:
     def __init__(self):
         pass
 
+    VIMNAME = {
+        'name_or_flags': ['--vimname'],
+        'options': {'action': 'store', 'help': 'name of the vimtype object'},
+    }
+
+    VIMTYPE = {
+        'name_or_flags': ['--vimtype'],
+        'options': {
+            'action': 'store',
+            'help': 'the object type to check, i.e. HostSystem, Datacenter or VirtualMachine',
+        },
+    }
+
     WARNING_THRESHOLD = {
         'name_or_flags': ['--warning'],
         'options': {'action': 'store', 'help': 'warning threshold'},
     }
+
     CRITICAL_THRESHOLD = {
         'name_or_flags': ['--critical'],
         'options': {'action': 'store', 'help': 'critical threshold'},
     }
+
     def ALLOWED(help):
         return {
             'name_or_flags': ['--allowed'],
@@ -135,6 +150,7 @@ class CheckArgument:
                 'action': 'append',
             }
         }
+
 
 def isbanned(args, name):
     '''
