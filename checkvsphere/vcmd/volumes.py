@@ -155,13 +155,13 @@ def datastore_volumes_info(check: Check, si: vim.ServiceInstance, datastores):
                 _, uom, *_ = (args.metric.split('_') + ['%' if 'usage' in args.metric else 'B'])
                 values_to_check.append(value)
                 s = check.threshold.get_status(space[args.metric])
-                opts['threshold'] = {}
+
                 threshold = {}
+                opts['threshold'] = {}
                 if args.warning:
                     threshold['warning'] = range_in_bytes(Range(args.warning), uom)
                 if args.critical:
                     threshold['critical'] = range_in_bytes(Range(args.critical), uom)
-
                 opts['threshold'] = Threshold(**threshold)
 
                 if s != Status.OK:
