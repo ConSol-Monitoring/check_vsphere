@@ -41,8 +41,6 @@ class Space:
     }
 
 def range_in_bytes(r: Range, uom):
-    if not r:
-        return None
     start = r.start
     end = r.end
 
@@ -52,12 +50,6 @@ def range_in_bytes(r: Range, uom):
     return ('' if r.outside else '@') + \
         ('~' if start == float('-inf') else str(start)) + \
         ":" + ('' if end == float('+inf') else str(end))
-
-def threshold_in_bytes(threshold: Threshold, uom):
-    return Threshold(
-        warning=range_in_bytes(threshold.warning, uom),
-        critical=range_in_bytes(threshold.critical, uom),
-    )
 
 args = None
 
@@ -136,9 +128,17 @@ def datastore_volumes_info(check: Check, si: vim.ServiceInstance, datastores):
                     _, uom, *_ = (args.metric.split('_') + ['%' if 'usage' in args.metric else 'B'])
                     values_to_check.append(value)
                     s = check.threshold.get_status(space[args.metric])
-                    opts['threshold'] = threshold_in_bytes(check.threshold, uom)
+                    opts['threshold'] = {}
+                    threshold = {}
+                    if args.warning:
+                        threshold['warning'] = range_in_bytes(Range(args.warning), uom)
+                    if args.critical:
+                        threshold['critical'] = range_in_bytes(Range(args.critical), uom)
+
+                    opts['threshold'] = Threshold(**threshold)
+
                     if s != Status.OK:
-                        check.add_message(s, f"{args.metric} on {name} is outside of threshold: {value :.2f}{uom}")
+                        check.add_message(s, f"{args.metric} on {name} is in state {s.name}: {value :.2f}{uom}")
 
                 puom = '%' if metric == 'usage' else 'B'
                 check.add_perfdata(label=f"{name} {metric}", value=space[metric], uom=puom, **opts)
