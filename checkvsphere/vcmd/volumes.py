@@ -58,8 +58,8 @@ def run():
     parser = cli.Parser()
     parser.add_optional_arguments(CheckArgument.BANNED('regex, name of datastore'))
     parser.add_optional_arguments(CheckArgument.ALLOWED('regex, name of datastore'))
-    parser.add_required_arguments(CheckArgument.VIMNAME)
-    parser.add_required_arguments(CheckArgument.VIMTYPE)
+    parser.add_optional_arguments(CheckArgument.VIMNAME)
+    parser.add_optional_arguments(CheckArgument.VIMTYPE)
     parser.add_optional_arguments(CheckArgument.CRITICAL_THRESHOLD)
     parser.add_optional_arguments(CheckArgument.WARNING_THRESHOLD)
     parser.add_optional_arguments({
@@ -78,20 +78,35 @@ def run():
     si = service_instance.connect(args)
     check = Check(shortname='VSPHERE-VOL', threshold = Threshold(args.warning or None, args.critical or None))
 
-    vimtype = getattr(vim, args.vimtype)
+    vimtype = None
+    if args.vimname and args.vimtype:
+        vimtype = getattr(vim, args.vimtype)
 
-    try:
-        vm = find_entity_views(
+    datastores = []
+
+    if vimtype in [vim.HostSystem, vim.ClusterComputeResource]:
+        try:
+            vm = find_entity_views(
+                si,
+                vimtype,
+                begin_entity=si.content.rootFolder,
+                sieve={'name': args.vimname},
+                properties=["name", "datastore"],
+            )[0]
+            datastores = vm['props']['datastore']
+        except IndexError:
+            check.exit(Status.UNKNOWN, f"host {args.vihost} not found")
+    else:
+        dcs = find_entity_views(
             si,
-            vimtype,
+            vim.Datacenter,
             begin_entity=si.content.rootFolder,
-            sieve={'name': args.vimname},
-            properties=["name", "datastore"],
-        )[0]
-    except IndexError:
-        check.exit(Status.UNKNOWN, f"host {args.vihost} not found")
+            properties=["datastore"],
+        )
+        for dc in dcs:
+            datastores.extend(dc['props']['datastore'])
 
-    datastore_volumes_info(check, si, vm['props']['datastore'])
+    datastore_volumes_info(check, si, datastores)
 
 def datastore_volumes_info(check: Check, si: vim.ServiceInstance, datastores):
     ObjectSpec = vmodl.query.PropertyCollector.ObjectSpec
