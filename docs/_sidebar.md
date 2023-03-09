@@ -7,3 +7,4 @@
   * [media](/cmd/media.md)
   * [perf](/cmd/perf.md)
   * [snapshots](/cmd/snapshots.md)
+  * [volumes](/cmd/volumes.md)
