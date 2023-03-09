@@ -14,7 +14,35 @@ from ..tools import cli, service_instance
 from ..tools.helper import find_entity_views, CheckArgument, isbanned
 from .. import CheckVsphereException
 
+class Space:
+    def __init__(self, total, free):
+        self.total = total
+        self.free = free
+        self.used = total - free
+        self.usage = 100 * self.used / total
+
+    def __getitem__(self, key):
+        unit = 'B'
+        if "_"  in key:
+            (key, unit) = key.split('_')
+
+        return self.__dict__[key] / Space.conversion_table[unit]
+
+    conversion_table = {
+        'B': 1,
+        'kB': 10**3,
+        'MB': 10**6,
+        'GB': 10**9,
+        'KiB': 2**10,
+        'kiB': 2**10,
+        'MiB': 2**20,
+        'GiB': 2**30,
+    }
+
+args = None
+
 def run():
+    global args
     parser = cli.Parser()
     # parser.add_optional_arguments(cli.Argument.DATACENTER_NAME)
     parser.add_required_arguments(CheckArgument.VIMNAME)
@@ -41,9 +69,9 @@ def run():
     except IndexError:
         check.exit(Status.UNKNOWN, f"host {args.vihost} not found")
 
-    datastore_volumes_info(si, vm['props']['datastore'])
+    datastore_volumes_info(check, si, vm['props']['datastore'])
 
-def datastore_volumes_info(si, datastores):
+def datastore_volumes_info(check: Check, si: vim.ServiceInstance, datastores):
     ObjectSpec = vmodl.query.PropertyCollector.ObjectSpec
     retrieve = si.content.propertyCollector.RetrieveContents
     propspec = vmodl.query.PropertyCollector.PropertySpec(
@@ -67,14 +95,23 @@ def datastore_volumes_info(si, datastores):
     for store in stores:
         name = store['summary'].name
         volume_type = store['summary'].type
-        print((name, volume_type))
         if store['summary'].accessible:
-            print(('a', name))
-
+            space = Space(store['summary'].capacity, store['summary'].freeSpace)
+            print(f"{name} {space['total_kB'] :.2g} {space['total_KiB'] :.2g} {space['used_GiB'] :.2f}")
+            check.add_perfdata(label=f"{name} usage", value=space['usage'], uom='%')
+            check.add_perfdata(label=f"{name} free", value=space['free'], uom='B')
+            check.add_perfdata(label=f"{name} used", value=space['used'], uom='B')
+            check.add_perfdata(label=f"{name} capacity", value=space['total'], uom='B')
+            check.exit(Status.OK)
+        else:
+            check.add_message(Status.CRITICAL, f"{name} is not accessible")
 
 
 
 def fix_content(content):
+    """
+    reorganize RetrieveContents shit, so we can use it
+    """
     objs = []
     for o in content:
         d = {}
