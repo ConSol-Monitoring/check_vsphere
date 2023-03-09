@@ -126,33 +126,34 @@ def datastore_volumes_info(check: Check, si: vim.ServiceInstance, datastores):
         if not isallowed(args, f"{name}"):
             continue
 
-        if store['summary'].accessible:
-            space = Space(store['summary'].capacity, store['summary'].freeSpace)
-            for metric in ['usage', 'free', 'used', 'capacity']:
-                opts = {}
-
-                # Check threshold against this metric
-                if args.metric.startswith(metric) and (args.warning or args.critical):
-                    value = space[args.metric]
-                    _, uom, *_ = (args.metric.split('_') + ['%' if 'usage' in args.metric else 'B'])
-                    values_to_check.append(value)
-                    s = check.threshold.get_status(space[args.metric])
-                    opts['threshold'] = {}
-                    threshold = {}
-                    if args.warning:
-                        threshold['warning'] = range_in_bytes(Range(args.warning), uom)
-                    if args.critical:
-                        threshold['critical'] = range_in_bytes(Range(args.critical), uom)
-
-                    opts['threshold'] = Threshold(**threshold)
-
-                    if s != Status.OK:
-                        check.add_message(s, f"{args.metric} on {name} is in state {s.name}: {value :.2f}{uom}")
-
-                puom = '%' if metric == 'usage' else 'B'
-                check.add_perfdata(label=f"{name} {metric}", value=space[metric], uom=puom, **opts)
-        else:
+        if not store['summary'].accessible:
             check.add_message(Status.CRITICAL, f"{name} is not accessible")
+            continue
+
+        space = Space(store['summary'].capacity, store['summary'].freeSpace)
+        for metric in ['usage', 'free', 'used', 'capacity']:
+            opts = {}
+
+            # Check threshold against this metric
+            if args.metric.startswith(metric) and (args.warning or args.critical):
+                value = space[args.metric]
+                _, uom, *_ = (args.metric.split('_') + ['%' if 'usage' in args.metric else 'B'])
+                values_to_check.append(value)
+                s = check.threshold.get_status(space[args.metric])
+                opts['threshold'] = {}
+                threshold = {}
+                if args.warning:
+                    threshold['warning'] = range_in_bytes(Range(args.warning), uom)
+                if args.critical:
+                    threshold['critical'] = range_in_bytes(Range(args.critical), uom)
+
+                opts['threshold'] = Threshold(**threshold)
+
+                if s != Status.OK:
+                    check.add_message(s, f"{args.metric} on {name} is in state {s.name}: {value :.2f}{uom}")
+
+            puom = '%' if metric == 'usage' else 'B'
+            check.add_perfdata(label=f"{name} {metric}", value=space[metric], uom=puom, **opts)
 
     (code, message) = check.check_messages(separator="\n", separator_all='\n')#, allok=okmessage)
     check.exit(
