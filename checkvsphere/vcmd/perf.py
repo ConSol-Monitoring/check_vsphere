@@ -193,22 +193,9 @@ def get_argparser():
         }
     })
 
-    # parser.add_optional_arguments(cli.Argument.DATACENTER_NAME)
-    parser.add_required_arguments(
-        {
-            'name_or_flags': ['--vimname'],
-            'options': {'action': 'store', 'help': 'name of the vimtype object'},
-        }
-    )
-    parser.add_required_arguments(
-        {
-            'name_or_flags': ['--vimtype'],
-            'options': {
-                'action': 'store',
-                'help': 'the object type to check, i.e. HostSystem, Datacenter or VirtualMachine',
-            },
-        }
-    )
+    parser.add_required_arguments( CheckArgument.VIMNAME )
+    parser.add_required_arguments( CheckArgument.VIMTYPE )
+
     parser.add_required_arguments(
         {
             'name_or_flags': ['--perfcounter'],
@@ -218,6 +205,7 @@ def get_argparser():
             },
         }
     )
+
     parser.add_optional_arguments(
         {
             'name_or_flags': ['--perfinstance'],
