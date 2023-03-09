@@ -170,7 +170,7 @@ def datastore_volumes_info(check: Check, si: vim.ServiceInstance, datastores):
             puom = '%' if metric == 'usage' else 'B'
             check.add_perfdata(label=f"{name} {metric}", value=space[metric], uom=puom, **opts)
 
-    (code, message) = check.check_messages(separator="\n", separator_all='\n')#, allok=okmessage)
+    (code, message) = check.check_messages(separator="\n")#, allok=okmessage)
     check.exit(
         code=code,
         message=( message or "everything ok" )
