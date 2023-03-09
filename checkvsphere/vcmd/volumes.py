@@ -11,7 +11,7 @@ __cmd__ = 'volumes'
 from pyVmomi import vim, vmodl
 from monplugin import Check, Status, Threshold, Range
 from ..tools import cli, service_instance
-from ..tools.helper import find_entity_views, CheckArgument, isbanned
+from ..tools.helper import find_entity_views, CheckArgument, isbanned, isallowed
 from .. import CheckVsphereException
 
 class Space:
@@ -56,6 +56,8 @@ args = None
 def run():
     global args
     parser = cli.Parser()
+    parser.add_optional_arguments(CheckArgument.BANNED('regex, name of datastore'))
+    parser.add_optional_arguments(CheckArgument.ALLOWED('regex, name of datastore'))
     parser.add_required_arguments(CheckArgument.VIMNAME)
     parser.add_required_arguments(CheckArgument.VIMTYPE)
     parser.add_optional_arguments(CheckArgument.CRITICAL_THRESHOLD)
@@ -115,8 +117,15 @@ def datastore_volumes_info(check: Check, si: vim.ServiceInstance, datastores):
     values_to_check = []
 
     for store in stores:
+
         name = store['summary'].name
         volume_type = store['summary'].type
+
+        if isbanned(args, f"{name}"):
+            continue
+        if not isallowed(args, f"{name}"):
+            continue
+
         if store['summary'].accessible:
             space = Space(store['summary'].capacity, store['summary'].freeSpace)
             for metric in ['usage', 'free', 'used', 'capacity']:
