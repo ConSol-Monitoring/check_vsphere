@@ -9,52 +9,80 @@ This is not good because vms cannot move hosts with mounted cds/floppies
 __cmd__ = 'volumes'
 
 from pyVmomi import vim, vmodl
-from monplugin import Check, Status
+from monplugin import Check, Status, Threshold, Range
 from ..tools import cli, service_instance
 from ..tools.helper import find_entity_views, CheckArgument, isbanned
 from .. import CheckVsphereException
 
 class Space:
-    def __init__(self, total, free):
-        self.total = total
+    def __init__(self, capacity, free):
+        self.capacity = capacity
         self.free = free
-        self.used = total - free
-        self.usage = 100 * self.used / total
+        self.used = capacity - free
+        self.usage = 100 * self.used / capacity
 
     def __getitem__(self, key):
         unit = 'B'
         if "_"  in key:
             (key, unit) = key.split('_')
 
+        # Don't do conversion on usage
+        if key == "usage":
+            return self.__dict__[key]
+
         return self.__dict__[key] / Space.conversion_table[unit]
 
     conversion_table = {
+        '%': 1,
         'B': 1,
-        'kB': 10**3,
-        'MB': 10**6,
-        'GB': 10**9,
-        'KiB': 2**10,
-        'kiB': 2**10,
-        'MiB': 2**20,
-        'GiB': 2**30,
+        'kB': 2**10,
+        'MB': 2**20,
+        'GB': 2**30,
     }
+
+def range_in_bytes(r: Range, uom):
+    if not r:
+        return None
+    start = r.start
+    end = r.end
+
+    start *= Space.conversion_table[uom]
+    end *= Space.conversion_table[uom]
+
+    return ('' if r.outside else '@') + \
+        ('~' if start == float('-inf') else str(start)) + \
+        ":" + ('' if end == float('+inf') else str(end))
+
+def threshold_in_bytes(threshold: Threshold, uom):
+    return Threshold(
+        warning=range_in_bytes(threshold.warning, uom),
+        critical=range_in_bytes(threshold.critical, uom),
+    )
 
 args = None
 
 def run():
     global args
     parser = cli.Parser()
-    # parser.add_optional_arguments(cli.Argument.DATACENTER_NAME)
     parser.add_required_arguments(CheckArgument.VIMNAME)
     parser.add_required_arguments(CheckArgument.VIMTYPE)
+    parser.add_optional_arguments(CheckArgument.CRITICAL_THRESHOLD)
+    parser.add_optional_arguments(CheckArgument.WARNING_THRESHOLD)
+    parser.add_optional_arguments({
+        'name_or_flags': ['--metric'],
+        'options': {
+            'action': 'store',
+            'default': 'usage',
+            'help': 'The metric to apply the thresholds on, defaults to `usage`, can be: '
+                    'usage (in percent), free and used. '
+                    'free and used are measured in bytes. You can one of these suffixes: '
+                    'kB, MB, GB for example: free_MB or used_GB'
+        }
+    })
     args = parser.get_args()
 
     si = service_instance.connect(args)
-    check = Check(shortname='VSPHERE-VOL')
-
-    #objview = si.content.viewManager.CreateContainerView(content.rootFolder, [vim.VirtualMachine], True)
-    #print(objview)
-    #return
+    check = Check(shortname='VSPHERE-VOL', threshold = Threshold(args.warning or None, args.critical or None))
 
     vimtype = getattr(vim, args.vimtype)
 
@@ -92,25 +120,41 @@ def datastore_volumes_info(check: Check, si: vim.ServiceInstance, datastores):
     result = retrieve( [filter_spec] )
     stores = fix_content(result)
 
+    values_to_check = []
+
     for store in stores:
         name = store['summary'].name
         volume_type = store['summary'].type
         if store['summary'].accessible:
             space = Space(store['summary'].capacity, store['summary'].freeSpace)
-            print(f"{name} {space['total_kB'] :.2g} {space['total_KiB'] :.2g} {space['used_GiB'] :.2f}")
-            check.add_perfdata(label=f"{name} usage", value=space['usage'], uom='%')
-            check.add_perfdata(label=f"{name} free", value=space['free'], uom='B')
-            check.add_perfdata(label=f"{name} used", value=space['used'], uom='B')
-            check.add_perfdata(label=f"{name} capacity", value=space['total'], uom='B')
-            check.exit(Status.OK)
+            for metric in ['usage', 'free', 'used', 'capacity']:
+                opts = {}
+
+                # Check threshold against this metric
+                if args.metric.startswith(metric) and (args.warning or args.critical):
+                    value = space[args.metric]
+                    _, uom, *_ = (args.metric.split('_') + ['%' if 'usage' in args.metric else 'B'])
+                    values_to_check.append(value)
+                    s = check.threshold.get_status(space[args.metric])
+                    opts['threshold'] = threshold_in_bytes(check.threshold, uom)
+                    if s != Status.OK:
+                        check.add_message(s, f"{args.metric} on {name} is outside of threshold: {value :.2f}{uom}")
+
+                puom = '%' if metric == 'usage' else 'B'
+                check.add_perfdata(label=f"{name} {metric}", value=space[metric], uom=puom, **opts)
         else:
             check.add_message(Status.CRITICAL, f"{name} is not accessible")
 
+    (code, message) = check.check_messages(separator="\n", separator_all='\n')#, allok=okmessage)
+    check.exit(
+        code=code,
+        message=( message or "everything ok" )
+    )
 
 
 def fix_content(content):
     """
-    reorganize RetrieveContents shit, so we can use it
+    reorganize RetrieveContents shit, so we can use it.
     """
     objs = []
     for o in content:
