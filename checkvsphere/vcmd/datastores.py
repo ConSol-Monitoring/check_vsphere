@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
 """
-checks if there are any vms on a host that have connected cd or floppy drives
-
-This is not good because vms cannot move hosts with mounted cds/floppies
+checks capacity of datastores
 """
 
-__cmd__ = 'volumes'
+__cmd__ = 'datastores'
 
 from pyVmomi import vim, vmodl
 from monplugin import Check, Status, Threshold, Range
@@ -106,9 +104,9 @@ def run():
         for dc in dcs:
             datastores.extend(dc['props']['datastore'])
 
-    datastore_volumes_info(check, si, datastores)
+    datastore_info(check, si, datastores)
 
-def datastore_volumes_info(check: Check, si: vim.ServiceInstance, datastores):
+def datastore_info(check: Check, si: vim.ServiceInstance, datastores):
     ObjectSpec = vmodl.query.PropertyCollector.ObjectSpec
     retrieve = si.content.propertyCollector.RetrieveContents
     propspec = vmodl.query.PropertyCollector.PropertySpec(
@@ -134,7 +132,7 @@ def datastore_volumes_info(check: Check, si: vim.ServiceInstance, datastores):
     for store in stores:
 
         name = store['summary'].name
-        volume_type = store['summary'].type
+        datastore_type = store['summary'].type
 
         if isbanned(args, f"{name}"):
             continue

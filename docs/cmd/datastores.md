@@ -1,8 +1,9 @@
-## volumes
+## datastores
 
 ## Description
 
-This command can check various metrics on the datastore volumes.
+This command checks remaining capacity on the datastores, and if they are
+accessible.  This is known as `--select volumes` from check\_vmware\_esx.
 
 ## Options
 
@@ -24,7 +25,7 @@ options:
 
 ``` bash
 # notifiy volumes that have less than 10GB left
-check_vsphere volumes -nossl \
+check_vsphere datastores -nossl \
   -s vcenter.example.com \
   -u naemon@vsphere.local \
   --metric free_GB \
@@ -35,7 +36,7 @@ check_vsphere volumes -nossl \
 
 ``` bash
 # notifiy volumes that have a usage of 90%
-check_vsphere volumes -nossl \
+check_vsphere datastores -nossl \
   -s vcenter.example.com \
   -u naemon@vsphere.local \
   --critical 90
