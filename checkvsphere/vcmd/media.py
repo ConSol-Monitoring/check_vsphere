@@ -25,19 +25,20 @@ This is not good because vms cannot move hosts with mounted cds/floppies
 __cmd__ = 'media'
 
 import logging
-from ..tools.helper import find_entity_views
 from pyVmomi import vim
 from pyVim.task import WaitForTask
-from ..tools import cli, service_instance
 from monplugin import Check, Status
 from http.client import HTTPConnection
 from .. import CheckVsphereException
-
+from ..tools import cli, service_instance
+from ..tools.helper import find_entity_views, isbanned, isallowed, CheckArgument
 
 def run():
     parser = cli.Parser()
     # parser.add_optional_arguments(cli.Argument.DATACENTER_NAME)
     parser.add_optional_arguments(cli.Argument.VIHOST)
+    parser.add_optional_arguments(CheckArgument.ALLOWED('regex match against vm name'))
+    parser.add_optional_arguments(CheckArgument.BANNED('regex match against vm name'))
     args = parser.get_args()
     si = service_instance.connect(args)
 
@@ -70,6 +71,11 @@ def run():
 
     for vm in vms:
         match = 0
+        if isbanned(args, vm['props']['name']):
+            continue
+        if not isallowed(args, vm['props']['name']):
+            continue
+
         if vm['props']['config.template']:
             # This vm is a template, ignore it
             continue
