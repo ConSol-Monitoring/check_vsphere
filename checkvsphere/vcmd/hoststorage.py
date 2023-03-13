@@ -80,7 +80,49 @@ def run():
             f"host {args.vihost} is in maintenance"
         )
 
-    storage_info(si, host)
+    storage = storage_info(si, host)
+
+    if args.mode == "adapter":
+        check_adapter(check, args, storage)
+    #print(storage['storageDeviceInfo'].hostBusAdapter)
+
+def check_adapter(check: Check, si: vim.ServiceInstance, storage):
+    count = {}
+    adapters = storage['storageDeviceInfo'].hostBusAdapter
+    for dev in adapters:
+        if  (
+                isbanned(args, f"device:{dev.device}") or \
+                isbanned(args, f"model:{dev.model}") or \
+                isbanned(args, f"key:{dev.key}")
+            ):
+            count.setdefault('ignored', 0)
+            count['ignored'] += 1
+            continue
+        if not (
+            isallowed(args, f"device:{dev.device}") or \
+            isallowed(args, f"model:{dev.model}") or \
+            isallowed(args, f"key:{dev.key}")
+           ):
+            count.setdefault('ignored', 0)
+            count['ignored'] += 1
+            continue
+
+        status = {
+            'online': Status.OK,
+            'unbound': Status.WARNING,
+            'unknown': Status.CRITICAL,
+            'offline': Status.CRITICAL,
+        }.get(dev.status, Status.UNKNOWN)
+        count.setdefault(dev.status, 0)
+        count[dev.status]+=1
+        check.add_message(status, f"{dev.model} {dev.device} ({dev.status})")
+
+    short = f"Adapters {len(adapters)}; " + "; ".join([f"{x}: {count[x]}" for x in sorted(count.keys())])
+    (code, message) = check.check_messages(separator_all="\n")#, allok=okmessage)
+    check.exit(
+        code=code,
+        message=f"{short}\n{message}"
+    )
 
 def storage_info(si: vim.ServiceInstance, host):
     ObjectSpec = vmodl.query.PropertyCollector.ObjectSpec
@@ -100,8 +142,8 @@ def storage_info(si: vim.ServiceInstance, host):
     )
 
     result = retrieve( [filter_spec] )
-    stores = fix_content(result)
-    print(stores)
+    storage = fix_content(result)
+    return storage[0]
 
 
 def fix_content(content):
