@@ -43,6 +43,7 @@ def run():
             'action': 'store',
             'choices': [
                 'adapter',
+                'lun',
             ],
             'help': 'which runtime mode to check'
         }
@@ -84,7 +85,24 @@ def run():
 
     if args.mode == "adapter":
         check_adapter(check, args, storage)
-    #print(storage['storageDeviceInfo'].hostBusAdapter)
+    if args.mode == 'lun':
+        check_lun(check, args, storage)
+
+def get_lun2disc(storage):
+    lun2disc = {}
+
+    for adapter in storage['storageDeviceInfo'].scsiTopology.adapter:
+        for target in adapter.target:
+            for lun in target.lun:
+                key = lun.scsiLun
+                key = key.split("-")[-1]
+                lun2disc[key] = f"{lun.lun :03d}"
+
+    return lun2disc
+
+
+def check_lun(check: Check, si: vim.ServiceInstance, storage):
+    lun2disc = get_lun2disc(storage)
 
 def check_adapter(check: Check, si: vim.ServiceInstance, storage):
     count = {}
