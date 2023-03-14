@@ -17,7 +17,7 @@
 
 
 """
---select runtime --subselect health
+check age or number of vm snapshots
 """
 
 __cmd__ = 'snapshots'

@@ -17,9 +17,7 @@
 
 
 """
-checks if there are any vms on a host that have connected cd or floppy drives
-
-This is not good because vms cannot move hosts with mounted cds/floppies
+print all metric counters
 """
 
 __cmd__ = 'list-metrics'
