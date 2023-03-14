@@ -16,9 +16,7 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """
-checks if there are any vms on a host that have connected cd or floppy drives
-
-This is not good because vms cannot move hosts with mounted cds/floppies
+check various runtime info from a host
 """
 
 __cmd__ = 'host-runtime'

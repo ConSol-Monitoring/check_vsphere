@@ -142,7 +142,6 @@ def datastore_info(check: Check, si: vim.ServiceInstance, datastores):
     result = retrieve( [filter_spec] )
     stores = fix_content(result)
 
-    values_to_check = []
 
     for store in stores:
 
@@ -166,7 +165,6 @@ def datastore_info(check: Check, si: vim.ServiceInstance, datastores):
             if args.metric.startswith(metric) and (args.warning or args.critical):
                 value = space[args.metric]
                 _, uom, *_ = (args.metric.split('_') + ['%' if 'usage' in args.metric else 'B'])
-                values_to_check.append(value)
                 s = check.threshold.get_status(space[args.metric])
 
                 threshold = {}
