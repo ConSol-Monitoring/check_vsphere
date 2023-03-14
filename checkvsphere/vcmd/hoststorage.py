@@ -110,7 +110,7 @@ def check_lun(check: Check, si: vim.ServiceInstance, storage):
         canonicalName = scsi.canonicalName
         scsiId = scsi.uuid
         diskKey = scsi.key.split("-")[-1]
-        displayName = re.sub(r'[^][\w _()-]', '', scsi.displayName)
+        displayName = re.sub(r'[^][\w _().-]', '', scsi.displayName)
 
         if isbanned(args, displayName):
             count.setdefault('ignored', 0)
