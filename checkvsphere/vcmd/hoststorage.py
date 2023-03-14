@@ -21,6 +21,7 @@ checks storage adapters
 
 __cmd__ = 'host-storage'
 
+import re
 from pyVmomi import vim, vmodl
 from monplugin import Check, Status, Threshold, Range
 from ..tools import cli, service_instance
@@ -103,6 +104,45 @@ def get_lun2disc(storage):
 
 def check_lun(check: Check, si: vim.ServiceInstance, storage):
     lun2disc = get_lun2disc(storage)
+    count = {}
+    luns = storage['storageDeviceInfo'].scsiLun
+    for scsi in luns:
+        canonicalName = scsi.canonicalName
+        scsiId = scsi.uuid
+        diskKey = scsi.key.split("-")[-1]
+        displayName = re.sub(r'[^][\w _()-]', '', scsi.displayName)
+
+        if isbanned(args, displayName):
+            count.setdefault('ignored', 0)
+            count['ignored'] += 1
+            continue
+        if not isallowed(args, displayName):
+            count.setdefault('ignored', 0)
+            count['ignored'] += 1
+            continue
+
+        operationState = "-".join(scsi.operationalState)
+        if "degraded" in scsi.operationalState:
+            check.add_message(Status.WARNING, f"{displayName} degraded: {operationState}")
+            count.setdefault('warning', 0)
+            count['warning'] += 1
+        elif "ok" == scsi.operationalState[0]:
+            check.add_message(Status.OK, f"{displayName} OK state: {operationState}")
+            count.setdefault('ok', 0)
+            count['ok'] += 1
+        else:
+            check.add_message(Status.CRITICAL, f"{displayName} CRITICAL state: {operationState}")
+            count.setdefault('critical', 0)
+            count['critical'] += 1
+
+    (code, message) = check.check_messages(separator='\n', separator_all="\n")#, allok=okmessage)
+    short = f"LUNs: {len(luns)}; " + "; ".join([ f"{x}: {count[x]}" for x in sorted(count.keys()) ])
+    check.exit(
+        code=code,
+        message=f"{short}\n{message}"
+    )
+
+
 
 def check_adapter(check: Check, si: vim.ServiceInstance, storage):
     count = {}
