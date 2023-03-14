@@ -86,8 +86,10 @@ def run():
 
     if args.mode == "adapter":
         check_adapter(check, args, storage)
-    if args.mode == 'lun':
+    elif args.mode == "lun":
         check_lun(check, args, storage)
+    elif args.mode == "path":
+        check_path(check, args, storage)
 
 def get_lun2disc(storage):
     lun2disc = {}
@@ -100,6 +102,15 @@ def get_lun2disc(storage):
                 lun2disc[key] = f"{lun.lun :03d}"
 
     return lun2disc
+
+def check_path(check: Check, si: vim.ServiceInstance, storage):
+    check.exit(Status.UNKNOWN, "Not implemented yet")
+    lun2disc = get_lun2disc(storage)
+
+    for mpInfoLun in storage['storageDeviceInfo'].multipathInfo.lun:
+        for path in mpInfoLun.path:
+            scsiId = path.lun.split("-")[-1]
+            print(scsiId)
 
 
 def check_lun(check: Check, si: vim.ServiceInstance, storage):
