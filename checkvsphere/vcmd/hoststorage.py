@@ -109,7 +109,7 @@ def check_lun(check: Check, si: vim.ServiceInstance, storage):
     for scsi in luns:
         canonicalName = scsi.canonicalName
         scsiId = scsi.uuid
-        diskKey = scsi.key.split("-")[-1]
+        discKey = scsi.key.split("-")[-1]
         displayName = re.sub(r'[^][\w _().-]', '', scsi.displayName)
 
         if isbanned(args, displayName):
@@ -123,15 +123,15 @@ def check_lun(check: Check, si: vim.ServiceInstance, storage):
 
         operationState = "-".join(scsi.operationalState)
         if "degraded" in scsi.operationalState:
-            check.add_message(Status.WARNING, f"{displayName} degraded: {operationState}")
+            check.add_message(Status.WARNING, f"WARNING LUN:{lun2disc[discKey]} {displayName} degraded: {operationState}")
             count.setdefault('warning', 0)
             count['warning'] += 1
         elif "ok" == scsi.operationalState[0]:
-            check.add_message(Status.OK, f"{displayName} OK state: {operationState}")
+            check.add_message(Status.OK, f"OK LUN:{lun2disc[discKey]} {displayName} state: {operationState}")
             count.setdefault('ok', 0)
             count['ok'] += 1
         else:
-            check.add_message(Status.CRITICAL, f"{displayName} CRITICAL state: {operationState}")
+            check.add_message(Status.CRITICAL, f"CRITICAL LUN:{lun2disc[discKey]} {displayName} state: {operationState}")
             count.setdefault('critical', 0)
             count['critical'] += 1
 
