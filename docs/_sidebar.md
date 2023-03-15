@@ -5,6 +5,7 @@
   * [host-nic](/cmd/host-nic.md)
   * [host-runtime](/cmd/host-runtime.md)
   * [host-service](/cmd/host-service.md)
+  * [host-storage](/cmd/host-storage.md)
   * [list-metrics](/cmd/list-metrics.md)
   * [media](/cmd/media.md)
   * [perf](/cmd/perf.md)

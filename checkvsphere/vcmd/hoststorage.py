@@ -187,7 +187,7 @@ def check_adapter(check: Check, si: vim.ServiceInstance, storage):
         check.add_message(status, f"{dev.model} {dev.device} ({dev.status})")
 
     short = f"Adapters {len(adapters)}; " + "; ".join([f"{x}: {count[x]}" for x in sorted(count.keys())])
-    (code, message) = check.check_messages(separator_all="\n")#, allok=okmessage)
+    (code, message) = check.check_messages(separator="\n", separator_all="\n")#, allok=okmessage)
     check.exit(
         code=code,
         message=f"{short}\n{message}"
