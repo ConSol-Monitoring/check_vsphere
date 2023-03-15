@@ -19,7 +19,7 @@
 check services on host
 """
 
-__cmd__ = 'host-services'
+__cmd__ = 'host-service'
 
 import logging
 from pyVmomi import vim, vmodl
