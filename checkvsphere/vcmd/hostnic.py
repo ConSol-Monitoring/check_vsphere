@@ -34,7 +34,7 @@ from .. import CheckVsphereException
 def run():
     parser = cli.Parser()
     # parser.add_optional_arguments(cli.Argument.DATACENTER_NAME)
-    parser.add_required_arguments(cli.Argument.VIHOST)
+    parser.add_optional_arguments(cli.Argument.VIHOST)
     parser.add_optional_arguments(CheckArgument.BANNED(
         'regex, check against nic name'
     ))
@@ -78,11 +78,11 @@ def run():
             si,
             vim.HostSystem,
             begin_entity=si.content.rootFolder,
-            sieve={'name': args.vihost},
+            sieve=({'name': args.vihost} if args.vihost else None),
             properties=["name", "configManager.networkSystem", "runtime.inMaintenanceMode"]
         )[0]
     except IndexError:
-        check.exit(Status.UNKNOWN, f"host {args.vihost} not found")
+        check.exit(Status.UNKNOWN, f"host {args.vihost or ''} not found")
 
     result = []
 
@@ -90,7 +90,7 @@ def run():
         status = getattr(Status, args.maintenance_state)
         check.exit(
             status,
-            f"host {args.vihost} is in maintenance"
+            f"host {vm['props']['name']} is in maintenance"
         )
 
     network_system = vm["props"]["configManager.networkSystem"]

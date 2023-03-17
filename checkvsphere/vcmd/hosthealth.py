@@ -51,7 +51,7 @@ def run():
         args._si,
         vim.HostSystem,
         begin_entity=args._si.content.rootFolder,
-        sieve={'name': args.vihost},
+        sieve=({'name': args.vihost} if args.vihost else None),
         properties=['runtime', 'overallStatus', 'configIssue', 'summary.config.product.fullName']
     )
 
@@ -59,12 +59,12 @@ def run():
         obj = vms[0]['obj'].obj
         props = vms[0]['props']
     except IndexError:
-        check.exit(Status.UNKNOWN, f"{args.vimtype} {args.vimname} not found")
+        check.exit(Status.UNKNOWN, f"host {args.vihost or ''} not found")
 
     if 'runtime.inMaintenanceMode' in props:
         status = getattr(Status, args.maintenance_state)
         if props['runtime.inMaintenanceMode']:
-            check.exit(status, f"{args.vimname} is in maintenance")
+            check.exit(status, f"{props['name']} is in maintenance")
 
 def get_perf_values(args, obj, metricId):
     si = args._si
@@ -87,7 +87,7 @@ def get_perf_values(args, obj, metricId):
 
 def get_argparser():
     parser = cli.Parser()
-    parser.add_required_arguments(cli.Argument.VIHOST)
+    parser.add_optional_arguments(cli.Argument.VIHOST)
     parser.add_optional_arguments( {
         'name_or_flags': ['--maintenance-state'],
         'options': {

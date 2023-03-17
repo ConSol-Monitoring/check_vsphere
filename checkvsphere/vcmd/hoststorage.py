@@ -37,7 +37,7 @@ def run():
     #parser.add_optional_arguments(CheckArgument.WARNING_THRESHOLD)
     parser.add_optional_arguments(CheckArgument.BANNED('regex, name of datastore'))
     parser.add_optional_arguments(CheckArgument.ALLOWED('regex, name of datastore'))
-    parser.add_required_arguments(cli.Argument.VIHOST)
+    parser.add_optional_arguments(cli.Argument.VIHOST)
     parser.add_required_arguments( {
         'name_or_flags': ['--mode'],
         'options': {
@@ -69,17 +69,17 @@ def run():
             si,
             vim.HostSystem,
             begin_entity=si.content.rootFolder,
-            sieve={'name': args.vihost},
+            sieve=( {'name': args.vihost} if args.vihost else None ),
             properties=["name", "configManager", "runtime.inMaintenanceMode"],
         )[0]
     except IndexError:
-        check.exit(Status.UNKNOWN, f"host {args.vihost} not found")
+        check.exit(Status.UNKNOWN, f"host {args.vihost or ''} not found")
 
     if host['props']['runtime.inMaintenanceMode']:
         status = getattr(Status, args.maintenance_state)
         check.exit(
             status,
-            f"host {args.vihost} is in maintenance"
+            f"host {host['props']['name']} is in maintenance"
         )
 
     storage = storage_info(si, host)
