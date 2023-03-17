@@ -92,7 +92,7 @@ def run():
     check = Check(shortname='VSPHERE-VOL', threshold = Threshold(args.warning or None, args.critical or None))
 
     vimtype = None
-    if args.vimname and args.vimtype:
+    if args.vimtype:
         vimtype = getattr(vim, args.vimtype)
 
     datastores = []
@@ -103,12 +103,12 @@ def run():
                 si,
                 vimtype,
                 begin_entity=si.content.rootFolder,
-                sieve={'name': args.vimname},
+                sieve=( {'name': args.vimname} if args.vimname else None ),
                 properties=["name", "datastore"],
             )[0]
             datastores = vm['props']['datastore']
         except IndexError:
-            check.exit(Status.UNKNOWN, f"host {args.vihost} not found")
+            check.exit(Status.UNKNOWN, f"{args.vimtype} {args.vimname} not found")
     else:
         dcs = find_entity_views(
             si,

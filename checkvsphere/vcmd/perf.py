@@ -107,7 +107,7 @@ def run():
         args._si,
         vimtype,
         begin_entity=args._si.content.rootFolder,
-        sieve={'name': args.vimname},
+        sieve=( {'name': args.vimname} if args.vimname else None )
     )
 
     try:
@@ -209,8 +209,8 @@ def get_argparser():
         }
     })
 
-    parser.add_required_arguments( CheckArgument.VIMNAME )
     parser.add_required_arguments( CheckArgument.VIMTYPE )
+    parser.add_optional_arguments( CheckArgument.VIMNAME )
 
     parser.add_required_arguments(
         {

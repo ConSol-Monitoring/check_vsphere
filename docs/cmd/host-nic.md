@@ -2,8 +2,8 @@
 
 ## Description
 
-The host-runtime provides various checks against a hosts runtime. It's basically
-the same as `--select net --subselect=nic` from check\_vmware\_esx against a host.
+The host-nic command checks if all nics are connected. It's basically the same
+as `--select net --subselect=nic` from check\_vmware\_esx against a host.
 
 ## Options
 
