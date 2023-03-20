@@ -12,7 +12,7 @@ options:
 
 | option | description |
 |---|---|
-| `--vihost HOSTNAME` | the name of the HostSystem to check |
+| `--vihost HOSTNAME` | (optional) the name of the HostSystem to check, if omitted the first HostSystem found is checked, which is handy if you run this check directly against the host |
 | `--mode MODE` | what to check to perform, one of `con`, `health`, `issues`, `status`, `temp`, `version`, `maintenance` |
 | `--maintenance-state STATE` | one of OK, WARNING, CRITICAL, UNKNOWN. The status to use when the host is in maintenance mode, this defaults to UNKNOWN except when --mode maintenance, then the default is CRITICAL |
 

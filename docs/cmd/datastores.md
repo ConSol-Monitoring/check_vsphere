@@ -20,6 +20,8 @@ options:
 | `--warning WARNING`     | warning threshold, see [common options](/cmd/?id=common-options) |
 | `--metric METRIC`     | the name of the metric to check, can be one of `usage`, `used`, `free`. <br>`used` and `free` can be suffixed by a unit (B, kB, MB, GB), like `free_MB` or `used_GB`. <br>if omitted it defaults to `usage`, which is (100 * used/capacity) |
 
+In case of `--vimtype HostSystem` it may be useful to omit the `--vimname` when
+you run this command directly against the HostSystem (not through the vcenter).
 
 ## Examples
 

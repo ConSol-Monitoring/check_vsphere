@@ -23,6 +23,9 @@ options:
 | `--maintenance-state` | exit state if the host is in maintenance,<br/> one of `OK, WARNING, CRITICAL, UNKNOWN` (only has a meaning with `--vimtype HostSystem` |
 | `--interval INTERVALID` | defaults to `20` which works in most cases, other possible values `300, 1800, 7200, 86400` and maybe more ...|
 
+In case of `--vimtype HostSystem` it may be useful to omit the `--vimname` when
+you run this command directly against the HostSystem (not through the vcenter).
+
 ## Examples
 
 ```

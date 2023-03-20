@@ -42,7 +42,7 @@ def run():
 
     set_timeout()
 
-    if cmd:
+    if cmd and cmd not in ['-h', 'help', '--help']:
         mod = "".join(c for c in cmd if c.isalnum())
         try:
             runner = importlib.import_module(f"checkvsphere.vcmd.{mod}")
