@@ -51,9 +51,9 @@ def run():
     })
     parser.add_optional_arguments({
         'name_or_flags': ['--maintenance-state'],
-        'default': 'UNKNOWN',
         'options': {
             'action': 'store',
+            'default': 'UNKNOWN',
             'choices': ['OK', 'WARNING', 'CRITICAL', 'UNKNOWN'],
             'help': 'exit with this status if the host is in maintenance, '
                     'default UNKNOWN, or CRITICAL if --mode maintenance'
