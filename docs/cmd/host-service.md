@@ -13,7 +13,7 @@ options:
 
 | option | description |
 |---|---|
-| `--vihost HOSTNAME` | the name of the HostSystem to check the services on |
+| `--vihost HOSTNAME` | (optional) the name of the HostSystem to check, if omitted the first HostSystem found is checked, which is handy if you run this check directly against the host |
 | `--maintenance-state STATE` | one of OK, WARNING, CRITICAL, UNKNOWN. The status to use when the host is in maintenance mode, this defaults to UNKNOWN |
 | `--allowed REGEX` | (optional) REGEX is checked against `<name of service>`, if REGEX doesn't match the service is ignored |
 | `--banned REGEX` | (optional) REGEX is checked against `<name of datastore>`, if REGEX does match the service is ignored |
