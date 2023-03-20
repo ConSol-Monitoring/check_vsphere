@@ -106,6 +106,7 @@ def run():
     vms = find_entity_views(
         args._si,
         vimtype,
+        properties=['name'],
         begin_entity=args._si.content.rootFolder,
         sieve=( {'name': args.vimname} if args.vimname else None )
     )
@@ -114,7 +115,7 @@ def run():
         obj = vms[0]['obj'].obj
         props = vms[0]['props']
     except IndexError:
-        check.exit(Status.UNKNOWN, f"{args.vimtype} {args.vimname} not found")
+        check.exit(Status.UNKNOWN, f"{args.vimtype} {args.vimname or ''} not found")
 
     if not metricId:
         raise Exception(
@@ -127,7 +128,7 @@ def run():
     if 'runtime.inMaintenanceMode' in props:
         status = getattr(Status, args.maintenance_state)
         if props['runtime.inMaintenanceMode']:
-            check.exit(status, f"{args.vimname} is in maintenance")
+            check.exit(status, f"{args.vimname or props['name']} is in maintenance")
 
     counterInfo = get_counter_info(counter)
 
@@ -151,7 +152,7 @@ def run():
                 )
                 check.exit(
                     code=check.check_threshold(val),
-                    message=f'Counter {args.perfcounter} on {args.vimtype}:{args.vimname} reported {val} {counterInfo["unit"]}',
+                    message=f'Counter {args.perfcounter} on {args.vimtype}:{args.vimname or props["name"]} reported {val} {counterInfo["unit"]}',
                 )
     else:
         for instance in values.value:

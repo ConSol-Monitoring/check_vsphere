@@ -6,7 +6,7 @@ requires = ["flit_core >=3.2,<4"]
 name = "checkvsphere"
 readme = "README.md"
 description = "check_vsphere monitoring plugin"
-version = "0.1a11"
+version = "0.1a12"
 requires-python = ">= 3.6"
 authors = [
     { name = "Danijel Tasov", email = "danijel.tasov@consol.de" }
