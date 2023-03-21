@@ -27,8 +27,14 @@ from pyVim.task import WaitForTask
 from monplugin import Check, Status
 from http.client import HTTPConnection
 from ..tools import cli, service_instance
-from ..tools.helper import find_entity_views, CheckArgument, isbanned, isallowed
 from .. import CheckVsphereException
+from ..tools.helper import (
+    CheckArgument,
+    find_entity_views,
+    isallowed,
+    isbanned,
+    process_retrieve_content
+)
 
 def run():
     global args
@@ -111,21 +117,8 @@ def service_system(si: vim.ServiceInstance, host):
     )
 
     result = retrieve( [filter_spec] )
-    service_system = fix_content(result)
+    service_system = process_retrieve_content(result)
     return service_system[0]
-
-def fix_content(content):
-    """
-    reorganize RetrieveContents shit, so we can use it.
-    """
-    objs = []
-    for o in content:
-        d = {}
-        d['moref'] = o.obj
-        for prop in o.propSet:
-            d[prop.name] = prop.val
-        objs.append(d)
-    return objs
 
 if __name__ == "__main__":
     run()

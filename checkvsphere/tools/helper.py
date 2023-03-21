@@ -192,3 +192,16 @@ def isallowed(args, name):
         return False
 
     return True
+
+def process_retrieve_content(content):
+    """
+    reorganize RetrieveContents shit, so we can use it.
+    """
+    objs = []
+    for o in content:
+        d = {}
+        d['moref'] = o.obj
+        for prop in o.propSet:
+            d[prop.name] = prop.val
+        objs.append(d)
+    return objs
