@@ -24,7 +24,6 @@ __cmd__ = 'host-runtime'
 import logging
 from ..tools.helper import find_entity_views
 from pyVmomi import vim
-from pyVim.task import WaitForTask
 from ..tools import cli, service_instance
 from monplugin import Check, Status
 from http.client import HTTPConnection

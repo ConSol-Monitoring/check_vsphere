@@ -24,7 +24,6 @@ __cmd__ = 'snapshots'
 
 import logging
 from pyVmomi import vim
-from pyVim.task import WaitForTask
 from http.client import HTTPConnection
 from monplugin import Check, Status, Threshold
 from ..tools import cli, service_instance

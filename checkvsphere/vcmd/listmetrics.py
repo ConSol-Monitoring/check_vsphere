@@ -26,7 +26,6 @@ import logging
 import textwrap
 from pyVmomi import vim
 from ..tools import cli, service_instance
-from pprint import pprint as pp
 
 def run():
     parser = cli.Parser()

@@ -25,7 +25,6 @@ __cmd__ = 'about'
 import logging
 from ..tools.helper import find_entity_views
 from pyVmomi import vim
-from pyVim.task import WaitForTask
 from ..tools import cli, service_instance
 from http.client import HTTPConnection
 from .. import CheckVsphereException

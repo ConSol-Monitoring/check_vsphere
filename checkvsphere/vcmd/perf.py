@@ -24,7 +24,6 @@ __cmd__ = 'perf'
 
 import logging
 from pyVmomi import vim
-from pyVim.task import WaitForTask
 from http.client import HTTPConnection
 from ..tools import cli, service_instance
 from ..tools.helper import get_obj_by_name, get_metric, CheckArgument

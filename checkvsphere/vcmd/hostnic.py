@@ -23,7 +23,6 @@ __cmd__ = 'host-nic'
 
 import logging
 from pyVmomi import vim
-from pyVim.task import WaitForTask
 from monplugin import Check, Status
 from http.client import HTTPConnection
 from ..tools import cli, service_instance
