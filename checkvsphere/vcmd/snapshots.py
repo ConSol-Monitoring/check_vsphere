@@ -31,7 +31,6 @@ from ..tools.helper import (
 	CheckArgument,
 	find_entity_views,
 	get_metric,
-	get_obj_by_name,
     isbanned,
     isallowed
 )

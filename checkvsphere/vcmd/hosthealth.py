@@ -25,8 +25,7 @@ __cmd__ = None # not finished yet 'host-health'
 import logging
 from pyVmomi import vim
 from ..tools import cli, service_instance
-from ..tools.helper import get_obj_by_name, get_metric, CheckArgument
-from ..tools.helper import find_entity_views, get_obj_by_name, get_metric
+from ..tools.helper import find_entity_views, CheckArgument
 from monplugin import Check, Status, Threshold
 
 def health_status(color):

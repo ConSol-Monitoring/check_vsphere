@@ -25,9 +25,7 @@ __cmd__ = 'perf'
 import logging
 from pyVmomi import vim
 from ..tools import cli, service_instance
-from ..tools.helper import get_obj_by_name, get_metric, CheckArgument
-from ..tools.helper import find_entity_views, get_obj_by_name, get_metric
-from pprint import pprint as pp
+from ..tools.helper import find_entity_views, get_metric, CheckArgument
 from monplugin import Check, Status, Threshold
 
 '''

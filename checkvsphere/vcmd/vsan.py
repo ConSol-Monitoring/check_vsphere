@@ -26,8 +26,8 @@ import logging
 import ssl
 from pyVmomi import vim
 from ..tools import cli, service_instance
-from ..tools.helper import get_obj_by_name, get_metric, CheckArgument, isallowed, isbanned
-from ..tools.helper import find_entity_views, get_obj_by_name, get_metric, process_retrieve_content
+from ..tools.helper import CheckArgument, isallowed, isbanned
+from ..tools.helper import find_entity_views, process_retrieve_content
 from monplugin import Check, Status, Threshold
 
 OK = Status.OK
@@ -36,7 +36,6 @@ CRITICAL = Status.CRITICAL
 UNKNOWN = Status.UNKNOWN
 
 try:
-    import vsanmgmtObjects as vs
     import vsanapiutils as vsu
 except Exception as e:
     print(f"""
