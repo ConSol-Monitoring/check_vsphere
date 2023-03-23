@@ -26,7 +26,6 @@ import logging
 from ..tools.helper import find_entity_views
 from pyVmomi import vim
 from ..tools import cli, service_instance
-from http.client import HTTPConnection
 from .. import CheckVsphereException
 
 

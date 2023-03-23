@@ -24,7 +24,6 @@ __cmd__ = 'host-service'
 import logging
 from pyVmomi import vim, vmodl
 from monplugin import Check, Status
-from http.client import HTTPConnection
 from ..tools import cli, service_instance
 from .. import CheckVsphereException
 from ..tools.helper import (

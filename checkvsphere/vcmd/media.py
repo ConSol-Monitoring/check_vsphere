@@ -27,7 +27,6 @@ __cmd__ = 'media'
 import logging
 from pyVmomi import vim
 from monplugin import Check, Status
-from http.client import HTTPConnection
 from .. import CheckVsphereException
 from ..tools import cli, service_instance
 from ..tools.helper import find_entity_views, isbanned, isallowed, CheckArgument

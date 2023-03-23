@@ -24,7 +24,6 @@ __cmd__ = 'host-nic'
 import logging
 from pyVmomi import vim
 from monplugin import Check, Status
-from http.client import HTTPConnection
 from ..tools import cli, service_instance
 from ..tools.helper import find_entity_views, CheckArgument, isbanned
 from .. import CheckVsphereException

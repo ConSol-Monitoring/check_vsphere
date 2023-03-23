@@ -25,7 +25,6 @@ __cmd__ = None
 import logging
 import ssl
 from pyVmomi import vim
-from http.client import HTTPConnection
 from ..tools import cli, service_instance
 from ..tools.helper import get_obj_by_name, get_metric, CheckArgument, isallowed, isbanned
 from ..tools.helper import find_entity_views, get_obj_by_name, get_metric, process_retrieve_content
