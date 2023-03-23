@@ -75,7 +75,7 @@ object_health = {
     'reducedavailabilitywithpausedrebuild': CRITICAL,
     'reducedavailabilitywithpolicypending': OK,
     'reducedavailabilitywithpolicypendingfailed': WARNING,
-    'remoteAccessible': UNKNOWN, # ignore them maybe?
+    'remoteAccessible': UNKNOWN, # is ignored for now
     'VsanObjectHealthState_Unknown': WARNING,
 }
 
@@ -96,11 +96,7 @@ def run():
 
     clusters = process_retrieve_content(list(map(lambda x: x['obj'], clusters)))
 
-    from pprint import pprint as pp
-
-    print(args._si.content.about)
     apiVersion = vsu.GetLatestVmodlVersion(args.host, int(args.port))
-    print(apiVersion)
     vcMos =  vsu.GetVsanVcMos( #vsu.GetVsanVcMos(
         args._si._stub,
         context=sslContext(args),
@@ -127,6 +123,8 @@ def run():
 
     if args.mode == "objecthealth":
         check_objecthealth(check, clusters)
+    else:
+        raise Exception("WHAT?")
 
 def check_objecthealth(check, clusters):
     for cluster in clusters:
@@ -146,8 +144,6 @@ def check_objecthealth(check, clusters):
 
     (status, message) = check.check_messages(allok="everything is fine", separator='\n', separator_all='\n')
     check.exit(status, message)
-
-
 
 def sslContext(args):
     context = ssl.create_default_context()
