@@ -22,11 +22,11 @@ check various runtime info from a host
 __cmd__ = 'host-runtime'
 
 import logging
-from ..tools.helper import find_entity_views
 from pyVmomi import vim
-from ..tools import cli, service_instance
 from monplugin import Check, Status
 from .. import CheckVsphereException
+from ..tools import cli, service_instance
+from ..tools.helper import find_entity_views, isbanned, isallowed, CheckArgument
 
 
 def run():
@@ -60,6 +60,9 @@ def run():
                     'default UNKNOWN, or CRITICAL if --mode maintenance'
         }
     })
+
+    parser.add_optional_arguments(CheckArgument.ALLOWED('regex, name of info item'))
+    parser.add_optional_arguments(CheckArgument.BANNED('regex, name of info item'))
 
     args = parser.get_args()
 
@@ -110,7 +113,11 @@ def run():
     elif args.mode == 'maintenance':
         check.exit(Status.OK, "Host is not in maintenance")
 
-    (code, message) = check.check_messages(separator="\n", separator_all='\n', allok=okmessage)
+    opts = {}
+    if not args.verbose:
+        opts['allok'] = okmessage
+
+    (code, message) = check.check_messages(separator="\n", separator_all='\n', **opts)
     check.exit(
         code=code,
         message=( message or  "everything ok" )
@@ -146,6 +153,10 @@ def format_issue(issue):
 def check_issues(check, vm, args, result):
     issues = vm['props']['configIssue']
     for issue in issues:
+        if isbanned(args, issue.fullFormattedMessage):
+            continue
+        if not isallowed(args, issue.fullFormattedMessage):
+            continue
         check.add_message(Status.CRITICAL, format_issue(issue))
 
     return "No issues found"
@@ -181,6 +192,10 @@ def check_temp(check, vm, args, result):
     for info in numericinfo:
         if info.sensorType != "temperature":
             continue
+        if isbanned(args, info.name):
+            continue
+        if not isallowed(args, info.name):
+            continue
         state = health2state(info.healthState.key)
         name = info.name.rstrip(' Temp')
         check.add_perfdata(label=name, value=info.currentReading * (10 ** info.unitModifier))
@@ -203,6 +218,10 @@ def check_health(check, vm, args, result):
     if memorystatus:
         for info in memorystatus:
             state = health2state(info.status.key)
+            if isbanned(args, info.name):
+                continue
+            if not isallowed(args, info.name):
+                continue
             if state == Status.UNKNOWN:
                 continue
             check.add_message(state, f"{state.name} [Type: Memory] [Name: { info.name }] [Summary: { info.status.summary }]")
@@ -225,6 +244,10 @@ def check_health(check, vm, args, result):
 
     if storagestatus:
         for info in storagestatus:
+            if isbanned(args, info.name):
+                continue
+            if not isallowed(args, info.name):
+                continue
             state = health2state(info.status.key)
             if state == Status.UNKNOWN:
                 continue
@@ -238,6 +261,10 @@ def check_health(check, vm, args, result):
         for info in numericsensor:
             if info.sensorType == "Software Components":
                 # It is said they make no sense
+                continue
+            if isbanned(args, info.name):
+                continue
+            if not isallowed(args, info.name):
                 continue
             if 'unknown' in info.healthState.label and 'Cannot report' in info.healthState.summary:
                 # Filter out sensors which have not valid data. Often a sensor is recognized by vmware

@@ -90,6 +90,12 @@ class Parser:
                                                action='store_true',
                                                help='Disable ssl host certificate verification')
 
+        self._standard_args_group.add_argument('-v', '--verbose',
+                                               required=False,
+                                               default=0,
+                                               action='count',
+                                               help='verbosity')
+
     def get_args(self):
         """
         Supports the command-line arguments needed to form a connection to vSphere.
