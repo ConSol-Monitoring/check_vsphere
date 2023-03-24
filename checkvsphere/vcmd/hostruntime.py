@@ -267,7 +267,7 @@ def check_health(check, vm, args, result):
             if not isallowed(args, info.name):
                 continue
             if 'unknown' in info.healthState.label and 'Cannot report' in info.healthState.summary:
-                # Filter out sensors which have not valid data. Often a sensor is recognized by vmware
+                # Filter out sensors which have no valid data. Often a sensor is recognized by vmware
                 # but has not the ability to report something senseful. So it can be skipped.
                 continue
 
