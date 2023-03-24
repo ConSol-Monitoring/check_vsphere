@@ -20,7 +20,7 @@
 vsan health
 """
 
-__cmd__ = None
+__cmd__ = "vsan"
 
 import logging
 import ssl
@@ -154,15 +154,6 @@ def get_argparser():
     parser = cli.Parser()
     parser.add_optional_arguments(CheckArgument.BANNED('regex, name of cluster'))
     parser.add_optional_arguments(CheckArgument.ALLOWED('regex, name of cluster'))
-    parser.add_optional_arguments( {
-        'name_or_flags': ['--maintenance-state'],
-        'options': {
-            'action': 'store',
-            'choices': ['OK', 'WARNING', 'CRITICAL', 'UNKNOWN'],
-            'default': 'UNKNOWN',
-            'help': 'exit with this status if the host is in maintenance, only does something with --vimtype HostSystem'
-        }
-    })
     parser.add_required_arguments( {
         'name_or_flags': ['--mode'],
         'options': {
