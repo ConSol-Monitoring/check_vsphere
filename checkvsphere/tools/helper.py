@@ -150,7 +150,7 @@ class CheckArgument:
 
     def ALLOWED(help):
         return {
-            'name_or_flags': ['--allowed'],
+            'name_or_flags': ['--allowed', '--include'],
             'options': {
                 'default': [],
                 'help': help,
@@ -159,7 +159,7 @@ class CheckArgument:
         }
     def BANNED(help):
         return {
-            'name_or_flags': ['--banned'],
+            'name_or_flags': ['--banned', '--exclude'],
             'options': {
                 'default': [],
                 'help': help,
