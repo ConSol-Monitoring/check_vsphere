@@ -47,7 +47,7 @@ def run():
         try:
             runner = importlib.import_module(f"checkvsphere.vcmd.{mod}")
         except ModuleNotFoundError as e:
-            if not e.name.startswith("vcmd."):
+            if not e.name.startswith("checkvsphere.vcmd."):
                 raise e
             print(f"command not found: {cmd}")
             sys.exit(3)
