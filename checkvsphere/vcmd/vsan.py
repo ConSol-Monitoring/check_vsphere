@@ -35,6 +35,8 @@ WARNING = Status.WARNING
 CRITICAL = Status.CRITICAL
 UNKNOWN = Status.UNKNOWN
 
+args = None
+
 try:
     import vsanapiutils as vsu
 except Exception as e:
@@ -77,6 +79,7 @@ object_health = {
 }
 
 def run():
+    global args
     parser = get_argparser()
     args = parser.get_args()
 
@@ -137,9 +140,13 @@ def check_objecthealth(check, clusters):
                 continue
 
             state = object_health.get(detail.health, WARNING)
-            check.add_message(state, f"there are {detail.numObjects} in state {detail.health}")
+            check.add_message(state, f"there are {detail.numObjects} in state {detail.health} on cluster { cluster['name'] }")
 
-    (status, message) = check.check_messages(allok="everything is fine", separator='\n', separator_all='\n')
+    opts = {}
+    if not args.verbose:
+        opts['allok'] = "everything is fine"
+
+    (status, message) = check.check_messages(separator='\n', separator_all='\n', **opts)
     check.exit(status, message)
 
 def sslContext(args):
