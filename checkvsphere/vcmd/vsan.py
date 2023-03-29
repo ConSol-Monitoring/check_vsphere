@@ -37,26 +37,6 @@ UNKNOWN = Status.UNKNOWN
 
 args = None
 
-try:
-    import vsanapiutils as vsu
-except Exception as e:
-    print(f"""
-{str(e)}
-
-You need to download vsan api for python from vmware:
-
-https://developer.vmware.com/web/sdk/8.0/vsan-python
-
-Then take the vsanmgmtObjects.py from the bindings directory
-and the vsanapiutils.py from the samples directory and place
-them somewhere where your python can find it.
-
-Also the module defusedxml must be installed:
-
-    pip install defusedxml
-    """.strip())
-    raise SystemExit(3)
-
 # https://kb.vmware.com/s/article/2108319
 # https://archive.ph/r7E96
 object_health = {
@@ -80,6 +60,7 @@ object_health = {
 
 def run():
     global args
+    import_vsan()
     parser = get_argparser()
     args = parser.get_args()
 
@@ -173,6 +154,28 @@ def get_argparser():
     })
 
     return parser
+
+def import_vsan():
+    global vsu
+    try:
+        import vsanapiutils as vsu
+    except Exception as e:
+        print(f"""
+{str(e)}
+
+You need to download vsan api for python from vmware:
+
+https://developer.vmware.com/web/sdk/8.0/vsan-python
+
+Then take the vsanmgmtObjects.py from the bindings directory
+and the vsanapiutils.py from the samples directory and place
+them somewhere where your python can find it.
+
+Also the module defusedxml must be installed:
+
+    pip install defusedxml
+    """.strip())
+        raise SystemExit(3)
 
 
 if __name__ == "__main__":
