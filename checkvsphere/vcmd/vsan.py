@@ -93,8 +93,9 @@ def run():
 
         healthSummary = vhs.QueryClusterHealthSummary(
            cluster=cluster['moref'],
-           includeObjUuids=True,
-           fetchFromCache=True
+           includeObjUuids=False,
+           fetchFromCache=False,
+           fields=['groups', 'vsanConfig']
         )
 
         cluster['healthSummary'] = healthSummary
@@ -104,12 +105,40 @@ def run():
 
     if args.mode == "objecthealth":
         check_objecthealth(check, clusters)
+    elif args.mode == "healthtest":
+        check_healthtest(check, clusters)
     else:
         raise Exception("WHAT?")
+
+def check_healthtest(check, clusters):
+    for cluster in clusters:
+        #print((cluster['name'], cluster))
+        if not cluster['healthSummary'].vsanConfig.vsanEnabled:
+            continue
+        for group in cluster['healthSummary'].groups:
+            for test in group.groupTests:
+                check.add_message(
+                    health2state(test.testHealth),
+                    f"Cluster: {cluster['moref'].name} Group: { group.groupName } Status: { test.testHealth } Test: { test.testName }"
+                )
+                #print(f"{cluster['moref'].name} { group.groupName } { test.testHealth :10s} { test.testName }")
+
+    opts = {}
+    if not args.verbose:
+        opts['allok'] = "everything is fine"
+
+    (status, message) = check.check_messages(separator='\n', separator_all='\n', **opts)
+    check.exit(status, message)
+
+
 
 def check_objecthealth(check, clusters):
     for cluster in clusters:
         oh = cluster['healthSummary'].objectHealth
+        if oh is None:
+            # cluster doesn't have objectHealth
+            continue
+
         for detail in oh.objectHealthDetail:
             check.add_perfdata(label=f"{cluster['name']}_{detail.health}", value=detail.numObjects)
 
@@ -148,6 +177,7 @@ def get_argparser():
             'action': 'store',
             'choices': [
                 'objecthealth',
+                'healthtest',
             ],
             'help': 'which runtime mode to check'
         }
@@ -177,6 +207,20 @@ Also the module defusedxml must be installed:
     """.strip())
         raise SystemExit(3)
 
+def health2state(color):
+    color = color or ""
+    return {
+        "green": Status.OK,
+        "yellow": Status.WARNING,
+        "red": Status.CRITICAL,
+        'unknown': Status.WARNING,
+        'info': Status.OK,
+        'skipped': Status.OK,
+        # think about it more if this ever happens, according to the API it could
+        # but it doesn't say what that means, so we investigate this once we see it
+        # in the wild
+        "": Status.WARNING,
+    }.get(color.lower(), Status.WARNING)
 
 if __name__ == "__main__":
     try:
