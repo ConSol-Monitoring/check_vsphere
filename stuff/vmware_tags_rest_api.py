@@ -64,11 +64,12 @@ class VMTagReader:
                     tag_assoc[vm_id] = []
                 tag_assoc[vm_id].append(a['tag'])
 
+        pp(tag_assoc)
         return tag_assoc
 
     def __read_tags_category(self, cat_infos: Dict[str, str], tag_assoc: Dict[str, List[str]]) -> Dict[str, Dict[str, List[str]]]:
         # curl -X GET 'https://my-company-vcenter.com/rest/com/vmware/cis/tagging/tag/id:urn:vmomi:InventoryServiceTag:01xx0e6b-fxxc-4xx5-a086-3220xxa1e917:GLOBAL' -H "vmware-api-session-id:{id}"
-        vm_cat_tags: Dict[str, Dict[str, List[str]]] = {}
+        vm_cat_tags = {}
         print("TAG CATEGORY")
         for vi, tags in tag_assoc.items():
             for t in tags:

@@ -91,11 +91,17 @@ def run():
         if not isallowed(args, cluster['name']):
             continue
 
+        fields = ['vsanConfig']
+        if args.mode == 'objecthealth':
+            fields.append('objectHealth')
+        if args.mode == 'healthtest':
+            fields.append('groups')
+
         healthSummary = vhs.QueryClusterHealthSummary(
            cluster=cluster['moref'],
            includeObjUuids=False,
-           fetchFromCache=False,
-           fields=['groups', 'vsanConfig']
+           fetchFromCache=args.cache,
+           fields=fields
         )
 
         cluster['healthSummary'] = healthSummary
@@ -116,12 +122,19 @@ def check_healthtest(check, clusters):
         if not cluster['healthSummary'].vsanConfig.vsanEnabled:
             continue
         for group in cluster['healthSummary'].groups:
+            if isbanned(args, group.groupName):
+                continue
+            if not isallowed(args, group.groupName):
+                continue
             for test in group.groupTests:
+                if isbanned(args, test.testName):
+                    continue
+                if not isallowed(args, test.testName):
+                    continue
                 check.add_message(
                     health2state(test.testHealth),
                     f"Cluster: {cluster['moref'].name} Group: { group.groupName } Status: { test.testHealth } Test: { test.testName }"
                 )
-                #print(f"{cluster['moref'].name} { group.groupName } { test.testHealth :10s} { test.testName }")
 
     opts = {}
     if not args.verbose:
@@ -135,8 +148,13 @@ def check_healthtest(check, clusters):
 def check_objecthealth(check, clusters):
     for cluster in clusters:
         oh = cluster['healthSummary'].objectHealth
+        if not cluster['healthSummary'].vsanConfig.vsanEnabled:
+            check.add_message(OK, f"cluster {cluster['name']} doesn't have objectHealth")
+            continue
+
         if oh is None:
             # cluster doesn't have objectHealth
+            check.add_message(OK, f"cluster {cluster['name']} doesn't have objectHealth")
             continue
 
         for detail in oh.objectHealthDetail:
@@ -171,6 +189,13 @@ def get_argparser():
     parser = cli.Parser()
     parser.add_optional_arguments(CheckArgument.BANNED('regex, name of cluster'))
     parser.add_optional_arguments(CheckArgument.ALLOWED('regex, name of cluster'))
+    parser.add_optional_arguments({
+        'name_or_flags': ['--cache'],
+        'options': {
+            'action': 'store_true',
+            'help': 'tell the api to return cached data if available'
+        }
+    })
     parser.add_required_arguments( {
         'name_or_flags': ['--mode'],
         'options': {
