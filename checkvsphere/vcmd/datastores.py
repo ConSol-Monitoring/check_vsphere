@@ -185,7 +185,7 @@ def datastore_info(check: Check, si: vim.ServiceInstance, datastores):
                     check.add_message(s, f"{args.metric} on {name} is in state {s.name}: {value :.2f}{uom}")
 
             puom = '%' if metric == 'usage' else 'B'
-            check.add_perfdata(label=f"{name} {metric}", value=space[metric], uom=puom, **opts)
+            check.add_perfmultidata(name, 'datastores',  label=metric, value=space[metric], uom=puom, **opts)
 
     (code, message) = check.check_messages(separator="\n")#, allok=okmessage)
     check.exit(

@@ -140,7 +140,9 @@ def run():
         for instance in values.value:
             val = instance.value[0] * counterInfo['factor']
             if instance.id.instance == args.perfinstance:
-                check.add_perfdata(
+                check.add_perfmultidata(
+                    args.perfcounter if instance.id.instance == '' else instance.id.instance,
+                    'perf',
                     label=args.perfcounter,
                     value=val,
                     threshold=check.threshold,
@@ -157,8 +159,10 @@ def run():
                 continue
             if args.perfinstance == '*' or args.perfinstance == instance.id.instance:
                 val = instance.value[0] * counterInfo['factor']
-                check.add_perfdata(
-                    label=f'{args.perfcounter}_{instance.id.instance}',
+                check.add_perfmultidata(
+                    instance.id.instance,
+                    'perf',
+                    label=args.perfcounter,
                     value=val,
                     threshold=check.threshold,
                     uom=counterInfo['perfUnit'],
