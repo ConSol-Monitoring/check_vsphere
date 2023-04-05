@@ -13,7 +13,7 @@ authors = [
 ]
 dependencies = [
     "pyvmomi >= 8.0.0.1, < 9",
-    "monplugin >= 0.4",
+    "monplugin >= 0.5.1",
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
