@@ -86,9 +86,9 @@ def run():
     vhs = vcMos['vsan-cluster-health-system']
 
     for cluster in clusters:
-        if isbanned(args, cluster['name']):
+        if isbanned(args, cluster['name'], 'exclude'):
             continue
-        if not isallowed(args, cluster['name']):
+        if not isallowed(args, cluster['name'], 'include'):
             continue
 
         fields = ['vsanConfig']
@@ -122,14 +122,14 @@ def check_healthtest(check, clusters):
         if not cluster['healthSummary'].vsanConfig.vsanEnabled:
             continue
         for group in cluster['healthSummary'].groups:
-            if isbanned(args, group.groupName):
+            if isbanned(args, group.groupName, 'exclude_group'):
                 continue
-            if not isallowed(args, group.groupName):
+            if not isallowed(args, group.groupName, 'include_group'):
                 continue
             for test in group.groupTests:
-                if isbanned(args, test.testName):
+                if isbanned(args, test.testName, 'exclude_test'):
                     continue
-                if not isallowed(args, test.testName):
+                if not isallowed(args, test.testName, 'include_test'):
                     continue
                 check.add_message(
                     health2state(test.testHealth),
@@ -187,8 +187,12 @@ def sslContext(args):
 
 def get_argparser():
     parser = cli.Parser()
-    parser.add_optional_arguments(CheckArgument.BANNED('regex, name of cluster'))
-    parser.add_optional_arguments(CheckArgument.ALLOWED('regex, name of cluster'))
+    parser.add_optional_arguments(CheckArgument.BANNED('regex, name of cluster', name=['--exclude']))
+    parser.add_optional_arguments(CheckArgument.BANNED('regex, name of group (only with --mode healthtest)', name=['--exclude-group']))
+    parser.add_optional_arguments(CheckArgument.BANNED('regex, name of test (only with --mode healthtest)', name=['--exclude-test']))
+    parser.add_optional_arguments(CheckArgument.ALLOWED('regex, name of cluster', name=['--include']))
+    parser.add_optional_arguments(CheckArgument.ALLOWED('regex, name of group (only with --mode healthtest)', name=['--include-group']))
+    parser.add_optional_arguments(CheckArgument.ALLOWED('regex, name of test (only with --mode healthtest)', name=['--include-test']))
     parser.add_optional_arguments({
         'name_or_flags': ['--cache'],
         'options': {

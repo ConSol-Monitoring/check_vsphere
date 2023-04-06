@@ -148,18 +148,22 @@ class CheckArgument:
         'options': {'action': 'store', 'help': 'critical threshold'},
     }
 
-    def ALLOWED(help):
+    def ALLOWED(help, name=None):
+        if not name:
+            name = ['--allowed', '--include']
         return {
-            'name_or_flags': ['--allowed', '--include'],
+            'name_or_flags': name,
             'options': {
                 'default': [],
                 'help': help,
                 'action': 'append',
             }
         }
-    def BANNED(help):
+    def BANNED(help, name=None):
+        if not name:
+            name = ['--banned', '--exclude']
         return {
-            'name_or_flags': ['--banned', '--exclude'],
+            'name_or_flags': name,
             'options': {
                 'default': [],
                 'help': help,
@@ -168,24 +172,26 @@ class CheckArgument:
         }
 
 
-def isbanned(args, name):
+def isbanned(args, name, attr='banned'):
     '''
     checks name against regexes in args.banned
     '''
-    if args.banned:
-        for pattern in args.banned:
+    banned = getattr(args, attr, None)
+    if banned:
+        for pattern in banned:
             p = re.compile(pattern)
             if p.search(name):
                 return True
 
     return False
 
-def isallowed(args, name):
+def isallowed(args, name, attr='allowed'):
     '''
     checks name against regexes in args.allowed
     '''
-    if args.allowed:
-        for pattern in args.allowed:
+    allowed = getattr(args, attr, None)
+    if allowed:
+        for pattern in allowed:
             p = re.compile(pattern)
             if p.search(name):
                 return True
