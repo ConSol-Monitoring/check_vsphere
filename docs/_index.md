@@ -1,5 +1,8 @@
 +++
 title = "check_vsphere"
+tags = [
+    "vsphere"
+]
 [cascade]
 github_project_repo="https://github.com/ConSol/check_vsphere"
 github_repo="https://github.com/ConSol/check_vsphere"
