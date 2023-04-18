@@ -4,11 +4,11 @@ tags = [
     "vsphere"
 ]
 [cascade]
-github_project_repo="https://github.com/ConSol/check_vsphere"
-github_repo="https://github.com/ConSol/check_vsphere"
-github_subdir="docs"
-github_branch="main"
-path_base_for_github_subdir="content/en/docs/plugins/check_vsphere/"
+# github_project_repo="https://github.com/ConSol/check_vsphere"
+# github_repo="https://github.com/ConSol/check_vsphere"
+# github_subdir="docs"
+# github_branch="main"
+# path_base_for_github_subdir="content/en/docs/plugins/check_vsphere/"
 +++
 
 This is a monitoring plugin for naemon, nagios or icinga compatible systems that
