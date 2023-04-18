@@ -10,3 +10,4 @@
   * [media](/cmd/media.md)
   * [perf](/cmd/perf.md)
   * [snapshots](/cmd/snapshots.md)
+  * [vsan](/cmd/vsan.md)
