@@ -1,4 +1,6 @@
-# perf
+---
+title: perf
+---
 
 ## Description
 

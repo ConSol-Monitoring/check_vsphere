@@ -1,4 +1,7 @@
-# General Options
+---
+title: General Options
+weight: 100
+---
 
 | option | description |
 |---|---|
@@ -17,4 +20,3 @@
 | `--vimname VIMNAME` | the name of the ManagedEntity of vimtype  |
 | `--warning WARNING`     | warning [threshold](https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT) |
 | `--critical CRITICAL`   | critical [threshold](https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT) |
-

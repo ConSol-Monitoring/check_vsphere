@@ -1,4 +1,6 @@
-# media
+---
+title: media
+---
 
 ## Description
 
@@ -7,12 +9,12 @@ any the check result is CRITICAL.
 
 ## Options
 
-Besides the [general options](/cmd/) this command supports the following
+Besides the [general options](../../general-options/) this command supports the following
 options:
 
 | options | description |
 |---|---|
-| `--vihost VIHOST` | (optional) see [common options](/cmd/?id=common-options),<br/> only check vms on this host. If omitted all known VMs are checked |
+| `--vihost VIHOST` | (optional) see [common options](../../general-options/#common-options),<br/> only check vms on this host. If omitted all known VMs are checked |
 
 
 ## Examples

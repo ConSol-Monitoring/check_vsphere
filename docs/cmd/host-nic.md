@@ -1,4 +1,6 @@
-# host-nic
+---
+title: host-nic
+---
 
 ## Description
 
@@ -7,7 +9,7 @@ as `--select net --subselect=nic` from check\_vmware\_esx against a host.
 
 ## Options
 
-Besides the [general options](/cmd/) this command supports the following
+Besides the [general options](../../general-options/) this command supports the following
 options:
 
 | option | description |

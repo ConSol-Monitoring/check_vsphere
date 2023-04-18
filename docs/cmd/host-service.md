@@ -1,4 +1,6 @@
-# host-service
+---
+title: host-service
+---
 
 ## Description
 
@@ -8,7 +10,7 @@ all of them running you probably want to filter the ones to check with the
 
 ## Options
 
-Besides the [general options](/cmd/) this command supports the following
+Besides the [general options](../../general-options/) this command supports the following
 options:
 
 | option | description |

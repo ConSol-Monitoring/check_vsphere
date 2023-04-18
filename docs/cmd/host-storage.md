@@ -1,4 +1,6 @@
-# host-storage
+---
+title: host-storage
+---
 
 ## Description
 
@@ -8,7 +10,7 @@ host.
 
 ## Options
 
-Besides the [general options](/cmd/) this command supports the following
+Besides the [general options](../../general-options/) this command supports the following
 options:
 
 | option | description |
