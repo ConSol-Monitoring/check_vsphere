@@ -15,6 +15,9 @@ jobs:
         destination-github-username: 'ConSol'
         destination-repository-name: 'omd-consol-de'
         target-directory: 'content/en/docs/plugins/check_vsphere'
-        commit-message: update check_vsphere docs
+        commit-message: |
+          update check_vsphere docs
+
+          https://github.com/ConSol/check_vsphere/actions/workflows/deploy-docs.yml
         user-email: 'devnull@consol.de'
         user-name: '/dev/null'

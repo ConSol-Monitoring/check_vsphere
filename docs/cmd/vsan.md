@@ -52,7 +52,7 @@ ignored as well.
 
 REGEX of `--include`, `--exclude` is matched against cluster name.
 
-This is an in depth check of the 'vSAN object health" test. It's not very well
+This is an in depth check of the "vSAN object health" test. It's not very well
 tested yet.
 
 ## Examples
