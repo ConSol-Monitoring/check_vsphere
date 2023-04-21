@@ -38,18 +38,18 @@ def run():
         si = service_instance.connect(args)
         about = si.content.about
         print(
-            f'VSPHERE-ABOUT - OK - { about.fullName }, '
+            f'OK: { about.fullName }, '
             f'api: { about.apiType }/{ about.apiVersion }, '
             f'product: { about.licenseProductName } { about.licenseProductVersion }'
         )
     except vim.fault.VimFault as e:
         if hasattr(e, 'msg'):
-            print(f"VSPHERE-ABOUT - ERROR - {e.msg}")
+            print(f"ERROR: {e.msg}")
         else:
-            print(f"VSPHERE-ABOUT - ERROR - {e}")
+            print(f"ERROR: {e}")
         raise SystemExit(2)
     except Exception as e:
-        print(f"VSPHERE-ABOUT - ERROR - {e}")
+        print(f"ERROR: {e}")
         raise SystemExit(2)
 
 if __name__ == "__main__":

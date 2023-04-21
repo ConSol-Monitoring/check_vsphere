@@ -68,7 +68,7 @@ def run():
     args = parser.get_args()
 
     si = service_instance.connect(args)
-    check = Check(shortname='VSPHERE-NIC')
+    check = Check()
 
     #vm_view = si.content.viewManager.CreateContainerView(parentView, [vim.VirtualMachine], True)
     try:

@@ -113,7 +113,7 @@ def run():
     if not (args.warning or args.critical):
         raise Exception("at least one of --warning or --critical is required")
 
-    check = Check(shortname="VSPHERE-SNAPSHOTS")
+    check = Check()
     check.set_threshold(warning=args.warning, critical=args.critical)
 
     args._si = service_instance.connect(args)

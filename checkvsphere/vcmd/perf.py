@@ -77,7 +77,7 @@ def run():
     parser = get_argparser()
     args = parser.get_args()
 
-    check = Check(shortname="VSPHERE-PERFCOUNTER")
+    check = Check()
     check.set_threshold(warning=args.warning, critical=args.critical)
 
     args._si = service_instance.connect(args)

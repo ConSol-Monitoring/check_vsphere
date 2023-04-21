@@ -53,7 +53,7 @@ def run():
     args = parser.get_args()
 
     si = service_instance.connect(args)
-    check = Check(shortname='VSPHERE-SERVICE')
+    check = Check()
 
     try:
         host = find_entity_views(

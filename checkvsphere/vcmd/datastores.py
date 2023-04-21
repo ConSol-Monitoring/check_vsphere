@@ -95,7 +95,7 @@ def run():
     args = parser.get_args()
 
     si = service_instance.connect(args)
-    check = Check(shortname='VSPHERE-VOL', threshold = Threshold(args.warning or None, args.critical or None))
+    check = Check(threshold = Threshold(args.warning or None, args.critical or None))
 
     vimtype = None
     if args.vimtype:

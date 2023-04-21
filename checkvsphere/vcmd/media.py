@@ -40,7 +40,7 @@ def run():
     args = parser.get_args()
     si = service_instance.connect(args)
 
-    check = Check(shortname='VSPHERE-MEDIA')
+    check = Check()
 
     if args.vihost:
         host_view = si.content.viewManager.CreateContainerView(

@@ -72,7 +72,7 @@ def run():
 
     si = service_instance.connect(args)
 
-    check = Check(shortname='VSPHERE-RUNTIME')
+    check = Check()
 
     #vm_view = si.content.viewManager.CreateContainerView(parentView, [vim.VirtualMachine], True)
     try:

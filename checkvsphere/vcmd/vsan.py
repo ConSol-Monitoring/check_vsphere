@@ -64,7 +64,7 @@ def run():
     parser = get_argparser()
     args = parser.get_args()
 
-    check = Check(shortname="VSPHERE-VSAN")
+    check = Check()
 
     args._si = service_instance.connect(args)
 
