@@ -31,22 +31,26 @@ options:
 | `--vihost HOSTNAME` | (optional) the name of the HostSystem to check, if omitted the first HostSystem found is checked, which is handy if you run this check directly against the host |
 | `--maintenance-state STATE` | one of OK, WARNING, CRITICAL, UNKNOWN. The status to use when the host is in maintenance mode, this defaults to UNKNOWN |
 | `--mode MODE` | one of objecthealth, healthtest |
-| `--include REGEX` | (optional) REGEX is checked against a name depending on the `--mode` |
-| `--exclude REGEX` | (optional) REGEX is checked against a name depending on the `--mode` |
+| `--include REGEX` | (optional) REGEX is checked against the cluster name |
+| `--exclude REGEX` | (optional) REGEX is checked against the cluster name |
+| `--include-group REGEX` | (optional) only with `--mode healthtest`, REGEX is checked against the tests' group name |
+| `--include-test REGEX`  | (optional) only with `--mode healthtest`, REGEX is checked against the test name |
+| `--exclude-group REGEX` | (optional) only with `--mode healthtest`, REGEX is checked against the tests' group name |
+| `--exclude-test REGEX`  | (optional) only with `--mode healthtest`, REGEX is checked against the test name |
+| `--cache`  | fetch cached data from the API when available and not outdated |
 | `--verbose` | show also tests the where OK |
 
 ### `--mode healthtest`
-
-REGEX of `--include`, `--exclude` is matched against cluster name, groupName or testName.
 
 This corresponds to the following in the vcenter:
 
 If you navigate to Cluster/Monitor/vSAN/Skyline Health you will see a sidebar
 with items like "Hardware compatibility", "Online Health" and so on. These are
-the several group of tests (you can ignore a whole group for example with `--exclude`).
+the several group of tests (you can ignore a whole groups with
+`--exclude-group/--include-group`)
 
-You can expand them and  see the individual names of each test.  These can be
-ignored as well.
+You can expand them and see the individual names of each test. These can be
+ignored as well (`--exclude-test/--include-test`).
 
 ### `--mode objecthealth`
 
