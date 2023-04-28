@@ -206,6 +206,19 @@ def check_temp(check, vm, args, result):
 def check_health(check, vm, args, result):
     runtime = vm['props']['runtime']
     healthsystem = runtime.healthSystemRuntime
+    if not healthsystem:
+        check.exit(
+            Status.UNKNOWN,
+            "system health status not available, "
+            "no vim.Host.runtime.healthSystemRuntime found"
+        )
+    if not healthsystem.hardwareStatusInfo:
+        check.exit(
+            Status.UNKNOWN,
+            "hardware health information not available, "
+            "no vim.Host.runtime.healthSystemRuntime.hardwareStatusInfo found"
+        )
+
     filterunknown = lambda x: x.status.key != "unknown"
     cpustatus = healthsystem.hardwareStatusInfo.cpuStatusInfo
     storagestatus = list(filter(filterunknown, healthsystem.hardwareStatusInfo.storageStatusInfo))
