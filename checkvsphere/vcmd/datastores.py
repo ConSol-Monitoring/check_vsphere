@@ -161,7 +161,13 @@ def datastore_info(check: Check, si: vim.ServiceInstance, datastores):
             check.add_message(Status.CRITICAL, f"{name} is not accessible")
             continue
 
-        space = Space(store['summary'].capacity, store['summary'].freeSpace)
+        try:
+            space = Space(store['summary'].capacity, store['summary'].freeSpace)
+        except ZeroDivisionError:
+            check.add_message(Status.CRITICAL, f"{name} has a capacity of zero")
+            continue
+
+
         for metric in ['usage', 'free', 'used', 'capacity']:
             opts = {}
 
