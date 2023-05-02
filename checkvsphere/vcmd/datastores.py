@@ -148,10 +148,8 @@ def datastore_info(check: Check, si: vim.ServiceInstance, datastores):
     result = retrieve( [filter_spec] )
     stores = process_retrieve_content(result)
 
-
     for store in stores:
-
-        name = store['summary'].name
+        name = f"{ store['moref']._moId }_{store['summary'].name}"
         datastore_type = store['summary'].type
 
         if isbanned(args, f"{name}"):
