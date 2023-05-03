@@ -22,34 +22,34 @@ options:
 check_vsphere host-runtime \
 	-s vcenter.example.com -u naemon@vsphere.local -nossl \
         --vihost esx-2.example.com --mode status
-VSPHERE-RUNTIME CRITICAL - overall status is RED
+CRITICAL: overall status is RED
 ```
 
 ```
 check_vsphere host-runtime \
 	-s vcenter.example.com -u naemon@vsphere.local -nossl \
 	--vihost esx-2.example.com --mode con
-VSPHERE-RUNTIME OK - connection state is 'connected'
+OK: connection state is 'connected'
 ```
 
 ```
 check_vsphere host-runtime \
 	-s vcenter.example.com -u naemon@vsphere.local -nossl \
 	--vihost esx-2.example.com --mode health
-VSPHERE-RUNTIME OK - All 53 health checks are GREEN: memory: 10, storage: 9, other: 1, voltage: 12, fan: 4, temperature: 15, power: 2
+OK: All 53 health checks are GREEN: memory: 10, storage: 9, other: 1, voltage: 12, fan: 4, temperature: 15, power: 2
 ```
 
 ```
 check_vsphere host-runtime \
 	-s vcenter.example.com -u naemon@vsphere.local -nossl \
 	--vihost esx-2.example.com --mode status
-VSPHERE-RUNTIME CRITICAL - overall status is RED
+CRITICAL: overall status is RED
 ```
 
 ```
 check_vsphere host-runtime \
 	-s vcenter.example.com -u naemon@vsphere.local -nossl \
 	--vihost esx-2.example.com --mode temp
-VSPHERE-RUNTIME OK - All temperature sensors green
+OK: All temperature sensors green
 | 'Memory Device 77 DIMMD2'=43.0;;;; ...
 ```
