@@ -25,5 +25,5 @@ options:
 check_vsphere host-nic \
 	-s vcenter.example.com -u naemon@vsphere.local -nossl \
         --vihost esx-2.example.com --mode status
-VSPHERE-NIC OK - All nics connected
+OK: All nics connected
 ```

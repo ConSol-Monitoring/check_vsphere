@@ -53,14 +53,14 @@ check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
 $ check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
 	--vimname esx1.int.example.com --vimtype HostSystem \
 	--perfcounter disk:totalLatency:average
-VSPHERE-PERFCOUNTER UNKNOWN - Cannot find disk:totalLatency:average for the queried resources
+UNKNOWN: Cannot find disk:totalLatency:average for the queried resources
 
 # On that error you may want to try --perfinstance '*'
 
 $ check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
 	--vimname esx1.int.example.com --vimtype HostSystem \
 	--perfcounter disk:totalLatency:average --perfinstance '*'
-VSPHERE-PERFCOUNTER OK - disk:totalLatency:average_naa.6000eb3810d426400000000000000277 has value 0 Millisecond
+OK: disk:totalLatency:average_naa.6000eb3810d426400000000000000277 has value 0 Millisecond
   disk:totalLatency:average_naa.600605b00ba8cb0022564867b8c8cc32 has value 2 Millisecond
   disk:totalLatency:average_naa.6000eb3810d4264000000000000000b2 has value 0 Millisecond
   disk:totalLatency:average_naa.600605b00ba8cb001fd947850523e56d has value 0 Millisecond
@@ -76,7 +76,7 @@ $ check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
 
 $ check_vsphere perf -s vcenter.example.com -u naemon@vsphere.local -nossl \
     --vimname esx1.int.example.com --vimtype HostSystem --perfcounter power:power:average
-VSPHERE-PERFCOUNTER OK - Counter power:power:average on HostSystem:esx1.int.example.com reported 227 Watt
+OK: Counter power:power:average on HostSystem:esx1.int.example.com reported 227 Watt
 | 'power:power:average'=227.0;;;;
 ```
 

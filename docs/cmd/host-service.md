@@ -27,7 +27,7 @@ options:
 $ check_vsphere host-services \
 	-s vcenter.example.com -u naemon@vsphere.local -nossl \
         --vihost esx-2.example.com --allowed 'vpxa|ntpd|DCUI'
-VSPHERE-SERVICE OK - running: 3; not running: 0
+OK: running: 3; not running: 0
 DCUI running
 ntpd running
 vpxa running
@@ -37,7 +37,7 @@ vpxa running
 $ check_vsphere host-services \
 	-s vcenter.example.com -u naemon@vsphere.local -nossl \
         --vihost esx-2.example.com --allowed 'snmpd'
-VSPHERE-SERVICE CRITICAL - running: 3; not running: 1
+CRITICAL: running: 3; not running: 1
 snmpd not running
 DCUI running
 ntpd running
