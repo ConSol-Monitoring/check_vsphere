@@ -20,3 +20,11 @@ weight: 100
 | `--vimname VIMNAME` | the name of the ManagedEntity of vimtype  |
 | `--warning WARNING`     | warning [threshold](https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT) |
 | `--critical CRITICAL`   | critical [threshold](https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT) |
+
+# Environment Variables
+
+| var | description |
+|---|---|
+| `CONNECT_NOFAIL` | if set a connection error exits with status OK |
+| `TIMEOUT` | Global timeout of the plugin in seconds, defaults to `30` |
+| `VSPHERE_PASS` | default value for `--password` option |
