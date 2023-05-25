@@ -81,14 +81,14 @@ def run():
             vim.HostSystem,
             begin_entity=si.content.rootFolder,
             sieve=({'name': args.vihost} if args.vihost else None),
-            properties=['name', 'runtime', 'overallStatus', 'configIssue', 'summary.config']
+            properties=['name', 'runtime.inMaintenanceMode'],
         )[0]
     except IndexError:
         check.exit(Status.UNKNOWN, f"host {args.vihost or ''} not found")
 
     result = []
 
-    if vm['props']['runtime'].inMaintenanceMode:
+    if vm['props']['runtime.inMaintenanceMode']:
         status = getattr(Status, args.maintenance_state)
         check.exit(
             status,
@@ -151,7 +151,7 @@ def format_issue(issue):
 
 
 def check_issues(check, vm, args, result):
-    issues = vm['props']['configIssue']
+    issues = vm['obj'].obj.configIssue
     for issue in issues:
         if isbanned(args, issue.fullFormattedMessage):
             continue
@@ -163,7 +163,7 @@ def check_issues(check, vm, args, result):
 
 
 def check_con(check, vm, args, result):
-    con = vm['props']['runtime'].connectionState
+    con = vm['obj'].obj.runtime.connectionState
     status = Status.OK
     if con == "disconnected":
         status = Status.WARNING
@@ -175,13 +175,12 @@ def check_con(check, vm, args, result):
     )
 
 def check_status(check, vm, args, result):
-    color = vm['props']['overallStatus']
+    color = vm['obj'].obj.overallStatus
     status = health2state(color)
     check.exit(status, f"overall status is {str(color).upper()}")
 
 def check_temp(check, vm, args, result):
-    runtime = vm['props']['runtime']
-    systemRuntime = runtime.healthSystemRuntime
+    systemRuntime = vm['obj'].obj.runtime.healthSystemRuntime
     if not systemRuntime:
         check.exit(
             Status.UNKNOWN,
@@ -204,8 +203,7 @@ def check_temp(check, vm, args, result):
     return "All temperature sensors green"
 
 def check_health(check, vm, args, result):
-    runtime = vm['props']['runtime']
-    healthsystem = runtime.healthSystemRuntime
+    healthsystem = vm['obj'].obj.runtime.healthSystemRuntime
     if not healthsystem:
         check.exit(
             Status.UNKNOWN,
