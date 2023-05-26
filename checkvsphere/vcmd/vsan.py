@@ -72,7 +72,7 @@ def run():
         args._si,
         vim.ClusterComputeResource,
         begin_entity=args._si.content.rootFolder,
-        properties=['name']
+        properties=['name', 'configurationEx']
     )
 
     clusters = process_retrieve_content(list(map(lambda x: x['obj'], clusters)))
@@ -84,6 +84,8 @@ def run():
         version=apiVersion
     )
     vhs = vcMos['vsan-cluster-health-system']
+
+    clusters = list(filter(lambda x: x['configurationEx'].vsanConfigInfo.enabled, clusters))
 
     for cluster in clusters:
         if isbanned(args, cluster['name'], 'exclude'):
