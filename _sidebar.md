@@ -9,5 +9,6 @@
   * [list-metrics](/cmd/list-metrics.md)
   * [media](/cmd/media.md)
   * [perf](/cmd/perf.md)
+  * [power-state](/cmd/power-state.md)
   * [snapshots](/cmd/snapshots.md)
   * [vsan](/cmd/vsan.md)
