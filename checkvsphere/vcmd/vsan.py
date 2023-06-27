@@ -160,7 +160,7 @@ def check_objecthealth(check, clusters):
             continue
 
         for detail in oh.objectHealthDetail:
-            check.add_perfmultidata(cluster['name'], None, label=detail.health, value=detail.numObjects)
+            check.add_perfdata(label=f"{cluster['name']}_{detail.health}", value=detail.numObjects)
 
             if detail.health == 'remoteAccessible':
                 # ignore them, should be checked on the remote side
