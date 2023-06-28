@@ -46,6 +46,17 @@ def get_argparser():
     parser.add_optional_arguments(CheckArgument.ALLOWED(
         'regex, checked against <host-name>',
     ))
+    parser.add_optional_arguments( CheckArgument.CRITICAL_THRESHOLD )
+    parser.add_optional_arguments( CheckArgument.WARNING_THRESHOLD )
+    parser.add_optional_arguments({
+        'name_or_flags': ['--metric'],
+        'options': {
+            'action': 'store',
+            'choices': ['total', 'up', 'down', 'ignored', 'up%', 'down%'],
+            'default': 'down',
+            'help': 'metric to apply thresholds on, defaults to "down"',
+        }
+    })
     return parser
 
 def run():
@@ -54,6 +65,7 @@ def run():
     args = parser.get_args()
 
     check = Check()
+    check.set_threshold(warning=args.warning, critical=args.critical)
 
     args._si = service_instance.connect(args)
 
@@ -68,6 +80,7 @@ def run():
     total = 0
     ignored = 0
     powered = 0
+    unpowered = 0
 
     for host in hosts:
         total += 1
@@ -80,22 +93,39 @@ def run():
 
         message = f"powerState of { host['name'] } is { host['runtime.powerState']}"
 
-        if host['runtime.powerState'] == 'poweredOn':
+        if host['runtime.powerState'] in ['poweredOn']: # , 'MaintenanceMode']:
             powered += 1
             check.add_message(Status.OK, message)
         else:
+            unpowered += 1
             check.add_message(Status.CRITICAL, message)
 
-    check.add_perfdata(label='hosts', value=total)
-    check.add_perfdata(label='ignored hosts', value=ignored)
-    check.add_perfdata(label='hosts with power', value=powered)
+    metrics = {
+        'total': total,
+        'up': powered,
+        'down': unpowered,
+        'ignored': ignored,
+        'up%': 100*powered/(total - ignored) if total - ignored != 0 else -1,
+        'down%': 100*unpowered/(total - ignored) if total - ignored != 0 else -1,
+    }
+
+    for l, v in metrics.items():
+        opt = {}
+        if l == args.metric and (args.warning or args.critical):
+            opt['threshold'] = check.threshold
+
+        check.add_perfdata(label=l, value=v, **opt)
 
     opt = {}
     if not args.verbose:
         opt['allok'] = 'All hosts ok'
 
-    (code, message) = check.check_messages(separator='\n', separator_all='\n', **opt)
-    check.exit(
-        code=code,
-        message=f"{ total } hosts, {ignored} ignored, unpowered { total - ignored - powered }\n" + message,
-    )
+    if args.warning or args.critical:
+        code = check.check_threshold(metrics[args.metric])
+        check.exit(code=code, message=f"{ total } hosts, { powered } powered, {ignored} ignored, unpowered { unpowered }")
+    else:
+        (code, message) = check.check_messages(separator='\n', separator_all='\n', **opt)
+        check.exit(
+            code=code,
+            message=f"{ total } hosts, { powered } powered, {ignored} ignored, unpowered { unpowered }\n" + message,
+        )
