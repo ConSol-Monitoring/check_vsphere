@@ -158,14 +158,14 @@ def run():
             if args.perfinstance == '*' or args.perfinstance == instance.id.instance:
                 val = instance.value[0] * counterInfo['factor']
                 check.add_perfdata(
-                    label=f'{args.perfcounter}_{instance.id.instance}',
+                    label=f'{instance.id.instance} {args.perfcounter}',
                     value=val,
                     threshold=check.threshold,
                     uom=counterInfo['perfUnit'],
                 )
                 check.add_message(
                     check.threshold.get_status(val),
-                    f"{args.perfcounter}_{instance.id.instance} has value {val} {counterInfo['unit']}",
+                    f"'{instance.id.instance} {args.perfcounter}' has value {val} {counterInfo['unit']}",
                 )
 
         (code, message) = check.check_messages(separator='\n  ')
