@@ -73,6 +73,14 @@ def run():
 
 def main():
     import traceback
+    import logging
+
+    if int(os.environ.get("VSPHERE_DEBUG", "0")) > 0:
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format='%(asctime)s %(levelname)s %(message)s',
+            stream=sys.stderr
+        )
 
     try:
         run()
