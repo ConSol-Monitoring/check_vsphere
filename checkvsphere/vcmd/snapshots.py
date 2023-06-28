@@ -122,17 +122,27 @@ def run():
         args._si,
         vim.VirtualMachine,
         begin_entity=args._si.content.rootFolder,
-        properties=['name', 'snapshot']
+        properties=['name', 'snapshot', 'resourcePool', 'config.template']
     )
 
     for vm in vms:
         name = vm['props']['name']
+        isTemplate = vm['props'].get('config.template', None)
+
         if 'snapshot' not in vm['props']:
+            logging.debug(f"vm {name} has no snapshots")
             continue
 
+        if isTemplate:
+            logging.debug(f"{name} is a template vm, ignoring ...")
+            continue
+
+        adj = None
         if args.mode == 'age':
+            adj = 'old'
             check_by_age(vm, vm['props']['snapshot'].rootSnapshotList)
         elif args.mode == 'count':
+            adj = 'many'
             count = count_snapshots(vm, vm['props']['snapshot'].rootSnapshotList)
             code = check.check_threshold(count)
             if code != Status.OK:
@@ -140,14 +150,11 @@ def run():
         else:
             raise RuntimeError("Unknown mode {args.mode}")
 
-    (code, message) = check.check_messages(separator=', ', separator_all='; ')
-    if code != Status.OK:
-        check.exit(
-            code=code,
-            message=message,
-        )
-    else:
-        check.exit(code=Status.OK, message='snapshots ok')
+    (code, message) = check.check_messages(separator='\n', separator_all='\n')
+    check.exit(
+        code=code,
+        message=f"snapshots ok" if code == Status.OK else f"too {adj} snapshots found\n" + message,
+    )
 
 if __name__ == "__main__":
     try:
