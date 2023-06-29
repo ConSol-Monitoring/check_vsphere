@@ -48,6 +48,7 @@ def get_argparser():
     ))
     parser.add_optional_arguments( CheckArgument.CRITICAL_THRESHOLD )
     parser.add_optional_arguments( CheckArgument.WARNING_THRESHOLD )
+    parser.add_optional_arguments( cli.Argument.CLUSTER_NAME )
     parser.add_optional_arguments({
         'name_or_flags': ['--metric'],
         'options': {
@@ -69,10 +70,23 @@ def run():
 
     args._si = service_instance.connect(args)
 
+    begin_entity=args._si.content.rootFolder
+    if args.cluster_name:
+        cluster = find_entity_views(
+            args._si,
+            vim.ClusterComputeResource,
+            properties=['name'],
+            sieve={'name': args.cluster_name},
+        )
+        try:
+            begin_entity = cluster[0]['obj'].obj
+        except:
+            raise CheckVsphereException(f"cluster {args.cluster_name} not found")
+
     hosts = find_entity_views(
         args._si,
         vim.HostSystem,
-        begin_entity=args._si.content.rootFolder,
+        begin_entity=begin_entity,
         properties=['name', 'runtime.powerState']
     )
     hosts = process_retrieve_content(list(map(lambda x: x['obj'], hosts)))
