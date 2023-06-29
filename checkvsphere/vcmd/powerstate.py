@@ -29,9 +29,9 @@ from datetime import datetime, timedelta, timezone
 from .. import CheckVsphereException
 from ..tools import cli, service_instance
 from ..tools.helper import (
-	CheckArgument,
-	find_entity_views,
-	get_metric,
+    CheckArgument,
+    find_entity_views,
+    get_metric,
     isbanned,
     isallowed,
     process_retrieve_content

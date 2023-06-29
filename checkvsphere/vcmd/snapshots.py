@@ -28,9 +28,9 @@ from monplugin import Check, Status, Threshold
 from ..tools import cli, service_instance
 from datetime import datetime, timedelta, timezone
 from ..tools.helper import (
-	CheckArgument,
-	find_entity_views,
-	get_metric,
+    CheckArgument,
+    find_entity_views,
+    get_metric,
     isbanned,
     isallowed
 )
