@@ -26,6 +26,7 @@ import logging
 from pyVmomi import vim
 from monplugin import Check, Status, Threshold
 from datetime import datetime, timedelta, timezone
+from .. import CheckVsphereException
 from ..tools import cli, service_instance
 from ..tools.helper import (
 	CheckArgument,
