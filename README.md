@@ -1,4 +1,4 @@
-[Documentation](https://consol-monitoring.github.io/check_vsphere/#/)
+[Documentation](https://omd.consol.de/docs/plugins/check_vsphere/)
 
 # Installation
 
