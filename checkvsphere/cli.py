@@ -85,7 +85,15 @@ def main():
     try:
         run()
     except VsphereConnectException as e:
-        print("Cannot connect")
+        print("Cannot connect - ", end="")
+        if e.__cause__ and hasattr(e.__cause__, "msg"):
+            print(e.__cause__.msg)
+        elif e.__cause__ and hasattr(e.__cause__, "message"):
+            print(e.__cause__.message)
+        elif e.__cause__:
+            print(str(e.__cause__))
+        else:
+            print(str(e))
         sys.exit(0)
     except SystemExit as e:
         if not isinstance(e.code, int) or e.code > 3:

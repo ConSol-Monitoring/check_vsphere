@@ -52,7 +52,7 @@ def connect(args):
                                             port=args.port)
     except Exception as e:
         if os.environ.get("CONNECT_NOFAIL", None):
-            raise VsphereConnectException("cannot connect: " + str(e))
+            raise VsphereConnectException("cannot connect") from e
         else:
             raise e
 
