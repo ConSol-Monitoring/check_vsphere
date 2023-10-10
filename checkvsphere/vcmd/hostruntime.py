@@ -263,7 +263,7 @@ def check_health(check, vm, args, result):
             if state == Status.UNKNOWN:
                 continue
 
-            check.add_message(state, f"{state.name} [Type: Memory] [Name: { info.name }] [Summary: { info.status.summary }]")
+            check.add_message(state, f"{state.name} [Type: Storage] [Name: { info.name }] [Summary: { info.status.summary }]")
             count.setdefault('storage', 0)
             count['storage'] += 1
 
