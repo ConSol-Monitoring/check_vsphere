@@ -46,14 +46,14 @@ object_health = {
     'nonavailabilityrelatedincompliance': CRITICAL, # should not be possible according to the docs
     'nonavailabilityrelatedincompliancewithpausedrebuild': WARNING,
     'nonavailabilityrelatedincompliancewithpolicypending': OK,
-    'nonavailabilityrelatedincompliancewithpolicypendingfailed': WARNING,
+    'nonavailabilityrelatedincompliancewithpolicypendingfailed': CRITICAL,
     'nonavailabilityrelatedreconfig': OK,
     'reducedavailabilitywithactiverebuild': WARNING, # debatable
     'reducedavailabilitywithnorebuild': CRITICAL,
     'reducedavailabilitywithnorebuilddelaytimer': WARNING,
     'reducedavailabilitywithpausedrebuild': CRITICAL,
     'reducedavailabilitywithpolicypending': OK,
-    'reducedavailabilitywithpolicypendingfailed': WARNING,
+    'reducedavailabilitywithpolicypendingfailed': CRITICAL,
     'remoteAccessible': UNKNOWN, # is ignored for now
     'VsanObjectHealthState_Unknown': WARNING,
 }

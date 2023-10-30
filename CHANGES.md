@@ -1,3 +1,11 @@
+# v0.3.3
+
+* adjust object status mapping in vsan cmd
+
+# v0.3.2
+
+* fix status message in hostruntime
+
 # v0.3.1
 
 * Try harder to extract a nice message from the excpetions if CONNECT_NOFAIL is set
