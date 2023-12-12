@@ -102,7 +102,8 @@ def main():
             sys.exit(e.code)
     except CheckVsphereTimeout as e:
         print("UNKOWN - Timout reached")
-        traceback.print_exc(file=sys.stdout)
+        if int(os.environ.get("VSPHERE_DEBUG", "0")) > 0:
+            traceback.print_exc(file=sys.stdout)
         sys.exit(3)
     except ConnectionRefusedError as e:
         print(f"UNKNOWN - Connection refused")
