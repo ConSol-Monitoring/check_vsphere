@@ -122,9 +122,11 @@ def run():
         raise Exception(f"vim.{args.vimtype} not found with name {args.vimname}")
 
     if 'runtime.inMaintenanceMode' in props:
-        status = getattr(Status, args.maintenance_state)
         if props['runtime.inMaintenanceMode']:
-            check.exit(status, f"{args.vimname or props['name']} is in maintenance")
+            check.exit(
+                Status[args.maintenance_state],
+                f"{args.vimname or props['name']} is in maintenance"
+            )
 
     counterInfo = get_counter_info(counter)
 

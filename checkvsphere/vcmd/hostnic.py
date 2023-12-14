@@ -85,9 +85,8 @@ def run():
     result = []
 
     if vm['props']['runtime.inMaintenanceMode']:
-        status = getattr(Status, args.maintenance_state)
         check.exit(
-            status,
+            Status[args.maintenance_state],
             f"host {vm['props']['name']} is in maintenance"
         )
 
@@ -116,7 +115,7 @@ def run():
             if isbanned(args, pnics[str(nic)].device):
                 continue
             if not pnics[nic].linkSpeed:
-                status = getattr(Status, args.unplugged_state)
+                status = Status[args.unplugged_state]
                 appendix=""
                 if status == Status.OK:
                     appendix = " , but ok due to `--unplugged_state OK`"

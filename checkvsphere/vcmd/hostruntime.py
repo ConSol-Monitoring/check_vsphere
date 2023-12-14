@@ -89,9 +89,8 @@ def run():
     result = []
 
     if vm['props']['runtime.inMaintenanceMode']:
-        status = getattr(Status, args.maintenance_state)
         check.exit(
-            status,
+            Status[args.maintenance_state],
             f"host {vm['props']['name']} is in maintenance"
         )
 

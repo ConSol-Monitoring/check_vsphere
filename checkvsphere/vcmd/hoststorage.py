@@ -82,9 +82,8 @@ def run():
         check.exit(Status.UNKNOWN, f"host {args.vihost or ''} not found")
 
     if host['props']['runtime.inMaintenanceMode']:
-        status = getattr(Status, args.maintenance_state)
         check.exit(
-            status,
+            Status[args.maintenance_state],
             f"host {host['props']['name']} is in maintenance"
         )
 
