@@ -71,8 +71,13 @@ def check_start_not_connected(vm):
             if isbanned(args, probe):
                 logging.debug(("banned", probe))
                 continue
+
             if not isallowed(args, probe):
                 logging.debug(("not allowed", probe))
+                continue
+
+            if not d.connectable.connected:
+                logging.debug(("running and disconnected", probe))
                 continue
 
             if not d.connectable.startConnected:
