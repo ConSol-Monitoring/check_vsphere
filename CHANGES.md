@@ -1,3 +1,7 @@
+# v0.3.4
+
+* add vm-net-dev check
+
 # v0.3.3
 
 * adjust object status mapping in vsan cmd
