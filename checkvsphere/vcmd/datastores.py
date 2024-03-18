@@ -103,7 +103,7 @@ def run():
 
     datastores = []
 
-    if vimtype in [vim.HostSystem, vim.ClusterComputeResource]:
+    if vimtype in [vim.HostSystem, vim.ClusterComputeResource, vim.Datacenter]:
         try:
             vm = find_entity_views(
                 si,
