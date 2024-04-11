@@ -16,7 +16,7 @@ options:
 |---|---|
 | `--allowed REGEX` | (optional) REGEX is checked against `<name of datastore>`, if REGEX doesn't match the snapshot is ignored |
 | `--banned REGEX` | (optional) REGEX is checked against `<name of datastore>`, if REGEX does match the snapshot is ignored |
-| `--vimtype VIMTYPE` | the object type to check, see [common options](../../general-options/#common-options), currently HostSystem, Datacenter, ClusterComputeResource are supported here, if omitted all datastores are checked |
+| `--vimtype VIMTYPE` | the object type to check, see [common options](../../general-options/#common-options), currently HostSystem and ClusterComputeResource are supported here, if omitted all datastores are checked |
 | `--vimname VIMNAME` | name of the vimtype object, see [common options](../../general-options/#common-options) |
 | `--critical CRITICAL`   | critical threshold, see [common options](../../general-options/#common-options) |
 | `--warning WARNING`     | warning threshold, see [common options](../../general-options/#common-options) |
