@@ -28,7 +28,6 @@ from ..tools import cli, service_instance
 from ..tools.helper import find_entity_views, CheckArgument, isbanned
 from .. import CheckVsphereException
 
-
 def run():
     parser = cli.Parser()
     # parser.add_optional_arguments(cli.Argument.DATACENTER_NAME)
@@ -50,16 +49,6 @@ def run():
         'options': {
             'action': 'store',
             'choices': ['OK', 'WARNING', 'CRITICAL'],
-            'default': 'WARNING',
-            'help': 'treat unplugged nics with that status code'
-        }
-    })
-
-    parser.add_optional_arguments({
-        'name_or_flags': ['--ignored'],
-        'options': {
-            'action': 'store',
-            'choices': ['OK', 'WARNING', 'CRITICAL', 'UNKNOWN'],
             'default': 'WARNING',
             'help': 'treat unplugged nics with that status code'
         }
@@ -114,6 +103,7 @@ def run():
         for nic in (switch.pnic or []):
             if isbanned(args, pnics[str(nic)].device):
                 continue
+
             if not pnics[nic].linkSpeed:
                 status = Status[args.unplugged_state]
                 appendix=""
