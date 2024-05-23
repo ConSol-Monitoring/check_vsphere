@@ -23,7 +23,7 @@ options:
 ## Examples
 
 ``` bash
-# notifiy if snapshots are too old
+# notify if snapshots are too old
 check_vsphere snapshots -nossl \
   -s vcenter.example.com \
   -u naemon@vsphere.local \

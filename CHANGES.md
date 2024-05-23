@@ -12,7 +12,7 @@
 
 # v0.3.1
 
-* Try harder to extract a nice message from the excpetions if CONNECT_NOFAIL is set
+* Try harder to extract a nice message from the exceptions if CONNECT_NOFAIL is set
 
 # v0.3.0
 

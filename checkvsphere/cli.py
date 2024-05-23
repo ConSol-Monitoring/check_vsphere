@@ -101,7 +101,7 @@ def main():
         else:
             sys.exit(e.code)
     except CheckVsphereTimeout as e:
-        print("UNKOWN - Timout reached")
+        print("UNKNOWN - Timeout reached")
         if int(os.environ.get("VSPHERE_DEBUG", "0")) > 0:
             traceback.print_exc(file=sys.stdout)
         sys.exit(3)

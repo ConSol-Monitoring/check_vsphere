@@ -2,7 +2,7 @@
 
 This is a monitoring plugin for naemon, icinga, nagios like systems. It
 is meant as a successor of check\_vmware\_esx. check\_vmware\_esx is written
-Perl but VMWare™ has droped support for the Perl SDK. So this plugin is written
+Perl but VMWare™ has dropped support for the Perl SDK. So this plugin is written
 Python using pyVmomi.
 
 ## Features
@@ -10,7 +10,7 @@ Python using pyVmomi.
 The plugin has modes to check various aspects of these components:
 
 * datastores
-* host-runtome
+* host-runtime
 * host-service
 * host-storage
 * host-nic
