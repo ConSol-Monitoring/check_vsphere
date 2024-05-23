@@ -10,7 +10,7 @@ Python using pyVmomi.
 The plugin has modes to check various aspects of these components:
 
 * datastores
-* host-runtome
+* host-runtime
 * host-service
 * host-storage
 * host-nic
