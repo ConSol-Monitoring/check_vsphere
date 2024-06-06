@@ -1,3 +1,5 @@
+* add experimental sessionfile support (MLUECKERT)
+
 # v0.3.4
 
 * add vm-net-dev check

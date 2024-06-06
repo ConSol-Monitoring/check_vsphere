@@ -96,6 +96,12 @@ class Parser:
                                                action='count',
                                                help='verbosity')
 
+        self._standard_args_group.add_argument('--sessionfile',
+                                               required=False,
+                                               action='store',
+                                               help='Path to a file where the sessioncookie'
+                                                    'will be stored for later reuse. (EXPERIMENTAL)')
+
     def get_args(self):
         """
         Supports the command-line arguments needed to form a connection to vSphere.
