@@ -18,7 +18,7 @@ it working.
 1. install defusedxml, i.e.:
    `pip install defusedxml`
 1. Copy the files `bindings/vsanmgmtObjects.py` and `samples/vsanapiutils.py`
-   somehwere where your python can find it.
+   somewhere where your python can find it.
    For example: `python3 -m site --user-site`
 
 ## Options

@@ -1,11 +1,14 @@
 on:
   workflow_dispatch: {}
+  push:
+    branches:
+    - docs
 
 jobs:
   copy-doc:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Deploy
       uses: cpina/github-action-push-to-another-repository@v1.6
       env:

@@ -28,7 +28,7 @@ you run this command directly against the HostSystem (not through the vcenter).
 ## Examples
 
 ``` bash
-# notifiy volumes that have less than 10GB left
+# notify volumes that have less than 10GB left
 check_vsphere datastores -nossl \
   -s vcenter.example.com \
   -u naemon@vsphere.local \
@@ -39,7 +39,7 @@ check_vsphere datastores -nossl \
 ```
 
 ``` bash
-# notifiy volumes that have a usage of 90%
+# notify volumes that have a usage of 90%
 check_vsphere datastores -nossl \
   -s vcenter.example.com \
   -u naemon@vsphere.local \

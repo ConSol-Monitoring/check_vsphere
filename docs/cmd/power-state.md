@@ -17,8 +17,8 @@ options:
 | `--banned REGEX` | (optional) REGEX is checked against `<name of HostSystem>`, if REGEX does match the host is ignored |
 | `--cluster-name CLUSTERNAME` | (optional) consider only hosts in cluster CLUSTERNAME |
 | `--metric METRIC` | One of total, up, down, ignored, up%, down% | which metric to apply THRESHOLD on (default is `down`) |
-| `--warning THRESHOLD` | (optional) warning threshold, see [common options](/cmd/?id=common-options) |
-| `--critical THRESHOLD` | (optional) critical threshold, see [common options](/cmd/?id=common-options) |
+| `--warning THRESHOLD` | (optional) warning threshold, see [common options](../../general-options/#common-options) |
+| `--critical THRESHOLD` | (optional) critical threshold, see [common options](../../general-options/#common-options) |
 
 if no thresholds are given the exit the check is basically equal to
 `power-state --critical 1 --metric down`. Just the output is a bit different.

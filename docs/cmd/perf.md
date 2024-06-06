@@ -7,19 +7,19 @@ title: perf
 The perf command extracts a values from a
 [_PerfCounter_](https://vdc-download.vmware.com/vmwb-repository/dcr-public/bf660c0a-f060-46e8-a94d-4b5e6ffc77ad/208bc706-e281-49b6-a0ce-b402ec19ef82/SDK/vsphere-ws/docs/ReferenceGuide/vim.PerformanceManager.html).
 You can get a list of all available counters with a short description (as
-provided by the API) with the [list-metrics](/cmd/list-metrics) command.
+provided by the API) with the [list-metrics](../list-metrics) command.
 
 ## Options
 
-Besides the [general options](/cmd/) this command supports the following
+Besides the [general options](../../general-options) this command supports the following
 options:
 
 | option | description |
 |---|---|
-| `--vimtype VIMTYPE` | the object type to check, see [common options](/cmd/?id=common-options) |
-| `--vimname VIMNAME` | name of the vimtype object, see [common options](/cmd/?id=common-options) |
-| `--critical CRITICAL`   | warning threshold, see [common options](/cmd/?id=common-options) |
-| `--warning WARNING`     | warning threshold, see [common options](/cmd/?id=common-options) |
+| `--vimtype VIMTYPE` | the object type to check, see [common options](../../general-options/#common-options) |
+| `--vimname VIMNAME` | name of the vimtype object, see [common options](../../general-options/#common-options) |
+| `--critical CRITICAL`   | warning threshold, see [common options](../../general-options/#common-options) |
+| `--warning WARNING`     | warning threshold, see [common options](../../general-options/#common-options) |
 | `--perfcounter PERFCOUNTER` | a colon separated string composed of groupInfo.key:nameInfo.key:rollupType |
 | `--perfinstance PERFINSTANCE` | the instance of of the metric to monitor.<br/>defaults to empty string, which is not always available but means an aggregated value over all instances.<br/>Can also be `*` meaning all instances, in this case the threshold is checked against each of the instances |
 | `--maintenance-state` | exit state if the host is in maintenance,<br/> one of `OK, WARNING, CRITICAL, UNKNOWN` (only has a meaning with `--vimtype HostSystem` |
