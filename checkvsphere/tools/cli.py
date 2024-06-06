@@ -95,6 +95,12 @@ class Parser:
                                                default=0,
                                                action='count',
                                                help='verbosity')
+        
+        self._standard_args_group.add_argument('-sf', '--sessionfile',
+                                               required=False,
+                                               action='store',
+                                               help='Path to a file where the sessioncookie'
+                                               'will be stored for later reuse.')
 
     def get_args(self):
         """
