@@ -1,4 +1,10 @@
+# v0.3.6
+
 * add experimental sessionfile support (MLUECKERT)
+
+# v0.3.5
+
+* datastores: add support for vimtype Datacenter (MLUECKERT)
 
 # v0.3.4
 
