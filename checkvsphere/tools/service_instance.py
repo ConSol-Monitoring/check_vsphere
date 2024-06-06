@@ -62,6 +62,7 @@ def open_session_from_sessionfile(sessionfile, nossl: bool):
     logging.debug(f'restoring session from {sessionfile}')
     session_cookie = None
     service_instance = None
+
     if os.path.exists(sessionfile):
         logging.debug(f'{sessionfile} exists')
         cached_session = read_sessionfile(sessionfile)
@@ -96,31 +97,32 @@ def connect(args):
     service_instance = None
     if sessionfile:
         service_instance = open_session_from_sessionfile(sessionfile, args.disable_ssl_verification)
+        if service_instance:
+            return service_instance
 
-    if not service_instance:
-    # form a connection...
-        try:
-            logging.debug(f'initiating session with username/password')
-            if args.disable_ssl_verification:
-                service_instance = SmartConnect(
-                    host=args.host,
-                    user=args.user,
-                    pwd=args.password,
-                    port=args.port,
-                    disableSslCertValidation=True,
-                )
-            else:
-                service_instance = SmartConnect(
-                    host=args.host,
-                    user=args.user,
-                    pwd=args.password,
-                    port=args.port,
-                )
-        except Exception as e:
-            if os.environ.get("CONNECT_NOFAIL", None):
-                raise VsphereConnectException("cannot connect") from e
-            else:
-                raise e
+    # Form session otherwise
+    try:
+        logging.debug(f'initiating session with username/password')
+        if args.disable_ssl_verification:
+            service_instance = SmartConnect(
+                host=args.host,
+                user=args.user,
+                pwd=args.password,
+                port=args.port,
+                disableSslCertValidation=True,
+            )
+        else:
+            service_instance = SmartConnect(
+                host=args.host,
+                user=args.user,
+                pwd=args.password,
+                port=args.port,
+            )
+    except Exception as e:
+        if os.environ.get("CONNECT_NOFAIL", None):
+            raise VsphereConnectException("cannot connect") from e
+        else:
+            raise e
 
     if sessionfile:
         write_session(service_instance, args.sessionfile)
@@ -128,4 +130,5 @@ def connect(args):
         logging.debug(f'disconnect session')
         # doing this means you don't need to remember to disconnect your script/objects
         atexit.register(Disconnect, service_instance)
+
     return service_instance
