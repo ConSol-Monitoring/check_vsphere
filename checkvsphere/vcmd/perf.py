@@ -150,7 +150,7 @@ def run():
                 )
                 check.exit(
                     code=check.check_threshold(val),
-                    message=f'Counter {args.perfcounter} on {args.vimtype}:{args.vimname or props["name"]} reported {val} {counterInfo["unit"]}',
+                    message=f'Counter {args.perfcounter} on {args.vimtype}:{args.vimname or props["name"]} reported {val:.2f} {counterInfo["unit"]}',
                 )
     else:
         for instance in values.value:
@@ -167,7 +167,7 @@ def run():
                 )
                 check.add_message(
                     check.threshold.get_status(val),
-                    f"'{instance.id.instance} {args.perfcounter}' has value {val} {counterInfo['unit']}",
+                    f"'{instance.id.instance} {args.perfcounter}' has value {val:.2f} {counterInfo['unit']}",
                 )
 
         (code, message) = check.check_messages(separator='\n  ')
