@@ -1,3 +1,7 @@
+# v0.3.7
+
+* limit number in plugin output to 8 significant digits
+
 # v0.3.6
 
 * add experimental sessionfile support (MLUECKERT)
