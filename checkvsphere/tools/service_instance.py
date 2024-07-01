@@ -54,7 +54,7 @@ def read_sessionfile(sessionfile):
     return loaded_dict
 
 
-def open_session_from_sessionfile(sessionfile, nossl: bool):
+def open_session_from_sessionfile(sessionfile, host, nossl: bool):
     if nossl:
         sslcontext = ssl._create_unverified_context()
     else:
@@ -68,7 +68,6 @@ def open_session_from_sessionfile(sessionfile, nossl: bool):
         cached_session = read_sessionfile(sessionfile)
         session_cookie = cached_session["cookie"]
         version = cached_session["version"]
-        host = str.split(cached_session["host"],":")[0]
     else:
         logging.debug(f'{sessionfile} missing')
 
@@ -96,7 +95,7 @@ def connect(args):
     sessionfile = args.sessionfile
     service_instance = None
     if sessionfile:
-        service_instance = open_session_from_sessionfile(sessionfile, args.disable_ssl_verification)
+        service_instance = open_session_from_sessionfile(sessionfile, args.host, args.disable_ssl_verification)
         if service_instance:
             return service_instance
 
