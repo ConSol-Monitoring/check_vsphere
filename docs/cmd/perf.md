@@ -5,7 +5,7 @@ title: perf
 ## Description
 
 The perf command extracts a values from a
-[_PerfCounter_](https://vdc-download.vmware.com/vmwb-repository/dcr-public/bf660c0a-f060-46e8-a94d-4b5e6ffc77ad/208bc706-e281-49b6-a0ce-b402ec19ef82/SDK/vsphere-ws/docs/ReferenceGuide/vim.PerformanceManager.html).
+[_PerfCounter_](https://dp-downloads.broadcom.com/api-content/apis/API_VWSA_001/8.0U3/html/ReferenceGuides/vim.PerformanceManager.html).
 You can get a list of all available counters with a short description (as
 provided by the API) with the [list-metrics](../list-metrics) command.
 
