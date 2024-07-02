@@ -221,21 +221,10 @@ def import_vsan():
     try:
         import vsanapiutils as vsu
     except Exception as e:
-        print(f"""
-{str(e)}
-
-You need to download vsan api for python from vmware:
-
-https://developer.vmware.com/web/sdk/8.0/vsan-python
-
-Then take the vsanmgmtObjects.py from the bindings directory
-and the vsanapiutils.py from the samples directory and place
-them somewhere where your python can find it.
-
-Also the module defusedxml must be installed:
-
-    pip install defusedxml
-    """.strip())
+        print((
+            f"""{str(e)}\n\n"""
+            "pyVmomi is too old, at least 8.0.3.0.1 is required"
+        ).strip())
         raise SystemExit(3)
 
 def health2state(color):
