@@ -10,7 +10,7 @@ weight: 100
 | `-u USER, --user USER`  | User name to use when connecting to host |
 | `-p PASSWORD, --password` | Password to use when connecting to host, can also be set by env `VSPHERE_PASS` |
 | `-nossl, --disable-ssl-verification` | Disable ssl host certificate verification |
-| `--sessionfile FILE` | **EXPERIMENTAL** it caches session information in FILE to avoid logging in and out so much, it messes around with internals of the pyVmomi library, so it is marked as experimental and probably stay so until they provide some public API for this use case (which is already in their master branch ...) |
+| `--sessionfile FILE` | it caches sessionId in FILE to avoid logging in and out so much |
 
 # Common Options
 

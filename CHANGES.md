@@ -1,3 +1,7 @@
+# v0.3.9
+
+* make use of sessionId support in pyVmomi for `--sessionfile`
+
 # v0.3.8
 
 * depend on 8.0.3.0.1 because of the vsan command, the extra non free bindings
