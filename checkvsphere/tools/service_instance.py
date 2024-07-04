@@ -28,64 +28,26 @@ import logging
 import os
 import ssl
 import time
-from pyVim.connect import SmartConnect, Disconnect, vim
+from pyVim.connect import SmartConnect, Disconnect, vim, GetStub
 from pyVmomi.SoapAdapter import SoapStubAdapter
 from .. import VsphereConnectException
 
 
-def write_session(service_instance, sessionfile):
-    cache_dict = {}
-    cache_dict.update(
-        {
-            "host": service_instance._stub.host,
-            "cookie": service_instance._stub.cookie,
-            "time": time.strftime("%Y-%m-%d %H:%M:%S"),
-            "version": service_instance._stub.version,
-        }
-    )
-    with open(sessionfile, "w") as json_file:
+def write_session_id(service_instance, sessionfile):
+    with open(sessionfile, "w") as s:
         logging.debug(f'saving session to {sessionfile}')
-        json.dump(cache_dict, json_file)
+        s.write(service_instance._GetStub().GetSessionId())
 
 
-def read_sessionfile(sessionfile):
-    with open(sessionfile, "r") as json_file:
-        loaded_dict = json.load(json_file)
-    return loaded_dict
-
-
-def open_session_from_sessionfile(sessionfile, nossl: bool):
-    if nossl:
-        sslcontext = ssl._create_unverified_context()
-    else:
-        sslcontext = ssl._create_default_https_context()
-    logging.debug(f'restoring session from {sessionfile}')
-    session_cookie = None
-    service_instance = None
-
-    if os.path.exists(sessionfile):
-        logging.debug(f'{sessionfile} exists')
-        cached_session = read_sessionfile(sessionfile)
-        session_cookie = cached_session["cookie"]
-        version = cached_session["version"]
-        host = str.split(cached_session["host"],":")[0]
-    else:
-        logging.debug(f'{sessionfile} missing')
-
-    if session_cookie:
-        soapStub = SoapStubAdapter(host=host, version=version, sslContext=sslcontext)
-        service_instance = vim.ServiceInstance("ServiceInstance",soapStub)
-        service_instance._stub.cookie = session_cookie
-        content = service_instance.RetrieveContent()
-        # If the session is inactive we delete the old session file
-        if content.sessionManager.currentSession == None:
-            logging.debug(f'session in {sessionfile} was invalid. Trying with username/password and deleting invalid sessionfile')
-            os.remove(sessionfile)
-            service_instance = None
-        else:
-            logging.debug(f'sucessfully restored session for {content.sessionManager.currentSession.userName}')
-    return service_instance
-
+def read_session_id(sessionfile):
+    try:
+        logging.debug(f'read session from {sessionfile}')
+        return open(sessionfile).read()
+    except FileNotFoundError:
+        return None
+    except:
+        logging.exception("Error restoring session")
+        return None
 
 def connect(args):
     """
@@ -94,30 +56,31 @@ def connect(args):
     the service instance object.
     """
     sessionfile = args.sessionfile
+    sessionId = None
     service_instance = None
     if sessionfile:
-        service_instance = open_session_from_sessionfile(sessionfile, args.disable_ssl_verification)
-        if service_instance:
-            return service_instance
+        sessionId = read_session_id(args.sessionfile)
 
-    # Form session otherwise
+
+    params = {
+        "host": args.host,
+        "port": args.port,
+        "pwd": args.password,
+        "user": args.user,
+        "disableSslCertValidation": bool(args.disable_ssl_verification),
+        "sessionId": sessionId,
+    }
+
     try:
-        logging.debug(f'initiating session with username/password')
-        if args.disable_ssl_verification:
-            service_instance = SmartConnect(
-                host=args.host,
-                user=args.user,
-                pwd=args.password,
-                port=args.port,
-                disableSslCertValidation=True,
-            )
-        else:
-            service_instance = SmartConnect(
-                host=args.host,
-                user=args.user,
-                pwd=args.password,
-                port=args.port,
-            )
+        try:
+            service_instance = SmartConnect(**params)
+        except Exception as e:
+            if sessionId:
+                logging.debug("retry without sessionId")
+                del params["sessionId"]
+                service_instance = SmartConnect(**params)
+            else:
+                raise
     except Exception as e:
         if os.environ.get("CONNECT_NOFAIL", None):
             raise VsphereConnectException("cannot connect") from e
@@ -125,9 +88,9 @@ def connect(args):
             raise e
 
     if sessionfile:
-        write_session(service_instance, args.sessionfile)
+        write_session_id(service_instance, args.sessionfile)
     else:
-        logging.debug(f'disconnect session')
+        logging.debug(f'add disconnect handler')
         # doing this means you don't need to remember to disconnect your script/objects
         atexit.register(Disconnect, service_instance)
 
