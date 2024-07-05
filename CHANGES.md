@@ -1,3 +1,7 @@
+# v0.3.10
+
+* fix error in media with offline vms
+
 # v0.3.9
 
 * make use of sessionId support in pyVmomi for `--sessionfile`

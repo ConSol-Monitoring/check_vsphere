@@ -74,9 +74,15 @@ def run():
         if not isallowed(args, vm['props']['name']):
             continue
 
+        if vm['props']['runtime.powerState'] != 'poweredOn':
+            # it's powered off, api is unreliable
+            # config.hardware or config.template might be missing
+            continue
+
         if vm['props']['config.template']:
             # This vm is a template, ignore it
             continue
+
         for device in vm['props']['config.hardware.device']:
             if \
                 (isinstance(device, vim.vm.device.VirtualCdrom)
