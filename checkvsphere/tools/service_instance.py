@@ -74,6 +74,8 @@ def connect(args):
     try:
         try:
             service_instance = SmartConnect(**params)
+            # Testing the sessions permissions (at least System.View is required)
+            time = service_instance.serverClock
         except Exception as e:
             if sessionId:
                 logging.debug("retry without sessionId")
