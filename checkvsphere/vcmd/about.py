@@ -23,6 +23,8 @@ Connects to the API and prints the version
 __cmd__ = 'about'
 
 import logging
+import os
+from monplugin import Status
 from ..tools.helper import find_entity_views
 from pyVmomi import vim
 from ..tools import cli, service_instance
@@ -32,16 +34,43 @@ from .. import CheckVsphereException
 def run():
     try:
         parser = cli.Parser()
-        # parser.add_optional_arguments(cli.Argument.DATACENTER_NAME)
-        parser.add_optional_arguments(cli.Argument.VIHOST)
+        parser.add_optional_arguments({
+            'name_or_flags': ['--skip-permission'],
+            'options': {
+                'action': 'store_true',
+                'default': False,
+                'help': 'skips the System.View permission check',
+            }
+        })
+
         args = parser.get_args()
         si = service_instance.connect(args)
         about = si.content.about
-        print(
-            f'OK: { about.fullName }, '
+        status = Status.OK
+        clock = True
+        if not args.skip_permission:
+            try:
+                clock = si.serverClock
+            except Exception as e:
+                logging.debug("no server clock", exc_info=1)
+                status = Status.CRITICAL
+                clock = None
+                if args.sessionfile:
+                    try:
+                        logging.debug(f"deleting {args.sessionfile}")
+                        os.unlink(args.sessionfile)
+                    except Exception as e:
+                        logging.debug(f"unlink {args.sessionfile} failed", exc_info=1)
+
+        out = (
+            f'{status.name}: '
+            f'{ "No System.View permission, " if not clock  else "" }'
+            f'{ about.fullName }, '
             f'api: { about.apiType }/{ about.apiVersion }, '
             f'product: { about.licenseProductName } { about.licenseProductVersion }'
         )
+        print(out)
+        raise SystemExit(status.value)
     except vim.fault.VimFault as e:
         if hasattr(e, 'msg'):
             print(f"ERROR: {e.msg}")

@@ -1,3 +1,8 @@
+# next
+
+* [BREAKING] add check for System.View permission to about cmd. use
+  `--skip-permission` to skip this (old behavior).
+
 # v0.3.10
 
 * fix error in media with offline vms
