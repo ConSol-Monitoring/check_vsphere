@@ -7,6 +7,18 @@ title: about
 This command just uses the [general options](../../general-options/). It connects to the
 API and prints some vsphere version information.
 
+### Options
+
+Besides the [general options](../../general-options/) this command supports the following
+options:
+
+| option | description |
+|---|---|
+|`--skip-permission` | skips the System.View permission check, if omitted about
+check if it has System.View permissions. If it does not and `--sessionfile` is
+active the sessionfile is deleted if the check fails. |
+
+
 ### Example
 
 ```
