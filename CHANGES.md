@@ -1,4 +1,4 @@
-# next
+# v0.3.11
 
 * [BREAKING] add check for System.View permission to about cmd. use
   `--skip-permission` to skip this (old behavior).
