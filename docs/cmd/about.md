@@ -14,9 +14,7 @@ options:
 
 | option | description |
 |---|---|
-|`--skip-permission` | skips the System.View permission check, if omitted about
-check if it has System.View permissions. If it does not and `--sessionfile` is
-active the sessionfile is deleted if the check fails. |
+|`--skip-permission` | skips the System.View permission check, if omitted about check if it has System.View permissions. If it does not and `--sessionfile` is active the sessionfile is deleted if the check fails. |
 
 
 ### Example
