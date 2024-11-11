@@ -1,3 +1,7 @@
+# v0.3.12
+
+* add `--mode path` to host-storage
+
 # v0.3.11
 
 * [BREAKING] add check for System.View permission to about cmd. use
