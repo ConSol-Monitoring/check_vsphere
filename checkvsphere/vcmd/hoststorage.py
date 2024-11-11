@@ -22,8 +22,11 @@ checks storage adapters
 __cmd__ = 'host-storage'
 
 import re
+import itertools
 from pyVmomi import vim, vmodl
 from monplugin import Check, Status, Threshold, Range
+from collections import namedtuple
+
 from ..tools import cli, service_instance
 from .. import CheckVsphereException
 from ..tools.helper import (
@@ -51,6 +54,7 @@ def run():
             'choices': [
                 'adapter',
                 'lun',
+                'path',
             ],
             'help': 'which runtime mode to check'
         }
@@ -108,15 +112,45 @@ def get_lun2disc(storage):
 
     return lun2disc
 
+
 def check_path(check: Check, si: vim.ServiceInstance, storage):
-    check.exit(Status.UNKNOWN, "Not implemented yet")
     lun2disc = get_lun2disc(storage)
+    PathInfo = namedtuple('PathInfo', ('scsiId', 'path', 'lun'))
 
-    for mpInfoLun in storage['storageDeviceInfo'].multipathInfo.lun:
-        for path in mpInfoLun.path:
-            scsiId = path.lun.split("-")[-1]
-            print(scsiId)
+    def iter_lun():
+        for mpInfoLun in storage['storageDeviceInfo'].multipathInfo.lun:
+            for path in mpInfoLun.path:
+                scsiId = path.lun.split("-")[-1]
+                yield PathInfo(scsiId, path, lun2disc[scsiId])
 
+    groupedPaths = itertools.groupby(
+        sorted(
+            list(iter_lun()),
+            key=lambda x: x.scsiId
+        ),
+        lambda x: x.scsiId
+    )
+
+    for scsiId, pathinfos in groupedPaths:
+        for pi in pathinfos:
+            if pi.path.state not in [ 'active', 'disabled', 'standby' ]:
+                check.add_message(
+                    Status.CRITICAL,
+                    f"On LUN {pi.lun} the path {pi.path.name} is in state {pi.path.state}"
+                )
+            else:
+                check.add_message(
+                    Status.OK,
+                    f"On LUN {pi.lun} the path {pi.path.name} is in state {pi.path.state}"
+                )
+
+
+    (code, message) = check.check_messages(separator='\n', separator_all="\n", allok="All paths are OK")
+    prefix = "The following paths are faulty:\n"
+    check.exit(
+        code=code,
+        message=f"{'' if code == Status.OK else prefix}{message}"
+    )
 
 def check_lun(check: Check, si: vim.ServiceInstance, storage):
     lun2disc = get_lun2disc(storage)
