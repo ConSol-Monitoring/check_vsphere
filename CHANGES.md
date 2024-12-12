@@ -1,4 +1,4 @@
-# next
+# v0.3.13
 
 * add vm-tools subcommand that checks for VMs that don't have vm-tools installed
   @BenjaminBoehm #25
