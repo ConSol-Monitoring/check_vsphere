@@ -9,7 +9,13 @@ If it finds any the check result is CRITICAL.
 
 ## Options
 
-[general options](../../general-options/) 
+Besides the [general options](../../general-options/) this command supports the
+following options:
+
+| options | description |
+|---|---|
+| `--allowed REGEX` | (optional) REGEX is checked against `<name of VirtualMachine>`, if REGEX doesn't match the vm is ignored |
+| `--banned REGEX` | (optional) REGEX is checked against `<name of VirtualMachine>`, if REGEX does match the vm is ignored |
 
 ## Examples
 
