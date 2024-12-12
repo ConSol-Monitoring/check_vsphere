@@ -1,3 +1,8 @@
+# next
+
+* add vm-tools subcommand that checks for VMs that don't have vm-tools installed
+  @BenjaminBoehm #25
+
 # v0.3.12
 
 * add `--mode path` to host-storage
