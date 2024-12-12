@@ -29,7 +29,7 @@ from monplugin import Check, Status
 from pyVmomi import vim
 
 from ..tools import cli, service_instance
-from ..tools.helper import find_entity_views
+from ..tools.helper import find_entity_views, isbanned, isallowed, CheckArgument
 
 check = None
 args = None
@@ -41,6 +41,12 @@ def run():
     global args
 
     parser = cli.Parser()
+    parser.add_optional_arguments(CheckArgument.BANNED(
+        'regex, checked against <vm-name>'
+    ))
+    parser.add_optional_arguments(CheckArgument.ALLOWED(
+        'regex, checked against <vm-name>'
+    ))
     args = parser.get_args()
 
     check = Check()
@@ -65,6 +71,11 @@ def run():
         isTemplate = vm["props"].get("config.template", None)
         guest_summary = vm["props"].get("summary.guest", None)
         powered = vm["props"].get("runtime.powerState", None) == "poweredOn"
+
+        if isbanned(args, name):
+            continue
+        if not isallowed(args, name):
+            continue
 
         if isTemplate:
             perf_data["VM Templates"] += 1
@@ -95,8 +106,8 @@ def run():
     check.exit(
         code=code,
         message=f"{len(vms)} VMs checked for VMware Tools state"
-        if code == Status.OK
-        else message,
+                if code == Status.OK
+                else message,
     )
 
 
