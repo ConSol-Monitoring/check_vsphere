@@ -1,3 +1,7 @@
+# v0.3.14
+
+* report warning if we miss datastores we want to check
+
 # v0.3.13
 
 * add vm-tools subcommand that checks for VMs that don't have vm-tools installed

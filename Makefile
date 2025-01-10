@@ -1,11 +1,13 @@
 .PHONY: all clean test
 
+PYTHON=python3
+
 all: check_vsphere_bundle check_vsphere
 
 check_vsphere_bundle:
 	pip install --no-cache-dir --no-compile --target allinone .
 	mv allinone/bin/check_vsphere allinone/__main__.py
-	python -m zipapp  -c -p '/usr/bin/env python3' allinone
+	$(PYTHON) -m zipapp  -c -p '/usr/bin/env python3' allinone
 	rm -rf allinone
 	mv allinone.pyz check_vsphere_bundle
 
@@ -13,11 +15,11 @@ check_vsphere:
 	mkdir build
 	cp -av checkvsphere build/checkvsphere
 	mv build/checkvsphere/cli.py build/__main__.py
-	( cd build/; python -m zipapp -c --output ../check_vsphere -p '/usr/bin/env python3' . )
+	( cd build/; $(PYTHON) -m zipapp -c --output ../check_vsphere -p '/usr/bin/env python3' . )
 	rm -rf build
 
 dist: pyproject.toml
-	python3 -m build
+	$(PYTHON) -m build
 	chmod a+r dist/*
 
 .PHONY: clean
@@ -26,11 +28,11 @@ clean:
 
 .PHONY: upload-test
 upload-test: dist
-	python3 -m twine upload --repository testpypi dist/*
+	$(PYTHON) -m twine upload --repository testpypi dist/*
 
 .PHONY: upload-prod
 upload-prod: dist
-	python3 -m twine upload dist/*
+	$(PYTHON) -m twine upload dist/*
 
 .PHONY: upload-private
 upload-private: dist
