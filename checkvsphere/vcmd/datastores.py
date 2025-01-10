@@ -147,14 +147,17 @@ def datastore_info(check: Check, si: vim.ServiceInstance, datastores):
 
     result = retrieve( [filter_spec] )
     stores = process_retrieve_content(result)
+    StoresCount = len(store)
 
     for store in stores:
         name = f"{ store['moref']._moId }_{store['summary'].name}"
         datastore_type = store['summary'].type
 
         if isbanned(args, f"{name}"):
+            StoresCount -= 1
             continue
         if not isallowed(args, f"{name}"):
+            StoresCount -= 1
             continue
 
         if not store['summary'].accessible:
@@ -191,6 +194,9 @@ def datastore_info(check: Check, si: vim.ServiceInstance, datastores):
             puom = '%' if metric == 'usage' else 'B'
             check.add_perfdata(label=f"{name} {metric}", value=space[metric], uom=puom, **opts)
 
+    if not StoresCount:
+        check.add_message(Status.WARNING, "no datastores found")
+        
     (code, message) = check.check_messages(separator="\n")#, allok=okmessage)
     check.exit(
         code=code,
