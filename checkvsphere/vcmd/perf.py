@@ -56,6 +56,9 @@ def get_counter_info(counter):
         info['factor'] = 0.01
         info['unit'] = '%'
         info['perfUnit'] = '%'
+    elif unit.endswith('BytesPerSecond'):
+        unit = counter.unitInfo.key.capitalize()
+        info['perfUnit'] = unit[0] + 'B'
     elif unit.endswith('Bytes'):
         unit = unit.capitalize()
         info['perfUnit'] = unit[0] + 'B'

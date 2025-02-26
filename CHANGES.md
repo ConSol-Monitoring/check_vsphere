@@ -1,3 +1,7 @@
+# v0.3.15
+
+*  fixed issing perfdata units for perf checks reporting *BytesPerSecond @ccztux #31
+
 # v0.3.14
 
 * report warning if we miss datastores we want to check
