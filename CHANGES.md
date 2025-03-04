@@ -1,3 +1,8 @@
+# v0.3.15
+
+* perf: report an error if `--perfinstance '*'` is used but the metric
+  just has an aggregate available
+
 # v0.3.14
 
 * report warning if we miss datastores we want to check

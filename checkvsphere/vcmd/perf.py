@@ -26,6 +26,7 @@ import logging
 from pyVmomi import vim
 from ..tools import cli, service_instance
 from ..tools.helper import find_entity_views, get_metric, CheckArgument
+from .. import CheckVsphereException
 from monplugin import Check, Status, Threshold
 
 '''
@@ -153,7 +154,10 @@ def run():
                     message=f'Counter {args.perfcounter} on {args.vimtype}:{args.vimname or props["name"]} reported {val:.8g} {counterInfo["unit"]}',
                 )
     else:
+        metrics_count = len(values.value)
         for instance in values.value:
+            if metrics_count == 1 and instance.id.instance == '':
+                raise CheckVsphereException("The perfcounter only returns an aggregate, maybe you want to use --perfinstance '' instead")
             if instance.id.instance == '':
                 # ignore the aggregate if we query a specific or all instances
                 continue
