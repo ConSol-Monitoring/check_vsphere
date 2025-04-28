@@ -30,6 +30,7 @@ from pyVmomi import vim
 
 from ..tools import cli, service_instance
 from ..tools.helper import find_entity_views, isbanned, isallowed, CheckArgument
+from .. import CheckVsphereException
 
 check = None
 args = None
@@ -41,22 +42,41 @@ def run():
     global args
 
     parser = cli.Parser()
+    parser.add_optional_arguments(cli.Argument.VIHOST)
     parser.add_optional_arguments(CheckArgument.BANNED(
         'regex, checked against <vm-name>'
     ))
     parser.add_optional_arguments(CheckArgument.ALLOWED(
         'regex, checked against <vm-name>'
     ))
+    parser.add_optional_arguments({
+        'name_or_flags': ['--not-installed'],
+        'options': {
+            'action': 'store_true',
+            'default': False,
+            'help': 'tools not installed is ignored by default, make them critical',
+        }
+    })
     args = parser.get_args()
 
     check = Check()
 
     args._si = service_instance.connect(args)
 
+    if args.vihost:
+        host_view = args._si.content.viewManager.CreateContainerView(
+            args._si.content.rootFolder, [vim.HostSystem], True)
+        try:
+            parentView = next(x for x in host_view.view if x.name.lower() == args.vihost.lower())
+        except:
+            raise CheckVsphereException(f"host {args.vihost} not found")
+    else:
+        parentView = args._si.content.rootFolder
+
     vms = find_entity_views(
         args._si,
         vim.VirtualMachine,
-        begin_entity=args._si.content.rootFolder,
+        begin_entity=parentView,
         properties=[
             "name",
             "runtime.powerState",
@@ -65,6 +85,7 @@ def run():
     )
 
     perf_data = defaultdict(int)
+    vmscnt = len(vms)
 
     for vm in vms:
         name = vm["props"]["name"]
@@ -73,8 +94,10 @@ def run():
         powered = vm["props"].get("runtime.powerState", None) == "poweredOn"
 
         if isbanned(args, name):
+            vmscnt -= 1
             continue
         if not isallowed(args, name):
+            vmscnt -= 1
             continue
 
         if isTemplate:
@@ -91,8 +114,9 @@ def run():
             if guest_summary.toolsStatus == "toolsNotInstalled":
                 perf_data["VMware Tools not installed"] += 1
                 logging.debug(f"{name} has no vm tools installed")
-                continue
-            if guest_summary.toolsRunningStatus == "guestToolsNotRunning":
+                if args.not_installed:
+                    check.add_message(Status.CRITICAL, f"{name} tools not installed")
+            elif guest_summary.toolsRunningStatus == "guestToolsNotRunning":
                 perf_data["VMware Tools not running"] += 1
                 check.add_message(Status.CRITICAL, f"{name} tools not running")
                 logging.debug(f"{name} tools not running")
@@ -105,7 +129,7 @@ def run():
     (code, message) = check.check_messages(separator="\n", separator_all="\n")
     check.exit(
         code=code,
-        message=f"{len(vms)} VMs checked for VMware Tools state"
+        message=f"{vmscnt} VMs checked for VMware Tools state, {len(vms) - vmscnt} VMs ignored"
                 if code == Status.OK
                 else message,
     )

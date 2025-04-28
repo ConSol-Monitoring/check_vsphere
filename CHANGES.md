@@ -1,3 +1,8 @@
+# v0.3.16
+
+* improve vm-tools: add --vihost argument to limit checks to a ESX host
+  and polish output a bit
+
 # v0.3.15
 
 * perf: report an error if `--perfinstance '*'` is used but the metric
