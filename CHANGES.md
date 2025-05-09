@@ -1,3 +1,7 @@
+# v0.3.17
+
+* improve vm-tools some more, VMS can be ignores by config.guestId
+
 # v0.3.16
 
 * improve vm-tools: add --vihost argument to limit checks to a ESX host
