@@ -23,6 +23,7 @@ check for running vm tools
 __cmd__ = "vm-tools"
 
 import logging
+import re
 from collections import defaultdict
 
 from monplugin import Check, Status
@@ -57,6 +58,14 @@ def run():
             'help': 'tools not installed is ignored by default, make them critical',
         }
     })
+    parser.add_optional_arguments({
+        'name_or_flags': ['-E', '--exclude-guest-id'],
+        'options': {
+            'action': 'append',
+            'default': [],
+            'help': "if config.guestId matches, VM is ignored",
+        }
+    })
     args = parser.get_args()
 
     check = Check()
@@ -81,6 +90,7 @@ def run():
             "name",
             "runtime.powerState",
             "summary.guest",
+            "config.guestId",
         ],
     )
 
@@ -92,12 +102,21 @@ def run():
         isTemplate = vm["props"].get("config.template", None)
         guest_summary = vm["props"].get("summary.guest", None)
         powered = vm["props"].get("runtime.powerState", None) == "poweredOn"
+        guestId = vm['props'].get('config.guestId', '')
+
+        logging.debug(f"found VM {name} with guestId {guestId}")
 
         if isbanned(args, name):
             vmscnt -= 1
             continue
         if not isallowed(args, name):
             vmscnt -= 1
+            continue
+
+        if any(map( lambda p: re.search(p, guestId), args.exclude_guest_id )):
+            vmscnt -= 1
+            perf_data["excluded guestId"] += 1
+            logging.debug(f"{name} matches {guestId} ~ {args.exclude_guest_id}")
             continue
 
         if isTemplate:
@@ -109,6 +128,7 @@ def run():
             perf_data["Powered off"] += 1
             logging.debug(f"{name} is powered off")
             continue
+
 
         if guest_summary:
             if guest_summary.toolsStatus == "toolsNotInstalled":
