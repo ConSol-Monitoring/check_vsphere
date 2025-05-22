@@ -31,4 +31,4 @@ check_vsphere = "checkvsphere.cli:main"
 "issues" = "https://github.com/consol/check_vsphere/issues"
 
 [tool.flit.sdist]
-exclude = ["docs/", "stuff/", "dist/", ".ruff_cache"]
+exclude = ["docs/", "stuff/", "dist/", ".ruff_cache", "inkubator"]
