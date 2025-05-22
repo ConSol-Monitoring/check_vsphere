@@ -15,6 +15,7 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import re
+import os
 from pyVmomi import vim, vmodl
 from . import serviceutil
 
@@ -171,16 +172,19 @@ class CheckArgument:
             }
         }
 
+def match_method():
+    return os.environ.get("VSPHERE_FILTER_MATCH", "search")
+
 
 def isbanned(args, name, attr='banned'):
     '''
     checks name against regexes in args.banned
     '''
-    banned = getattr(args, attr, None)
+    banned = getattr(args, attr)
     if banned:
         for pattern in banned:
             p = re.compile(pattern)
-            if p.search(name):
+            if getattr(p,match_method())(name):
                 return True
 
     return False
@@ -193,7 +197,7 @@ def isallowed(args, name, attr='allowed'):
     if allowed:
         for pattern in allowed:
             p = re.compile(pattern)
-            if p.search(name):
+            if getattr(p,match_method())(name):
                 return True
         return False
 

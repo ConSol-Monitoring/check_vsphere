@@ -177,7 +177,7 @@ class Argument:
         'options': {'action': 'store', 'help': 'UUID of an entity (VirtualMachine or HostSystem)'}
     }
     VM_NAME = {
-        'name_or_flags': ['-v', '--vm-name'],
+        'name_or_flags': ['--vm-name'],
         'options': {'action': 'store', 'help': 'Name of the vm'}
     }
     VM_IP = {
