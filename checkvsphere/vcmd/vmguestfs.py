@@ -26,7 +26,13 @@ from pyVmomi import vim, vmodl
 from monplugin import Check, Status, Threshold, Range
 from checkvsphere import CheckVsphereException
 from checkvsphere.tools import cli, service_instance
-from checkvsphere.tools.helper import CheckArgument, find_entity_views, process_retrieve_content
+from checkvsphere.tools.helper import (
+    CheckArgument,
+    find_entity_views,
+    process_retrieve_content,
+    isallowed,
+    isbanned,
+)
 from checkvsphere.vcmd.datastores import Space, range_in_bytes
 
 args = None
@@ -35,15 +41,7 @@ args = None
 def run():
     global args
     parser = cli.Parser()
-    #parser.add_required_arguments(cli.Argument.VM_NAME)
-    parser.add_required_arguments({
-        'name_or_flags': ['--vm-name'],
-        'options': {'action': 'store'}
-    })
-    parser.add_optional_arguments({
-        'name_or_flags': ['--match-method'],
-        'options': {'action': 'store', 'default': 'search', 'choices':{'search','match','fullmatch'}}
-    })
+    parser.add_required_arguments(cli.Argument.VM_NAME)
     parser.add_optional_arguments(CheckArgument.BANNED("regex, of mountpoint"))
     parser.add_optional_arguments(CheckArgument.ALLOWED("regex, of mountpoint"))
     parser.add_optional_arguments(CheckArgument.CRITICAL_THRESHOLD)
@@ -129,37 +127,6 @@ def fs_info(check: Check, si: vim.ServiceInstance, disks):
 
     (code, message) = check.check_messages(separator="\n")  # , allok=okmessage)
     check.exit(code=code, message=(message or "everything ok"))
-
-
-def match_method(args):
-    return getattr(args, 'match_method', "search")
-
-def isbanned(args, name, attr="banned"):
-    """
-    checks name against regexes in args.banned
-    """
-    banned = getattr(args, attr)
-    if banned:
-        for pattern in banned:
-            p = re.compile(pattern)
-            if getattr(p, match_method(args))(name):
-                return True
-
-    return False
-
-def isallowed(args, name, attr="allowed"):
-    """
-    checks name against regexes in args.allowed
-    """
-    allowed = getattr(args, attr, None)
-    if allowed:
-        for pattern in allowed:
-            p = re.compile(pattern)
-            if getattr(p, match_method(args))(name):
-                return True
-        return False
-
-    return True
 
 
 if __name__ == "__main__":
