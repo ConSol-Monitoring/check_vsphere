@@ -21,7 +21,6 @@ check virtualmachine filesystems
 
 __cmd__ = "vm-guestfs"
 
-import re, os
 from pyVmomi import vim, vmodl
 from monplugin import Check, Status, Threshold, Range
 from checkvsphere import CheckVsphereException
@@ -76,10 +75,10 @@ def run():
         check.exit(Status.UNKNOWN, f"{args.vimtype} {args.vimname} not found")
 
     # print(vm['props']['guest'])
-    fs_info(check, si, vm["props"]["guest"].disk)
+    fs_info(check, vm["props"]["guest"].disk)
 
 
-def fs_info(check: Check, si: vim.ServiceInstance, disks):
+def fs_info(check: Check, disks):
     filtered = False
     disk_count = len(disks)
 
