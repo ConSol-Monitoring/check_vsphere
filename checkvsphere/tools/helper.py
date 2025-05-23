@@ -172,32 +172,31 @@ class CheckArgument:
             }
         }
 
-def match_method():
-    return os.environ.get("VSPHERE_FILTER_MATCH", "search")
+def match_method(args):
+    return getattr(args, 'match_method', "search")
 
-
-def isbanned(args, name, attr='banned'):
-    '''
+def isbanned(args, name, attr="banned"):
+    """
     checks name against regexes in args.banned
-    '''
+    """
     banned = getattr(args, attr)
     if banned:
         for pattern in banned:
             p = re.compile(pattern)
-            if getattr(p,match_method())(name):
+            if getattr(p, match_method(args))(name):
                 return True
 
     return False
 
-def isallowed(args, name, attr='allowed'):
-    '''
+def isallowed(args, name, attr="allowed"):
+    """
     checks name against regexes in args.allowed
-    '''
+    """
     allowed = getattr(args, attr, None)
     if allowed:
         for pattern in allowed:
             p = re.compile(pattern)
-            if getattr(p,match_method())(name):
+            if getattr(p, match_method(args))(name):
                 return True
         return False
 

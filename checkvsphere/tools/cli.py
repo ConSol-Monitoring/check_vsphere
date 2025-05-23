@@ -102,6 +102,15 @@ class Parser:
                                                help='Path to a file where the sessioncookie'
                                                     'will be stored for later reuse. (EXPERIMENTAL)')
 
+        self._standard_args_group.add_argument('--match-method',
+                                               required=False,
+                                               action='store',
+                                               default='search',
+                                               choices=['search', 'match', 'fullmatch'],
+                                               help='changes the behaviour of regex for --allow and --banned, defaults to search. '
+                                                    'https://docs.python.org/3/library/re.html#search-vs-match'
+                                               )
+
     def get_args(self):
         """
         Supports the command-line arguments needed to form a connection to vSphere.

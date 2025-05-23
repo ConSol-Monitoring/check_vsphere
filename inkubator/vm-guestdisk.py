@@ -19,71 +19,67 @@
 check virtualmachine filesystems
 """
 
-__cmd__ = 'vm-guestfs'
+__cmd__ = "vm-guestfs"
 
+import re, os
 from pyVmomi import vim, vmodl
 from monplugin import Check, Status, Threshold, Range
 from checkvsphere import CheckVsphereException
 from checkvsphere.tools import cli, service_instance
-from checkvsphere.tools.helper import (
-    CheckArgument,
-    find_entity_views,
-    isallowed,
-    isbanned,
-    process_retrieve_content
-)
+from checkvsphere.tools.helper import CheckArgument, find_entity_views, process_retrieve_content
 from checkvsphere.vcmd.datastores import Space, range_in_bytes
 
 args = None
 
+
 def run():
     global args
     parser = cli.Parser()
-    parser.add_required_arguments(cli.Argument.VM_NAME)
-    parser.add_optional_arguments(CheckArgument.BANNED('regex, of mountpoint'))
-    parser.add_optional_arguments(CheckArgument.ALLOWED('regex, of mountpoint'))
+    #parser.add_required_arguments(cli.Argument.VM_NAME)
+    parser.add_required_arguments({
+        'name_or_flags': ['--vm-name'],
+        'options': {'action': 'store'}
+    })
+    parser.add_optional_arguments({
+        'name_or_flags': ['--match-method'],
+        'options': {'action': 'store', 'default': 'search', 'choices':{'search','match','fullmatch'}}
+    })
+    parser.add_optional_arguments(CheckArgument.BANNED("regex, of mountpoint"))
+    parser.add_optional_arguments(CheckArgument.ALLOWED("regex, of mountpoint"))
     parser.add_optional_arguments(CheckArgument.CRITICAL_THRESHOLD)
     parser.add_optional_arguments(CheckArgument.WARNING_THRESHOLD)
-    parser.add_optional_arguments({
-        'name_or_flags': ['--metric'],
-        'options': {
-            'action': 'store',
-            'default': 'usage',
-            'help': 'The metric to apply the thresholds on, defaults to `usage`, can be: '
-                    'usage (in percent), free and used. '
-                    'free and used are measured in bytes. You can use one of these suffixes: '
-                    'kB, MB, GB for example: free_MB or used_GB'
+    parser.add_optional_arguments(
+        {
+            "name_or_flags": ["--metric"],
+            "options": {
+                "action": "store",
+                "default": "usage",
+                "help": "The metric to apply the thresholds on, defaults to `usage`, can be: "
+                "usage (in percent), free and used. "
+                "free and used are measured in bytes. You can use one of these suffixes: "
+                "kB, MB, GB for example: free_MB or used_GB",
+            },
         }
-    })
+    )
     args = parser.get_args()
 
     si = service_instance.connect(args)
-    check = Check(threshold = Threshold(args.warning or None, args.critical or None))
+    check = Check(threshold=Threshold(args.warning or None, args.critical or None))
 
     try:
         vm = find_entity_views(
             si,
             vim.VirtualMachine,
             begin_entity=si.content.rootFolder,
-            sieve={'name': args.vm_name},
+            sieve={"name": args.vm_name},
             properties=["name", "guest"],
         )[0]
     except IndexError:
         check.exit(Status.UNKNOWN, f"{args.vimtype} {args.vimname} not found")
 
-    #print(vm['props']['guest'])
-    fs_info(check, si, vm['props']['guest'].disk)
+    # print(vm['props']['guest'])
+    fs_info(check, si, vm["props"]["guest"].disk)
 
-'''
-   disk = (vim.vm.GuestInfo.DiskInfo) [
-      (vim.vm.GuestInfo.DiskInfo) {
-         dynamicType = <unset>,
-         dynamicProperty = (vmodl.DynamicProperty) [],
-         diskPath = '/',
-         capacity = 16039018496,
-         freeSpace = 10757640192,
-         filesystemType = 'xfs',
-'''
 
 def fs_info(check: Check, si: vim.ServiceInstance, disks):
     filtered = False
@@ -105,38 +101,65 @@ def fs_info(check: Check, si: vim.ServiceInstance, disks):
             check.add_message(Status.CRITICAL, f"{name} has a capacity of zero")
             continue
 
-
-        for metric in ['usage', 'free', 'used', 'capacity']:
+        for metric in ["usage", "free", "used", "capacity"]:
             opts = {}
 
             # Check threshold against this metric
             if args.metric.startswith(metric) and (args.warning or args.critical):
                 value = space[args.metric]
-                _, uom, *_ = (args.metric.split('_') + ['%' if 'usage' in args.metric else 'B'])
+                _, uom, *_ = args.metric.split("_") + ["%" if "usage" in args.metric else "B"]
                 s = check.threshold.get_status(space[args.metric])
 
                 threshold = {}
-                opts['threshold'] = {}
+                opts["threshold"] = {}
                 if args.warning:
-                    threshold['warning'] = range_in_bytes(Range(args.warning), uom)
+                    threshold["warning"] = range_in_bytes(Range(args.warning), uom)
                 if args.critical:
-                    threshold['critical'] = range_in_bytes(Range(args.critical), uom)
-                opts['threshold'] = Threshold(**threshold)
+                    threshold["critical"] = range_in_bytes(Range(args.critical), uom)
+                opts["threshold"] = Threshold(**threshold)
 
                 if s != Status.OK:
                     check.add_message(s, f"{args.metric} on {name} is in state {s.name}: {value :.2f}{uom}")
 
-            puom = '%' if metric == 'usage' else 'B'
+            puom = "%" if metric == "usage" else "B"
             check.add_perfdata(label=f"{name} {metric}", value=space[metric], uom=puom, **opts)
 
     if filtered and not disk_count:
         check.add_message(Status.WARNING, "no filesystems found")
 
-    (code, message) = check.check_messages(separator="\n")#, allok=okmessage)
-    check.exit(
-        code=code,
-        message=( message or "everything ok" )
-    )
+    (code, message) = check.check_messages(separator="\n")  # , allok=okmessage)
+    check.exit(code=code, message=(message or "everything ok"))
+
+
+def match_method(args):
+    return getattr(args, 'match_method', "search")
+
+def isbanned(args, name, attr="banned"):
+    """
+    checks name against regexes in args.banned
+    """
+    banned = getattr(args, attr)
+    if banned:
+        for pattern in banned:
+            p = re.compile(pattern)
+            if getattr(p, match_method(args))(name):
+                return True
+
+    return False
+
+def isallowed(args, name, attr="allowed"):
+    """
+    checks name against regexes in args.allowed
+    """
+    allowed = getattr(args, attr, None)
+    if allowed:
+        for pattern in allowed:
+            p = re.compile(pattern)
+            if getattr(p, match_method(args))(name):
+                return True
+        return False
+
+    return True
 
 
 if __name__ == "__main__":
