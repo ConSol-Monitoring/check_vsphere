@@ -21,6 +21,7 @@ weight: 100
 | `--vimname VIMNAME` | the name of the ManagedEntity of vimtype  |
 | `--warning WARNING`     | warning [threshold](https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT) |
 | `--critical CRITICAL`   | critical [threshold](https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT) |
+| `--match-method search,match,fullmatch`   | Some commands have `--allowed` or `--banned` options, which accept a REGEX as an argument. This option modifies the behavior of the regex. For more information, refer to Python's re.search, re.match, and re.fullmatch documentation. The default value is 'search'.|
 
 # Environment Variables
 
