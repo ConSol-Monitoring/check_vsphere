@@ -1,3 +1,9 @@
+# v0.3.18
+
+* add vm-guestfs command
+* add `--match-method` option that can change the behavior of the REGEX passed to
+  `--allowed` or `--banned`
+
 # v0.3.17
 
 * improve vm-tools some more, VMS can be ignores by config.guestId
