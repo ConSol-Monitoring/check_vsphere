@@ -72,7 +72,7 @@ def run():
             properties=["name", "guest"],
         )[0]
     except IndexError:
-        check.exit(Status.UNKNOWN, f"{args.vimtype} {args.vimname} not found")
+        check.exit(Status.UNKNOWN, f"vm {args.vm_name} not found")
 
     # print(vm['props']['guest'])
     fs_info(check, vm["props"]["guest"].disk)
