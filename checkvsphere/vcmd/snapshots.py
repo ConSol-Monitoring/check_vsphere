@@ -24,13 +24,12 @@ __cmd__ = 'snapshots'
 
 import logging
 from pyVmomi import vim
-from monplugin import Check, Status, Threshold
+from monplugin import Check, Status
 from ..tools import cli, service_instance
 from datetime import datetime, timedelta, timezone
 from ..tools.helper import (
     CheckArgument,
     find_entity_views,
-    get_metric,
     isbanned,
     isallowed
 )
@@ -153,7 +152,7 @@ def run():
     (code, message) = check.check_messages(separator='\n', separator_all='\n')
     check.exit(
         code=code,
-        message=f"snapshots ok" if code == Status.OK else f"too {adj} snapshots found\n" + message,
+        message="snapshots ok" if code == Status.OK else f"too {adj} snapshots found\n" + message,
     )
 
 if __name__ == "__main__":

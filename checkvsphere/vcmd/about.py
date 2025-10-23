@@ -25,10 +25,8 @@ __cmd__ = 'about'
 import logging
 import os
 from monplugin import Status
-from ..tools.helper import find_entity_views
 from pyVmomi import vim
 from ..tools import cli, service_instance
-from .. import CheckVsphereException
 
 
 def run():
@@ -51,7 +49,7 @@ def run():
         if not args.skip_permission:
             try:
                 clock = si.serverClock
-            except Exception as e:
+            except Exception:
                 logging.debug("no server clock", exc_info=1)
                 status = Status.CRITICAL
                 clock = None
@@ -59,7 +57,7 @@ def run():
                     try:
                         logging.debug(f"deleting {args.sessionfile}")
                         os.unlink(args.sessionfile)
-                    except Exception as e:
+                    except Exception:
                         logging.debug(f"unlink {args.sessionfile} failed", exc_info=1)
 
         out = (

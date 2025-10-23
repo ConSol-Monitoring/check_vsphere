@@ -23,13 +23,9 @@ This module implements simple helper functions for managing service instance obj
 __author__ = "VMware, Inc."
 
 import atexit
-import json
 import logging
 import os
-import ssl
-import time
-from pyVim.connect import SmartConnect, Disconnect, vim, GetStub
-from pyVmomi.SoapAdapter import SoapStubAdapter
+from pyVim.connect import SmartConnect, Disconnect
 from .. import VsphereConnectException
 
 
@@ -74,7 +70,7 @@ def connect(args):
     try:
         try:
             service_instance = SmartConnect(**params)
-        except Exception as e:
+        except Exception:
             if sessionId:
                 logging.debug("retry without sessionId")
                 del params["sessionId"]
@@ -90,7 +86,7 @@ def connect(args):
     if sessionfile:
         write_session_id(service_instance, args.sessionfile)
     else:
-        logging.debug(f'add disconnect handler')
+        logging.debug('add disconnect handler')
         # doing this means you don't need to remember to disconnect your script/objects
         atexit.register(Disconnect, service_instance)
 

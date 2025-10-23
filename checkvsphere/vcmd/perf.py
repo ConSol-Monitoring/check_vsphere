@@ -22,12 +22,11 @@ check performance values from Vsphere
 
 __cmd__ = 'perf'
 
-import logging
 from pyVmomi import vim
 from ..tools import cli, service_instance
 from ..tools.helper import find_entity_views, get_metric, CheckArgument
 from .. import CheckVsphereException
-from monplugin import Check, Status, Threshold
+from monplugin import Check, Status
 
 '''
 [kiloBytes]
@@ -255,7 +254,7 @@ if __name__ == "__main__":
     try:
         run()
     except SystemExit as e:
-        if e.code > 3 or e.code < 0:
+        if isinstance(e, int) and (e.code > 3 or e.code < 0):
             print("UNKNOWN EXIT CODE")
             raise SystemExit(Status.UNKNOWN)
     except Exception as e:

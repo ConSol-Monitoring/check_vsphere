@@ -24,11 +24,10 @@ __cmd__ = 'host-storage'
 import re
 import itertools
 from pyVmomi import vim, vmodl
-from monplugin import Check, Status, Threshold, Range
+from monplugin import Check, Status
 from collections import namedtuple
 
 from ..tools import cli, service_instance
-from .. import CheckVsphereException
 from ..tools.helper import (
     CheckArgument,
     find_entity_views,
@@ -154,11 +153,9 @@ def check_path(check: Check, si: vim.ServiceInstance, storage):
 
 def check_lun(check: Check, si: vim.ServiceInstance, storage):
     lun2disc = get_lun2disc(storage)
-    count = {}
+    count: dict[str, int] = {}
     luns = storage['storageDeviceInfo'].scsiLun
     for scsi in luns:
-        canonicalName = scsi.canonicalName
-        scsiId = scsi.uuid
         discKey = scsi.key.split("-")[-1]
         displayName = re.sub(r'[^][\w _().-]', '', scsi.displayName)
 
@@ -195,7 +192,7 @@ def check_lun(check: Check, si: vim.ServiceInstance, storage):
 
 
 def check_adapter(check: Check, si: vim.ServiceInstance, storage):
-    count = {}
+    count: dict[str, int] = {}
     adapters = storage['storageDeviceInfo'].hostBusAdapter
     for dev in adapters:
         if  (

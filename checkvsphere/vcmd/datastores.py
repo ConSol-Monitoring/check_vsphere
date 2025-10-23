@@ -24,7 +24,6 @@ __cmd__ = 'datastores'
 from pyVmomi import vim, vmodl
 from monplugin import Check, Status, Threshold, Range
 from ..tools import cli, service_instance
-from .. import CheckVsphereException
 from ..tools.helper import (
     CheckArgument,
     find_entity_views,

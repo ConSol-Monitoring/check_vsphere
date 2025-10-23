@@ -22,13 +22,12 @@ vsan health
 
 __cmd__ = "vsan"
 
-import logging
 import ssl
 from pyVmomi import vim
 from ..tools import cli, service_instance
 from ..tools.helper import CheckArgument, isallowed, isbanned
 from ..tools.helper import find_entity_views, process_retrieve_content
-from monplugin import Check, Status, Threshold
+from monplugin import Check, Status
 
 OK = Status.OK
 WARNING = Status.WARNING

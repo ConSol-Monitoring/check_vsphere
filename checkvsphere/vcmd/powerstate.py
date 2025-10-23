@@ -22,16 +22,13 @@ check power state of all hosts
 
 __cmd__ = 'power-state'
 
-import logging
 from pyVmomi import vim
-from monplugin import Check, Status, Threshold
-from datetime import datetime, timedelta, timezone
+from monplugin import Check, Status
 from .. import CheckVsphereException
 from ..tools import cli, service_instance
 from ..tools.helper import (
     CheckArgument,
     find_entity_views,
-    get_metric,
     isbanned,
     isallowed,
     process_retrieve_content

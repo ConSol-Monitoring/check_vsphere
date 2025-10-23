@@ -24,7 +24,6 @@ This is not good because vms cannot move hosts with mounted cds/floppies
 
 __cmd__ = 'media'
 
-import logging
 from pyVmomi import vim
 from monplugin import Check, Status
 from .. import CheckVsphereException
@@ -59,8 +58,6 @@ def run():
         begin_entity=parentView,
         properties=['name', 'config.hardware.device', 'config.template']
     )
-
-    result = []
 
     check.add_message(
         Status.OK,
