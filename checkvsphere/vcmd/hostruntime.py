@@ -214,7 +214,7 @@ def check_health(check, vm, args, result):
             "no vim.Host.runtime.healthSystemRuntime.hardwareStatusInfo found"
         )
 
-    def filterunknown(x): x.status.key != "unknown"
+    filterunknown = lambda x: x.status.key != "unknown"
     cpustatus = healthsystem.hardwareStatusInfo.cpuStatusInfo
     storagestatus = list(filter(filterunknown, healthsystem.hardwareStatusInfo.storageStatusInfo))
     memorystatus = list(filter(filterunknown, healthsystem.hardwareStatusInfo.memoryStatusInfo))
