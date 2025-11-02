@@ -254,7 +254,7 @@ if __name__ == "__main__":
     try:
         run()
     except SystemExit as e:
-        if isinstance(e, int) and (e.code > 3 or e.code < 0):
+        if not isinstance(e.code, int) or not (0 <= e.code <= 3):
             print("UNKNOWN EXIT CODE")
             raise SystemExit(Status.UNKNOWN)
     except Exception as e:
