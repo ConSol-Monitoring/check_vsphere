@@ -21,14 +21,12 @@ check virtualmachine filesystems
 
 __cmd__ = "vm-guestfs"
 
-from pyVmomi import vim, vmodl
+from pyVmomi import vim
 from monplugin import Check, Status, Threshold, Range
-from checkvsphere import CheckVsphereException
 from checkvsphere.tools import cli, service_instance
 from checkvsphere.tools.helper import (
     CheckArgument,
     find_entity_views,
-    process_retrieve_content,
     isallowed,
     isbanned,
 )

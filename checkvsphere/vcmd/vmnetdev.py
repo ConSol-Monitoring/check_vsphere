@@ -24,20 +24,17 @@ __cmd__ = "vm-net-dev"
 
 import logging
 from pyVmomi import vim
-from monplugin import Check, Status, Threshold
+from monplugin import Check, Status
 from ..tools import cli, service_instance
-from datetime import datetime, timedelta, timezone
 from ..tools.helper import (
     CheckArgument,
     find_entity_views,
-    get_metric,
     isbanned,
     isallowed,
 )
 
 check = None
 args = None
-portgroup = {}
 
 
 def get_argparser():
@@ -123,7 +120,7 @@ def run():
     (code, message) = check.check_messages(separator="\n", separator_all="\n")
     check.exit(
         code=code,
-        message=f"all checks ok" if code == Status.OK else message,
+        message="all checks ok" if code == Status.OK else message,
     )
 
 

@@ -22,9 +22,7 @@ print all metric counters
 
 __cmd__ = 'list-metrics'
 
-import logging
 import textwrap
-from pyVmomi import vim
 from ..tools import cli, service_instance
 
 def run():
@@ -39,7 +37,6 @@ def run():
         group = counter.groupInfo.key
         name = counter.nameInfo.key
         rollup = counter.rollupType
-        id = counter.key
 
         metrics.setdefault(str(group), {}) \
             .setdefault(str(name), {}) \

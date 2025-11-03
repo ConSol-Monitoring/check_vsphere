@@ -21,10 +21,8 @@ check various runtime info from a host
 
 __cmd__ = 'host-runtime'
 
-import logging
 from pyVmomi import vim
 from monplugin import Check, Status
-from .. import CheckVsphereException
 from ..tools import cli, service_instance
 from ..tools.helper import find_entity_views, isbanned, isallowed, CheckArgument
 
@@ -216,7 +214,7 @@ def check_health(check, vm, args, result):
             "no vim.Host.runtime.healthSystemRuntime.hardwareStatusInfo found"
         )
 
-    filterunknown = lambda x: x.status.key != "unknown"
+    filterunknown = lambda x: x.status.key.lower() != "unknown"
     cpustatus = healthsystem.hardwareStatusInfo.cpuStatusInfo
     storagestatus = list(filter(filterunknown, healthsystem.hardwareStatusInfo.storageStatusInfo))
     memorystatus = list(filter(filterunknown, healthsystem.hardwareStatusInfo.memoryStatusInfo))

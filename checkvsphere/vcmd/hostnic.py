@@ -21,12 +21,10 @@ Check NICs on the host
 
 __cmd__ = 'host-nic'
 
-import logging
 from pyVmomi import vim
 from monplugin import Check, Status
 from ..tools import cli, service_instance
 from ..tools.helper import find_entity_views, CheckArgument, isbanned
-from .. import CheckVsphereException
 
 def run():
     parser = cli.Parser()
@@ -71,8 +69,6 @@ def run():
     except IndexError:
         check.exit(Status.UNKNOWN, f"host {args.vihost or ''} not found")
 
-    result = []
-
     if vm['props']['runtime.inMaintenanceMode']:
         check.exit(
             Status[args.maintenance_state],
@@ -113,10 +109,7 @@ def run():
             else:
                 check.add_message(Status.OK, f"{pnics[str(nic)].device} is ok")
 
-
-    okmessage = "All nics connected"
-
-    (code, message) = check.check_messages(separator="\n", separator_all='\n')#, allok=okmessage)
+    (code, message) = check.check_messages(separator="\n", separator_all='\n')
     check.exit(
         code=code,
         message=( message or "everything ok" )

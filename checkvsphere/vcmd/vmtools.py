@@ -35,7 +35,6 @@ from .. import CheckVsphereException
 
 check = None
 args = None
-portgroup = {}
 
 
 def run():
