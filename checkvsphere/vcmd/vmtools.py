@@ -144,24 +144,19 @@ def run():
                 check.add_message(Status.CRITICAL, f"{name} tools not running")
                 logging.debug(f"{name} tools not running")
             else:
-                vmname=name
                 perf_data["VMware Tools running"] += 1
 
     for key, value in perf_data.items():
         check.add_perfdata(label=key, value=value, uom="")
 
     (code, message) = check.check_messages(separator="\n")
-
-    if (vmscnt > 1):
-        message=f"{vmscnt} VMs checked for VMware Tools state, {len(vms) - vmscnt} VMs ignored"
-    else:
-        if (code == Status.OK):
-            message=f"{vmname} tools running"
-
     check.exit(
         code=code,
-        message=message,
+        message=f"{vmscnt} VMs checked for VMware Tools state, {len(vms) - vmscnt} VMs ignored"
+                if code == Status.OK
+                else message,
     )
+
 
 if __name__ == "__main__":
     try:
