@@ -50,6 +50,14 @@ def run():
         'regex, checked against <vm-name>'
     ))
     parser.add_optional_arguments({
+        'name_or_flags': ['--old'],
+        'options': {
+            'action': 'store_true',
+            'default': False,
+            'help': 'tools that are too old generate a warning now',
+        }
+    })
+    parser.add_optional_arguments({
         'name_or_flags': ['--not-installed'],
         'options': {
             'action': 'store_true',
@@ -137,8 +145,9 @@ def run():
                     check.add_message(Status.CRITICAL, f"{name} tools not installed")
             elif guest_summary.toolsStatus == "toolsOld":
                 perf_data["VMware Tools upgrade available"] += 1
-                check.add_message(Status.WARNING, f"{name} tools upgrade available")
                 logging.debug(f"{name} tools upgrade available")
+                if args.old:
+                    check.add_message(Status.WARNING, f"{name} tools upgrade available")
             elif guest_summary.toolsRunningStatus == "guestToolsNotRunning":
                 perf_data["VMware Tools not running"] += 1
                 check.add_message(Status.CRITICAL, f"{name} tools not running")
