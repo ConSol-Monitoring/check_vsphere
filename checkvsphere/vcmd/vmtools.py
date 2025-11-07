@@ -135,6 +135,10 @@ def run():
                 logging.debug(f"{name} has no vm tools installed")
                 if args.not_installed:
                     check.add_message(Status.CRITICAL, f"{name} tools not installed")
+            elif guest_summary.toolsStatus == "toolsOld":
+                perf_data["VMware Tools upgrade available"] += 1
+                check.add_message(Status.WARNING, f"{name} tools upgrade available")
+                logging.debug(f"{name} tools upgrade available")
             elif guest_summary.toolsRunningStatus == "guestToolsNotRunning":
                 perf_data["VMware Tools not running"] += 1
                 check.add_message(Status.CRITICAL, f"{name} tools not running")
