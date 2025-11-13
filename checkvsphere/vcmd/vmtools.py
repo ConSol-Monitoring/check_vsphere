@@ -158,7 +158,7 @@ def run():
     for key, value in perf_data.items():
         check.add_perfdata(label=key, value=value, uom="")
 
-    (code, message) = check.check_messages(separator="\n")
+    (code, message) = check.check_messages(separator="\n", separator_all="\n")
     check.exit(
         code=code,
         message=f"{vmscnt} VMs checked for VMware Tools state, {len(vms) - vmscnt} VMs ignored"
