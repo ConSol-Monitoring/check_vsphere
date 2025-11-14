@@ -107,6 +107,8 @@ def run():
     global check
     global args
     parser = get_argparser()
+    parser.add_optional_arguments(cli.Argument.VIHOST)
+
     args = parser.get_args()
 
     if not (args.warning or args.critical):
@@ -117,10 +119,20 @@ def run():
 
     args._si = service_instance.connect(args)
 
+    if args.vihost:
+        host_view = args._si.content.viewManager.CreateContainerView(
+            args._si.content.rootFolder, [vim.HostSystem], True)
+        try:
+            parentView = next(x for x in host_view.view if x.name.lower() == args.vihost.lower())
+        except:
+            raise CheckVsphereException(f"host {args.vihost} not found")
+    else:
+        parentView = args._si.content.rootFolder
+
     vms = find_entity_views(
         args._si,
         vim.VirtualMachine,
-        begin_entity=args._si.content.rootFolder,
+        begin_entity=parentView,
         properties=['name', 'snapshot', 'resourcePool', 'config.template']
     )
 
