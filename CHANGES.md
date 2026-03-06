@@ -1,3 +1,11 @@
+# v0.3.20
+
+* fix some exception handling bug
+
+# v0.3.19
+
+* allow pyVmomi 9 as dependency
+
 # v0.3.18
 
 * add vm-guestfs command
