@@ -15,6 +15,7 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import re
+import argparse
 from pyVmomi import vim, vmodl
 from . import serviceutil
 
@@ -121,6 +122,28 @@ def get_metric(perfMgr, perfCounterStr, perfInstance):
     return (None, None)
 
 
+def cluster_health_type(value):
+    parts = value.split(":")
+    max_members = float('Inf')
+    warn_threshold = None
+    crit_threshold = None
+    err = argparse.ArgumentTypeError(
+        "argument must be [max_members:]warn_threshold:crit_threshold"
+#        "max_members is a positive int "
+#        "xxx_threshold is either an int or a number with a % sign at the end "
+#        "in which case it means (number of cluster members) * xxx_threshold"
+    )
+
+    if len(parts) == 2:
+        warn_threshold, crit_threshold = parts[0], parts[1]
+    elif len(parts) == 3:
+        max_members, warn_threshold, crit_threshold = parts[0], parts[1], parts[2]
+    else:
+        raise err
+
+    return value
+
+
 class CheckArgument:
     def __init__(self):
         pass
@@ -135,6 +158,21 @@ class CheckArgument:
         'options': {
             'action': 'store',
             'help': 'the object type to check, i.e. HostSystem, Datacenter or VirtualMachine',
+        },
+    }
+
+    CLUSTER_NAME = {
+        'name_or_flags': ['--cluster-name'],
+        'options': {'action': 'store', 'help': 'Cluster name'}
+    }
+
+    CLUSTER_THRESHOLD = {
+        'name_or_flags': ['--cluster-threshold'],
+        'options': {
+            'default': [],
+            'action': 'append',
+            'type': cluster_health_type,
+            'help': 'cluster threshold: [max_members:]warn_threshold:crit_threshold'
         },
     }
 
