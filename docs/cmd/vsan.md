@@ -16,7 +16,7 @@ options:
 |---|---|
 | `--vihost HOSTNAME` | (optional) the name of the HostSystem to check, if omitted the first HostSystem found is checked, which is handy if you run this check directly against the host |
 | `--maintenance-state STATE` | one of OK, WARNING, CRITICAL, UNKNOWN. The status to use when the host is in maintenance mode, this defaults to UNKNOWN |
-| `--mode MODE` | one of objecthealth, healthtest |
+| `--mode MODE` | one of objecthealth, healthtest, capacity |
 | `--include REGEX` | (optional) REGEX is checked against the cluster name |
 | `--exclude REGEX` | (optional) REGEX is checked against the cluster name |
 | `--include-group REGEX` | (optional) only with `--mode healthtest`, REGEX is checked against the tests' group name |
@@ -25,6 +25,8 @@ options:
 | `--exclude-test REGEX`  | (optional) only with `--mode healthtest`, REGEX is checked against the test name |
 | `--cache`  | fetch cached data from the API when available and not outdated |
 | `--verbose` | show also tests the where OK |
+| `--warning` | warning free threshold for capacity |
+| `--critical` | critical free threshold for capacity |
 
 ### `--mode healthtest`
 
@@ -44,6 +46,13 @@ REGEX of `--include`, `--exclude` is matched against cluster name.
 
 This is an in depth check of the "vSAN object health" test. It's not very well
 tested yet.
+
+### `--mode capacity`
+
+REGEX of `--include`, `--exclude` is matched against cluster name.
+
+This Checks vSAN capacity, including slack and resync.
+Provides performance data. Uses --warning and --critical for free threshold
 
 ## Examples
 

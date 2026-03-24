@@ -115,6 +115,8 @@ def run():
         check_objecthealth(check, clusters)
     elif args.mode == "healthtest":
         check_healthtest(check, clusters)
+    elif args.mode == "capacity":
+        check_capacity(check, clusters, vhs)
     else:
         raise Exception("WHAT?")
 
@@ -179,6 +181,114 @@ def check_objecthealth(check, clusters):
     (status, message) = check.check_messages(separator='\n', separator_all='\n', **opts)
     check.exit(status, message)
 
+def check_capacity(check, clusters, vhs):
+    """
+    Checks vSAN capacity, including slack and resync.
+    Provides performance data and status for Icinga.
+    Optional debugging via args.debug
+    """
+    try:
+        vcMos = vsu.GetVsanVcMos(
+            args._si._stub,
+            context=sslContext(args),
+            version=vsu.GetLatestVmodlVersion(args.host, int(args.port))
+        )
+        vsan_space_system = vcMos['vsan-cluster-space-report-system']
+    except KeyError:
+        check.exit(CRITICAL, "vsan-cluster-space-report-system API nicht verfügbar!")
+    except Exception as e:
+        check.exit(CRITICAL, f"vsan API Fehler: {e}")
+
+    # Default Thresholds (Effective Free %)
+    warn_eff = args.warning if args.warning is not None else 25
+    crit_eff = args.critical if args.critical is not None else 15
+
+    for cluster in clusters:
+        try:
+            if not cluster['configurationEx'].vsanConfigInfo.enabled:
+                continue
+            if isbanned(args, cluster['name'], 'exclude'):
+                continue
+            if not isallowed(args, cluster['name'], 'include'):
+                continue
+
+            if getattr(args, 'debug', False):
+                print(f"DEBUG: Cluster={cluster['name']}, MoRef={cluster['moref']}")
+                print("DEBUG: vsan_space_system methods:", dir(vsan_space_system))
+
+            # Try ManagedStorageSpaceUsage, fallback QuerySpaceUsage
+            try:
+                if getattr(args, 'debug', False):
+                    print("DEBUG: Versuch QueryVsanManagedStorageSpaceUsage")
+                capacity = vsan_space_system.QueryVsanManagedStorageSpaceUsage(cluster['moref'])
+            except Exception as e1:
+                if getattr(args, 'debug', False):
+                    print(f"DEBUG: QueryVsanManagedStorageSpaceUsage failed ({e1}), fallback QuerySpaceUsage")
+                capacity = vsan_space_system.QuerySpaceUsage(cluster['moref'])
+
+            if getattr(args, 'debug', False):
+                print("DEBUG: Capacity abgerufen:", capacity)
+
+            # Correct Usage-Calculation
+            total = getattr(capacity, 'totalCapacityB', 0)
+            used = getattr(getattr(capacity, 'spaceOverview', None), 'usedB', 0)
+            free = getattr(capacity, 'freeCapacityB', 0)
+            slack = getattr(capacity, 'slackSpaceB', 0)
+            resync = getattr(capacity, 'resyncSpaceB', 0)
+
+            effective_free = max(0, free - slack - resync)
+            usage_pct = (used / total) * 100 if total > 0 else 0
+            effective_free_pct = (effective_free / total) * 100 if total > 0 else 0
+
+            # Calculate status
+            state = OK
+            if effective_free_pct < crit_eff:
+                state = CRITICAL
+            elif effective_free_pct < warn_eff:
+                state = WARNING
+
+            # Perfdata rounded Values & Thresholds
+            check.add_perfdata(label=f"{cluster['name']}_usage",
+                               value=round(usage_pct, 1),
+                               warning=warn_eff,
+                               critical=crit_eff,
+                               uom='%')
+            check.add_perfdata(label=f"{cluster['name']}_free_gb",
+                               value=round(free / 1024**3, 1),
+                               uom='GB')
+            check.add_perfdata(label=f"{cluster['name']}_slack_gb",
+                               value=round(slack / 1024**3, 1),
+                               uom='GB')
+            check.add_perfdata(label=f"{cluster['name']}_resync_gb",
+                               value=round(resync / 1024**3, 1),
+                               uom='GB')
+            check.add_perfdata(label=f"{cluster['name']}_effective_free_gb",
+                               value=round(effective_free / 1024**3, 1),
+                               warning=warn_eff,
+                               critical=crit_eff,
+                               uom='GB')
+
+            # Message
+            check.add_message(
+                state,
+                f"{cluster['name']}: usage={round(usage_pct,1)}% "
+                f"(free={round(free/1024*3,1)}GB, slack={round(slack/1024*3,1)}GB, "
+                f"resync={round(resync/1024**3,1)}GB, effective_free={round(effective_free_pct,1)}%)"
+            )
+
+        except Exception as e:
+            if getattr(args, 'debug', False):
+                print(f"DEBUG ERROR: Cluster={cluster['name']}, Exception={e}")
+            check.add_message(CRITICAL, f"{cluster['name']}: Fehler beim Abfragen: {e}")
+
+    # All OK Option
+    opts = {}
+    if not getattr(args, 'verbose', False):
+        opts['allok'] = "everything is fine"
+
+    status, message = check.check_messages(separator='\n', separator_all='\n', **opts)
+    check.exit(status, message)
+
 def sslContext(args):
     context = ssl.create_default_context()
     context.check_hostname = False
@@ -209,8 +319,24 @@ def get_argparser():
             'choices': [
                 'objecthealth',
                 'healthtest',
+                'capacity'
             ],
             'help': 'which runtime mode to check'
+        }
+    })
+    parser.add_optional_arguments({
+        'name_or_flags': ['--warning'],
+        'options': {
+            'type': float,
+            'help': 'Warning threshold for usage in percent'
+        }
+    })
+
+    parser.add_optional_arguments({
+        'name_or_flags': ['--critical'],
+        'options': {
+            'type': float,
+            'help': 'Critical threshold for usage in percent'
         }
     })
 
