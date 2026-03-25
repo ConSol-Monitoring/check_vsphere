@@ -25,8 +25,8 @@ options:
 | `--exclude-test REGEX`  | (optional) only with `--mode healthtest`, REGEX is checked against the test name |
 | `--cache`  | fetch cached data from the API when available and not outdated |
 | `--verbose` | show also tests the where OK |
-| `--warning` | warning free threshold for capacity |
-| `--critical` | critical free threshold for capacity |
+| `--warning` | warning threshold for capacity |
+| `--critical` | critical threshold for capacity |
 
 ### `--mode healthtest`
 
@@ -52,7 +52,7 @@ tested yet.
 REGEX of `--include`, `--exclude` is matched against cluster name.
 
 This Checks vSAN capacity, including slack and resync.
-Provides performance data. Uses --warning and --critical for free threshold
+Provides performance data. Uses --warning and --critical for threshold
 
 ## Examples
 
