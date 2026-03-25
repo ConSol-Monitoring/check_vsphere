@@ -65,6 +65,7 @@ def run():
     args = parser.get_args()
 
     check = Check()
+    check.set_threshold(warning=args.warning, critical=args.critical)
 
     args._si = service_instance.connect(args)
 
@@ -184,8 +185,6 @@ def check_objecthealth(check, clusters):
 def check_capacity(check, clusters, vhs):
     """
     Checks vSAN capacity, including slack and resync.
-    Provides performance data and status for Icinga.
-    Optional debugging via args.debug
     """
     try:
         vcMos = vsu.GetVsanVcMos(
@@ -195,13 +194,9 @@ def check_capacity(check, clusters, vhs):
         )
         vsan_space_system = vcMos['vsan-cluster-space-report-system']
     except KeyError:
-        check.exit(CRITICAL, "vsan-cluster-space-report-system API nicht verfügbar!")
+        check.exit(CRITICAL, "vsan-cluster-space-report-system API not avilable!")
     except Exception as e:
-        check.exit(CRITICAL, f"vsan API Fehler: {e}")
-
-    # Default Thresholds (Effective Free %)
-    warn_eff = args.warning if args.warning is not None else 25
-    crit_eff = args.critical if args.critical is not None else 15
+        check.exit(CRITICAL, f"vsan API error: {e}")
 
     for cluster in clusters:
         try:
@@ -219,7 +214,7 @@ def check_capacity(check, clusters, vhs):
             # Try ManagedStorageSpaceUsage, fallback QuerySpaceUsage
             try:
                 if getattr(args, 'debug', False):
-                    print("DEBUG: Versuch QueryVsanManagedStorageSpaceUsage")
+                    print("DEBUG: Try QueryVsanManagedStorageSpaceUsage")
                 capacity = vsan_space_system.QueryVsanManagedStorageSpaceUsage(cluster['moref'])
             except Exception as e1:
                 if getattr(args, 'debug', False):
@@ -227,7 +222,7 @@ def check_capacity(check, clusters, vhs):
                 capacity = vsan_space_system.QuerySpaceUsage(cluster['moref'])
 
             if getattr(args, 'debug', False):
-                print("DEBUG: Capacity abgerufen:", capacity)
+                print("DEBUG: Capacity querried:", capacity)
 
             # Correct Usage-Calculation
             total = getattr(capacity, 'totalCapacityB', 0)
@@ -240,19 +235,14 @@ def check_capacity(check, clusters, vhs):
             usage_pct = (used / total) * 100 if total > 0 else 0
             effective_free_pct = (effective_free / total) * 100 if total > 0 else 0
 
-            # Calculate status
-            state = OK
-            if effective_free_pct < crit_eff:
-                state = CRITICAL
-            elif effective_free_pct < warn_eff:
-                state = WARNING
+            # This checks the usage_pct against args.warning and args.critical
+            state = check.check_threshold(usage_pct)
 
-            # Perfdata rounded Values & Thresholds
             check.add_perfdata(label=f"{cluster['name']}_usage",
                                value=round(usage_pct, 1),
-                               warning=warn_eff,
-                               critical=crit_eff,
-                               uom='%')
+                               uom='%',
+                               threshold=check.threshold)
+            
             check.add_perfdata(label=f"{cluster['name']}_free_gb",
                                value=round(free / 1024**3, 1),
                                uom='GB')
@@ -264,24 +254,18 @@ def check_capacity(check, clusters, vhs):
                                uom='GB')
             check.add_perfdata(label=f"{cluster['name']}_effective_free_gb",
                                value=round(effective_free / 1024**3, 1),
-                               warning=warn_eff,
-                               critical=crit_eff,
                                uom='GB')
 
-            # Message
             check.add_message(
                 state,
                 f"{cluster['name']}: usage={round(usage_pct,1)}% "
-                f"(free={round(free/1024*3,1)}GB, slack={round(slack/1024*3,1)}GB, "
+                f"(free={round(free/1024**3,1)}GB, slack={round(slack/1024**3,1)}GB, "
                 f"resync={round(resync/1024**3,1)}GB, effective_free={round(effective_free_pct,1)}%)"
             )
 
         except Exception as e:
-            if getattr(args, 'debug', False):
-                print(f"DEBUG ERROR: Cluster={cluster['name']}, Exception={e}")
-            check.add_message(CRITICAL, f"{cluster['name']}: Fehler beim Abfragen: {e}")
-
-    # All OK Option
+            check.add_message(CRITICAL, f"{cluster['name']}: Error while querying: {e}")
+        
     opts = {}
     if not getattr(args, 'verbose', False):
         opts['allok'] = "everything is fine"
@@ -324,22 +308,8 @@ def get_argparser():
             'help': 'which runtime mode to check'
         }
     })
-    parser.add_optional_arguments({
-        'name_or_flags': ['--warning'],
-        'options': {
-            'type': float,
-            'help': 'Warning threshold for usage in percent'
-        }
-    })
-
-    parser.add_optional_arguments({
-        'name_or_flags': ['--critical'],
-        'options': {
-            'type': float,
-            'help': 'Critical threshold for usage in percent'
-        }
-    })
-
+    parser.add_optional_arguments(CheckArgument.WARNING_THRESHOLD)
+    parser.add_optional_arguments(CheckArgument.CRITICAL_THRESHOLD)
     return parser
 
 def import_vsan():
