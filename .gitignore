@@ -9,3 +9,4 @@ check_vsphere
 check_vsphere_*
 *.zip
 dist/
+constraints.txt
