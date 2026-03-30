@@ -1,16 +1,11 @@
 import unittest
 from monplugin import Status
+from typing import List
 
 
-def check_cluster_health(failed: int, members: int, thresholds: list[str]) -> Status:
-    parsed_thresholds = []
-    seen_max_members = set()
-    has_fallback = False
-
-    # Thresholds are of the form: max_members:warn:crit
-    # or warn:crit (this one is required as a fallback)
-    # it just means: +Inf:warn:crit basically
-    for t_str in thresholds:
+def check_cluster_health(failed: int, members: int, thresholds: List[str]) -> Status:
+    def parse_threshold(t_str: str) -> tuple:
+        """Parse threshold string and return (max_members, warn_str, crit_str)."""
         parts = t_str.split(":")
 
         if len(parts) == 3:
@@ -18,15 +13,25 @@ def check_cluster_health(failed: int, members: int, thresholds: list[str]) -> St
                 max_m = int(parts[0])
             except ValueError:
                 raise ValueError(f"Invalid max_members value: '{parts[0]}'")
-            w_val, c_val = parts[1], parts[2]
+            return (max_m, parts[1], parts[2])
         elif len(parts) == 2:
-            max_m = float("inf")
-            w_val, c_val = parts[0], parts[1]
-            has_fallback = True
+            return (float("inf"), parts[0], parts[1])
         else:
             raise ValueError(f"Malformed threshold string: '{t_str}'")
 
-        if max_m in seen_max_members:
+    def resolve_value(s: str) -> float:
+        """Resolve a threshold value (can be a number or percentage)."""
+        s = s.strip()
+        if s.endswith("%"):
+            return (float(s[:-1]) / 100.0) * members
+        return float(s)
+
+    # Parse and validate all thresholds
+    parsed = {}
+    for t_str in thresholds:
+        max_m, warn_str, crit_str = parse_threshold(t_str)
+
+        if max_m in parsed:
             label = (
                 "Fallback (Infinity)"
                 if max_m == float("inf")
@@ -34,35 +39,21 @@ def check_cluster_health(failed: int, members: int, thresholds: list[str]) -> St
             )
             raise ValueError(f"Duplicate threshold configuration found for {label}")
 
-        seen_max_members.add(max_m)
-        parsed_thresholds.append((max_m, w_val, c_val))
+        parsed[max_m] = (warn_str, crit_str)
 
-    if not has_fallback:
+    if float("inf") not in parsed:
         raise ValueError(
             "No fallback threshold (Infinity) provided in thresholds list."
         )
 
-    # filter out the thresholds where max_members is too small
-    eligible = [t for t in parsed_thresholds if t[0] >= members]
-    # take the one with the smallest max_values
-    selected = min(eligible, key=lambda x: x[0])
+    # Select the tightest threshold applicable to `members`
+    warn_str, crit_str = parsed[min(m for m in parsed if m >= members)]
 
-    _, warn_str, crit_str = selected
-
-    def resolve_threshold(val_str: str) -> float:
-        if "%" in val_str:
-            percentage = float(val_str.strip("%")) / 100.0
-            return percentage * members
-        return float(val_str)
-
-    crit_limit = resolve_threshold(crit_str)
-    warn_limit = resolve_threshold(warn_str)
-
-    if failed >= crit_limit:
+    # Compare failed count against resolved limits
+    if failed >= resolve_value(crit_str):
         return Status.CRITICAL
-    if failed >= warn_limit:
+    if failed >= resolve_value(warn_str):
         return Status.WARNING
-
     return Status.OK
 
 
