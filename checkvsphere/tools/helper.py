@@ -124,22 +124,11 @@ def get_metric(perfMgr, perfCounterStr, perfInstance):
 
 def cluster_health_type(value):
     parts = value.split(":")
-    max_members = float('Inf')
-    warn_threshold = None
-    crit_threshold = None
-    err = argparse.ArgumentTypeError(
-        "argument must be [max_members:]warn_threshold:crit_threshold"
-#        "max_members is a positive int "
-#        "xxx_threshold is either an int or a number with a % sign at the end "
-#        "in which case it means (number of cluster members) * xxx_threshold"
-    )
 
-    if len(parts) == 2:
-        warn_threshold, crit_threshold = parts[0], parts[1]
-    elif len(parts) == 3:
-        max_members, warn_threshold, crit_threshold = parts[0], parts[1], parts[2]
-    else:
-        raise err
+    if len(parts) not in (2, 3):
+        raise argparse.ArgumentTypeError(
+            "argument must be [max_members:]warn_threshold:crit_threshold"
+        )
 
     return value
 
