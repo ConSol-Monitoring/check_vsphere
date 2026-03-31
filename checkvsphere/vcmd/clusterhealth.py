@@ -92,7 +92,7 @@ def run():
 
     # if yellow is faulty, red is definitly faulty as well
     if 'overallStatusYellow' in args.faulty:
-        args.faulty.append(['overallStatusRed'])
+        args.faulty.append('overallStatusRed')
 
     si = service_instance.connect(args)
     check = Check()
