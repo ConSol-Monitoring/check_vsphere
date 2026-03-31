@@ -1,3 +1,7 @@
+# v0.3.21
+
+* introduce `cluster-health` mode
+
 # v0.3.20
 
 * fix some exception handling bug

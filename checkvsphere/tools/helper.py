@@ -15,6 +15,7 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import re
+import argparse
 from pyVmomi import vim, vmodl
 from . import serviceutil
 
@@ -121,6 +122,17 @@ def get_metric(perfMgr, perfCounterStr, perfInstance):
     return (None, None)
 
 
+def cluster_health_type(value):
+    parts = value.split(":")
+
+    if len(parts) not in (2, 3):
+        raise argparse.ArgumentTypeError(
+            "argument must be [max_members:]warn_threshold:crit_threshold"
+        )
+
+    return value
+
+
 class CheckArgument:
     def __init__(self):
         pass
@@ -135,6 +147,21 @@ class CheckArgument:
         'options': {
             'action': 'store',
             'help': 'the object type to check, i.e. HostSystem, Datacenter or VirtualMachine',
+        },
+    }
+
+    CLUSTER_NAME = {
+        'name_or_flags': ['--cluster-name'],
+        'options': {'action': 'store', 'help': 'Cluster name'}
+    }
+
+    CLUSTER_THRESHOLD = {
+        'name_or_flags': ['--cluster-threshold'],
+        'options': {
+            'default': [],
+            'action': 'append',
+            'type': cluster_health_type,
+            'help': 'cluster threshold: [max_members:]warn_threshold:crit_threshold'
         },
     }
 
