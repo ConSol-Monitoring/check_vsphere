@@ -27,7 +27,8 @@ The syntax is `[max_members:]warn_threshold:crit_threshold`.
 - `warn_threshold` – number or percentage of faulty nodes that triggers a **WARNING**.
 - `crit_threshold` – number or percentage of faulty nodes that triggers a **CRITICAL**.
 
-Thresholds can be absolute numbers (e.g., `1`) or percentages (e.g., `30%`). Mixed forms are allowed (e.g., `4:1:3`). Multiple `--cluster-threshold` flags may be given for different cluster sizes. Exactly one `--cluster-threshold` must omit `max_members` and acts as a fallback for any cluster size.
+Thresholds may be specified as absolute numbers (e.g., `1`) or percentages (e.g., `30%`). Mixed forms are allowed (e.g.,
+4:1:50%). You can supply multiple --cluster-threshold flags for different cluster sizes; exactly one `--cluster-threshold` must omit `max_members` and will serve as the fallback for any cluster size.
 
 Examples:
 
