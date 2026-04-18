@@ -70,6 +70,12 @@ def range_in_bytes(r: Range, uom):
         ":" + ('' if end == float('+inf') else str(end))
 
 args = None
+UNIT_METRICS = ('B', 'kB', 'MB', 'GB')
+METRIC_CHOICES = (
+    ['usage']
+    + [metric for metric in ('free', 'used', 'capacity')]
+    + [f"{metric}_{unit}" for metric in ('free', 'used', 'capacity') for unit in UNIT_METRICS]
+)
 
 def run():
     global args
@@ -85,6 +91,7 @@ def run():
         'options': {
             'action': 'store',
             'default': 'usage',
+            'choices': METRIC_CHOICES,
             'help': 'The metric to apply the thresholds on, defaults to `usage`, can be: '
                     'usage (in percent), free and used. '
                     'free and used are measured in bytes. You can one of these suffixes: '
