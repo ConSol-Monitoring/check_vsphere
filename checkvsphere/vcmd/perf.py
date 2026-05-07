@@ -80,17 +80,18 @@ def run():
     check = Check()
     check.set_threshold(warning=args.warning, critical=args.critical)
 
-    args._si = service_instance.connect(args)
-
     try:
         vimtype = getattr(vim, args.vimtype)
     except:
         raise Exception(f"vim.{args.vimtype} is not known")
 
-    try:
-        args.perfcounter.split(":", 2)
-    except:
-        raise Exception("perfcounter must be composed as groupName:perfName:rollupType")
+    parts = args.perfcounter.split(":")
+    if len(parts) != 3 or any(not part for part in parts):
+        raise CheckVsphereException(
+            "perfcounter must be composed as groupName:perfName:rollupType"
+        )
+
+    args._si = service_instance.connect(args)
 
     (counter, metricId) = get_metric(
         args._si.content.perfManager, args.perfcounter, args.perfinstance
@@ -230,7 +231,7 @@ def get_argparser():
             'options': {
                 'action': 'store',
                 'default': '',
-                'help': 'the instance of of the metric to monitor. defaults to empty string, '
+                'help': 'the instance of the metric to monitor. defaults to empty string, '
                 'which is not always available but means an aggregated value over all instances',
             },
         }

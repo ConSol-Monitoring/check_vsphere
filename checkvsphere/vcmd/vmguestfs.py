@@ -30,7 +30,7 @@ from checkvsphere.tools.helper import (
     isallowed,
     isbanned,
 )
-from checkvsphere.vcmd.datastores import Space, range_in_bytes
+from checkvsphere.vcmd.datastores import METRIC_CHOICES, Space, range_in_bytes
 
 args = None
 
@@ -49,6 +49,7 @@ def run():
             "options": {
                 "action": "store",
                 "default": "usage",
+                "choices": METRIC_CHOICES,
                 "help": "The metric to apply the thresholds on, defaults to `usage`, can be: "
                 "usage (in percent), free and used. "
                 "free and used are measured in bytes. You can use one of these suffixes: "
