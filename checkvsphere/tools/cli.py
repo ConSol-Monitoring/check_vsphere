@@ -36,6 +36,13 @@ class EnvDefault(argparse.Action):
         setattr(namespace, self.dest, values)
 
 
+class MonitoringArgumentParser(argparse.ArgumentParser):
+    def exit(self, status=0, message=None):
+        if status in (0, 2):
+            status = 3
+        super().exit(status, message)
+
+
 class Parser:
     """
     Samples specific argument parser.
@@ -56,7 +63,7 @@ class Parser:
         One for the standard arguments and one for sample specific arguments.
         The standard group cannot be extended.
         """
-        self._parser = argparse.ArgumentParser(description='Arguments for talking to vCenter')
+        self._parser = MonitoringArgumentParser(description='Arguments for talking to vCenter')
         self._standard_args_group = self._parser.add_argument_group('standard arguments')
         self._specific_args_group = self._parser.add_argument_group('sample-specific arguments')
 
@@ -99,7 +106,7 @@ class Parser:
         self._standard_args_group.add_argument('--sessionfile',
                                                required=False,
                                                action='store',
-                                               help='Path to a file where the sessioncookie'
+                                               help='Path to a file where the session cookie '
                                                     'will be stored for later reuse. (EXPERIMENTAL)')
 
         self._standard_args_group.add_argument('--match-method',
