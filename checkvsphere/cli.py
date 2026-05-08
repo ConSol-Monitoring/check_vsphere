@@ -69,6 +69,7 @@ def run():
         for cmd in sorted(cmds):
             print(f"  {cmd}")
         print()
+        sys.exit(3)
 
 
 def main():
