@@ -25,59 +25,57 @@ __cmd__ = 'about'
 import logging
 import os
 from monplugin import Status
-from pyVmomi import vim
 from ..tools import cli, service_instance
 
 
 def run():
-    try:
-        parser = cli.Parser()
-        parser.add_optional_arguments({
-            'name_or_flags': ['--skip-permission'],
-            'options': {
-                'action': 'store_true',
-                'default': False,
-                'help': 'skips the System.View permission check',
-            }
-        })
+    parser = cli.Parser()
+    parser.add_optional_arguments({
+        'name_or_flags': ['--skip-permission'],
+        'options': {
+            'action': 'store_true',
+            'default': False,
+            'help': 'skips the System.View permission check',
+        }
+    })
 
-        args = parser.get_args()
-        si = service_instance.connect(args)
-        about = si.content.about
-        status = Status.OK
-        clock = True
-        if not args.skip_permission:
-            try:
-                clock = si.serverClock
-            except Exception:
-                logging.debug("no server clock", exc_info=1)
-                status = Status.CRITICAL
-                clock = None
-                if args.sessionfile:
-                    try:
-                        logging.debug(f"deleting {args.sessionfile}")
-                        os.unlink(args.sessionfile)
-                    except Exception:
-                        logging.debug(f"unlink {args.sessionfile} failed", exc_info=1)
+    args = parser.get_args()
+    si = service_instance.connect(args)
+    about = si.content.about
+    status = Status.OK
+    clock = True
+    if not args.skip_permission:
+        try:
+            clock = si.serverClock
+        except Exception:
+            logging.debug("no server clock", exc_info=1)
+            status = Status.CRITICAL
+            clock = None
+            if args.sessionfile:
+                try:
+                    logging.debug(f"deleting {args.sessionfile}")
+                    os.unlink(args.sessionfile)
+                except Exception:
+                    logging.debug(f"unlink {args.sessionfile} failed", exc_info=1)
 
-        out = (
-            f'{status.name}: '
-            f'{ "No System.View permission, " if not clock  else "" }'
-            f'{ about.fullName }, '
-            f'api: { about.apiType }/{ about.apiVersion }, '
-            f'product: { about.licenseProductName } { about.licenseProductVersion }'
-        )
-        print(out)
-        raise SystemExit(status.value)
-    except vim.fault.VimFault as e:
-        if hasattr(e, 'msg'):
-            print(f"ERROR: {e.msg}")
-        else:
-            print(f"ERROR: {e}")
-        raise SystemExit(2)
-    except Exception as e:
-        print(f"ERROR: {e}")
-        raise SystemExit(2)
+    out = (
+        f'{status.name}: '
+        f'{ "No System.View permission, " if not clock  else "" }'
+        f'{ about.fullName }, '
+        f'api: { about.apiType }/{ about.apiVersion }, '
+        f'product: { about.licenseProductName } { about.licenseProductVersion }'
+    )
+    print(out)
+    raise SystemExit(status.value)
 
 if __name__ == "__main__":
-    run()
+    try:
+        run()
+    except SystemExit as e:
+        if not isinstance(e.code, int) or e.code > 3 or e.code < 0:
+            print("UNKNOWN EXIT CODE")
+            raise SystemExit(Status.UNKNOWN)
+        raise
+    except Exception as e:
+        print("UNKNOWN - " + str(e))
+        raise SystemExit(Status.UNKNOWN)
