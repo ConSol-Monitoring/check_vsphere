@@ -106,7 +106,7 @@ class Parser:
         self._standard_args_group.add_argument('--sessionfile',
                                                required=False,
                                                action='store',
-                                               help='Path to a file where the sessioncookie'
+                                               help='Path to a file where the session cookie '
                                                     'will be stored for later reuse. (EXPERIMENTAL)')
 
         self._standard_args_group.add_argument('--match-method',
