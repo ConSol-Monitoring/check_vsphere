@@ -27,7 +27,7 @@ def test_main_maps_connection_refused_to_critical(monkeypatch, capsys):
         cli.main()
 
     assert exc.value.code == 2
-    assert "UNKNOWN - Connection refused" in capsys.readouterr().out
+    assert "CRITICAL - Connection refused" in capsys.readouterr().out
 
 
 def test_main_maps_connect_exception_to_ok(monkeypatch, capsys):

@@ -107,7 +107,7 @@ def main():
             traceback.print_exc(file=sys.stdout)
         sys.exit(3)
     except ConnectionRefusedError:
-        print("UNKNOWN - Connection refused")
+        print("CRITICAL - Connection refused")
         raise SystemExit(2)
     except vim.fault.VimFault as e:
         if hasattr(e, 'msg'):
