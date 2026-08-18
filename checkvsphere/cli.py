@@ -108,7 +108,7 @@ def main():
         sys.exit(3)
     except ConnectionRefusedError:
         print("UNKNOWN - Connection refused")
-        raise SystemExit(2)
+        raise SystemExit(3)
     except vim.fault.VimFault as e:
         if hasattr(e, 'msg'):
             print(f"UNKNOWN - {e.msg}")
