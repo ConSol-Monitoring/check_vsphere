@@ -17,7 +17,7 @@ def test_main_maps_timeout_to_unknown(monkeypatch, capsys):
     assert "UNKNOWN - Timeout reached" in capsys.readouterr().out
 
 
-def test_main_maps_connection_refused_to_critical(monkeypatch, capsys):
+def test_main_maps_connection_refused_to_unknown(monkeypatch, capsys):
     def raise_connection_refused():
         raise ConnectionRefusedError("refused")
 
@@ -26,7 +26,7 @@ def test_main_maps_connection_refused_to_critical(monkeypatch, capsys):
     with pytest.raises(SystemExit) as exc:
         cli.main()
 
-    assert exc.value.code == 2
+    assert exc.value.code == 3
     assert "UNKNOWN - Connection refused" in capsys.readouterr().out
 
 
