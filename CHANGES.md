@@ -1,3 +1,9 @@
+# Unreleased
+
+* add `zertotag` command to check VM Zerto tag compliance
+* add `SSL_CA_FILE` and `SSL_CA_PATH` environment variables for custom CA trust
+* return UNKNOWN for missing or invalid commands and vCenter connection failures
+
 # v0.3.30
 
 * add vihost filter option to snapshot command
