@@ -24,9 +24,9 @@ __cmd__ = 'power-state'
 
 from pyVmomi import vim
 from monplugin import Check, Status
-from .. import CheckVsphereException
-from ..tools import cli, service_instance
-from ..tools.helper import (
+from checkvsphere import CheckVsphereException
+from checkvsphere.tools import cli, service_instance
+from checkvsphere.tools.helper import (
     CheckArgument,
     find_entity_views,
     isbanned,

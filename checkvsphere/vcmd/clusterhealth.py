@@ -25,9 +25,9 @@ import logging
 from pyVmomi import vim, vmodl
 from pprint import pprint as pp
 from monplugin import Check, Status
-from ..tools import cli, service_instance
-from ..tools.cluster_health import check_cluster_health
-from ..tools.helper import (
+from checkvsphere.tools import cli, service_instance
+from checkvsphere.tools.cluster_health import check_cluster_health
+from checkvsphere.tools.helper import (
     CheckArgument,
     find_entity_views,
     process_retrieve_content

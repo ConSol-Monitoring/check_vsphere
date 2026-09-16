@@ -24,10 +24,10 @@ __cmd__ = "vsan"
 
 import ssl
 from pyVmomi import vim
-from ..tools import cli, service_instance
-from ..tools.helper import CheckArgument, isallowed, isbanned
-from ..tools.helper import find_entity_views, process_retrieve_content
-from ..tools.service_instance import get_ssl_context
+from checkvsphere.tools import cli, service_instance
+from checkvsphere.tools.helper import CheckArgument, isallowed, isbanned
+from checkvsphere.tools.helper import find_entity_views, process_retrieve_content
+from checkvsphere.tools.service_instance import get_ssl_context
 from monplugin import Check, Status
 
 OK = Status.OK

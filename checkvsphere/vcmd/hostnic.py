@@ -23,8 +23,8 @@ __cmd__ = 'host-nic'
 
 from pyVmomi import vim
 from monplugin import Check, Status
-from ..tools import cli, service_instance
-from ..tools.helper import find_entity_views, CheckArgument, isbanned
+from checkvsphere.tools import cli, service_instance
+from checkvsphere.tools.helper import find_entity_views, CheckArgument, isbanned
 
 def run():
     parser = cli.Parser()

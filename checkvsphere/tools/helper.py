@@ -17,7 +17,7 @@
 import re
 import argparse
 from pyVmomi import vim, vmodl
-from . import serviceutil
+from checkvsphere.tools import serviceutil
 
 
 # TODO: this might be slow, probably speed this up with

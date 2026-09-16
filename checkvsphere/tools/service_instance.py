@@ -27,7 +27,7 @@ import logging
 import os
 import ssl
 from pyVim.connect import SmartConnect, Disconnect
-from .. import VsphereConnectException
+from checkvsphere import VsphereConnectException
 
 
 def write_session_id(service_instance, sessionfile):

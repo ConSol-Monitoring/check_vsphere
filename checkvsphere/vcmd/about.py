@@ -26,7 +26,7 @@ import logging
 import os
 from monplugin import Status
 from pyVmomi import vim
-from ..tools import cli, service_instance
+from checkvsphere.tools import cli, service_instance
 
 
 def run():

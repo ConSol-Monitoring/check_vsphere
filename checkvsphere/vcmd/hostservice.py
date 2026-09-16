@@ -23,8 +23,8 @@ __cmd__ = 'host-service'
 
 from pyVmomi import vim, vmodl
 from monplugin import Check, Status
-from ..tools import cli, service_instance
-from ..tools.helper import (
+from checkvsphere.tools import cli, service_instance
+from checkvsphere.tools.helper import (
     CheckArgument,
     find_entity_views,
     isallowed,

@@ -23,7 +23,7 @@ print all metric counters
 __cmd__ = 'list-metrics'
 
 import textwrap
-from ..tools import cli, service_instance
+from checkvsphere.tools import cli, service_instance
 
 def run():
     parser = cli.Parser()

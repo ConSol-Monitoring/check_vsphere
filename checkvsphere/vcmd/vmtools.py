@@ -29,9 +29,9 @@ from collections import defaultdict
 from monplugin import Check, Status
 from pyVmomi import vim
 
-from ..tools import cli, service_instance
-from ..tools.helper import find_entity_views, isbanned, isallowed, CheckArgument
-from .. import CheckVsphereException
+from checkvsphere.tools import cli, service_instance
+from checkvsphere.tools.helper import find_entity_views, isbanned, isallowed, CheckArgument
+from checkvsphere import CheckVsphereException
 
 check = None
 args = None

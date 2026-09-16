@@ -25,10 +25,10 @@ __cmd__ = 'snapshots'
 import logging
 from pyVmomi import vim
 from monplugin import Check, Status
-from .. import CheckVsphereException
-from ..tools import cli, service_instance
+from checkvsphere import CheckVsphereException
+from checkvsphere.tools import cli, service_instance
 from datetime import datetime, timedelta, timezone
-from ..tools.helper import (
+from checkvsphere.tools.helper import (
     CheckArgument,
     find_entity_views,
     isbanned,
