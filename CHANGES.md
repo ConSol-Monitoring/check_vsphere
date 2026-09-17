@@ -1,4 +1,4 @@
-# Unreleased
+# v0.3.40
 
 * add `zertotag` command to check VM Zerto tag compliance
 * add `SSL_CA_FILE` and `SSL_CA_PATH` environment variables for custom CA trust
@@ -11,7 +11,7 @@
 * fix: cluster-health command honors standby filtering only on request
 * fix: reduce repeated vSphere property fetches (performance improvement)
 * fix: harden vm-guestfs command and add test coverage
-* refactor: move argument definition into get_argparser
+* refactor: move argument definition into get\_argparser
 * ci: add GitHub Actions test workflow
 * test: extend vcsim and unit test coverage with mocked pyVmomi
 
