@@ -4,12 +4,12 @@ title: vm-tools
 
 ## Description
 
-This command reports any VMs that have VMware Tools not running.
-If it finds any the check result is CRITICAL.
+This command reports any VMs where VMware Tools is not running.
+If it finds any, the check result is CRITICAL.
 
 ## Options
 
-Besides the [general options](../../general-options/) this command supports the
+Besides the [general options](../../general-options/), this command supports the
 following options:
 
 | options | description |

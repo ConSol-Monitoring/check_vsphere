@@ -4,11 +4,11 @@ title: vm-net-dev
 
 ## Description
 
-This command check networkdevices of vms.
+This command checks the network devices of VMs.
 
 ## Options
 
-Besides the [general options](../../general-options/) this command supports the following
+Besides the [general options](../../general-options/), this command supports the following
 options:
 
 | options | description |

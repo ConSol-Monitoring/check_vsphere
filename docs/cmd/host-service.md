@@ -4,13 +4,13 @@ title: host-service
 
 ## Description
 
-The host-service checks the services are running. Since you probably don't have
-all of them running you probably want to filter the ones to check with the
+The host-service command checks whether services are running. Since you may not
+run all services, you can select which ones to check with the
 `--allowed` parameter.
 
 ## Options
 
-Besides the [general options](../../general-options/) this command supports the following
+Besides the [general options](../../general-options/), this command supports the following
 options:
 
 | option | description |

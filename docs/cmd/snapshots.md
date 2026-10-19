@@ -4,11 +4,11 @@ title: snapshots
 
 ## Description
 
-This command checks VirtualMachine snapshots by age or count.
+This command checks virtual machine snapshots by age or count.
 
 ## Options
 
-Besides the [general options](../../general-options/) this command supports the following
+Besides the [general options](../../general-options/), this command supports the following
 options:
 
 | options | description |

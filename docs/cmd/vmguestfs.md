@@ -4,12 +4,12 @@ title: vm-guestfs
 
 ## Description
 
-This command can check disk usage of mounted filesystems in a
-VM if vmwaretools are running.
+This command checks disk usage of mounted filesystems in a
+VM if VMware Tools is running.
 
 ## Options
 
-Besides the [general options](../../general-options/) this command supports the
+Besides the [general options](../../general-options/), this command supports the
 following options:
 
 | options | description |

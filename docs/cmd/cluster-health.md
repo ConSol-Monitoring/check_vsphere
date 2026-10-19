@@ -8,7 +8,7 @@ The `cluster-health` command checks the health of a vSphere cluster, evaluating 
 
 ## Options
 
-Besides the [general options](../../general-options/) this command supports the following options:
+Besides the [general options](../../general-options/), this command supports the following options:
 
 | option | description |
 |---|---|

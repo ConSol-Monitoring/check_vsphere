@@ -4,12 +4,12 @@ title: about
 
 ### Description
 
-This command just uses the [general options](../../general-options/). It connects to the
-API and prints some vsphere version information.
+This command uses the [general options](../../general-options/). It connects to the
+API and prints vSphere version information.
 
 ### Options
 
-Besides the [general options](../../general-options/) this command supports the following
+Besides the [general options](../../general-options/), this command supports the following
 options:
 
 | option | description |

@@ -4,12 +4,12 @@ title: media
 
 ## Description
 
-This command reports any VMs that have floppies or cdroms attached. If it finds
-any the check result is CRITICAL.
+This command reports any VMs that have floppy disks or CD-ROMs attached. If it finds
+any, the check result is CRITICAL.
 
 ## Options
 
-Besides the [general options](../../general-options/) this command supports the following
+Besides the [general options](../../general-options/), this command supports the following
 options:
 
 | options | description |

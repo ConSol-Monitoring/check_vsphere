@@ -4,14 +4,14 @@ title: perf
 
 ## Description
 
-The perf command extracts a values from a
+The perf command extracts values from a
 [_PerfCounter_](https://dp-downloads.broadcom.com/api-content/apis/API_VWSA_001/8.0U3/html/ReferenceGuides/vim.PerformanceManager.html).
 You can get a list of all available counters with a short description (as
 provided by the API) with the [list-metrics](../list-metrics) command.
 
 ## Options
 
-Besides the [general options](../../general-options) this command supports the following
+Besides the [general options](../../general-options), this command supports the following
 options:
 
 | option | description |
@@ -25,8 +25,8 @@ options:
 | `--maintenance-state` | exit state if the host is in maintenance,<br/> one of `OK, WARNING, CRITICAL, UNKNOWN` (only has a meaning with `--vimtype HostSystem` |
 | `--interval INTERVALID` | defaults to `20` which works in most cases, other possible values `300, 1800, 7200, 86400` and maybe more ...|
 
-In case of `--vimtype HostSystem` it may be useful to omit the `--vimname` when
-you run this command directly against the HostSystem (not through the vcenter).
+With `--vimtype HostSystem`, it may be useful to omit `--vimname` when
+you run this command directly against the HostSystem (not through vCenter).
 
 ## Examples
 

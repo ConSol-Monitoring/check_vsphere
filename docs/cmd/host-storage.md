@@ -4,13 +4,12 @@ title: host-storage
 
 ## Description
 
-The host-storage command provides various checks against a hosts storage system.
-It's basically the same as `--select storage` from check\_vmware\_esx against a
-host.
+The host-storage command provides various checks of a host's storage system.
+It corresponds to `--select storage` in check\_vmware\_esx when run against a host.
 
 ## Options
 
-Besides the [general options](../../general-options/) this command supports the following
+Besides the [general options](../../general-options/), this command supports the following
 options:
 
 | option | description |
@@ -21,8 +20,8 @@ options:
 | `--allowed REGEX` | (optional) REGEX is checked against a name depending on the `--mode` |
 | `--banned REGEX` | (optional) REGEX is checked against a name depending on the `--mode` |
 
-On `--mode adapter` REGEX is matched against device name, the model or the device-key of the adapter.
-On `--mode lun` REGEX is matched against displayName of the scsi device
+With `--mode adapter`, REGEX is matched against the device name, model, or device key of the adapter.
+With `--mode lun`, REGEX is matched against the displayName of the SCSI device.
 
 ## Examples
 

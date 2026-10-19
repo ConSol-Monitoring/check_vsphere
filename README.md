@@ -1,8 +1,8 @@
 # About
 
-This is a monitoring plugin for naemon, icinga, nagios like systems. It
-is meant as a successor of check\_vmware\_esx. check\_vmware\_esx is written
-Perl but VMWare™ has dropped support for the Perl SDK. So this plugin is written
+This is a monitoring plugin for Naemon, Icinga, Nagios, and similar systems. It
+is meant as a successor to check\_vmware\_esx. check\_vmware\_esx is written
+in Perl, but VMware™ has dropped support for the Perl SDK. This plugin is written
 in Python using pyVmomi.
 
 ## Features
@@ -29,7 +29,7 @@ pip install checkvsphere
 
 # LICENSE
 
-If not stated otherwise in a source file everything is licensed under
+Unless stated otherwise in a source file, everything is licensed under the
 GNU AFFERO GENERAL PUBLIC LICENSE Version 3.
 
 See also the LICENSE file.

@@ -4,12 +4,12 @@ title: vsan
 
 ## Description
 
-The vsan command provides checks against the vSAN system of a vcenter. Host
+The vsan command checks the vSAN system in vCenter. Host
 endpoints are currently not supported.
 
 ## Options
 
-Besides the [general options](../../general-options/) this command supports the following
+Besides the [general options](../../general-options/), this command supports the following
 options:
 
 | option | description |
@@ -27,21 +27,21 @@ options:
 
 ### `--mode healthtest`
 
-This corresponds to the following in the vcenter:
+This corresponds to the following in vCenter:
 
-If you navigate to Cluster/Monitor/vSAN/Skyline Health you will see a sidebar
-with items like "Hardware compatibility", "Online Health" and so on. These are
-the several group of tests (you can ignore a whole groups with
-`--exclude-group/--include-group`)
+If you navigate to Cluster/Monitor/vSAN/Skyline Health, you will see a sidebar
+with items like "Hardware compatibility", "Online Health", and so on. These are
+groups of tests (you can filter whole groups with
+`--exclude-group/--include-group`).
 
-You can expand them and see the individual names of each test. These can be
-ignored as well (`--exclude-test/--include-test`).
+You can expand them to see the names of individual tests. These can be
+filtered as well (`--exclude-test/--include-test`).
 
 ### `--mode objecthealth`
 
-REGEX of `--include`, `--exclude` is matched against cluster name.
+The REGEX for `--include` and `--exclude` is matched against the cluster name.
 
-This is an in depth check of the "vSAN object health" test. It's not very well
+This is an in-depth check of the "vSAN object health" test. It's not very well
 tested yet.
 
 ## Examples

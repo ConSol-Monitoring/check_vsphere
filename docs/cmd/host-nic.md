@@ -4,12 +4,12 @@ title: host-nic
 
 ## Description
 
-The host-nic command checks if all nics are connected. It's basically the same
-as `--select net --subselect=nic` from check\_vmware\_esx against a host.
+The host-nic command checks whether all NICs are connected. It corresponds to
+`--select net --subselect=nic` in check\_vmware\_esx when run against a host.
 
 ## Options
 
-Besides the [general options](../../general-options/) this command supports the following
+Besides the [general options](../../general-options/), this command supports the following
 options:
 
 | option | description |

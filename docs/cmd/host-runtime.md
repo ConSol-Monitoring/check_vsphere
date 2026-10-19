@@ -4,12 +4,12 @@ title: host-runtime
 
 ## Description
 
-The host-runtime provides various checks against a hosts runtime. It's basically
-the same as `--select runtime` from check\_vmware\_esx against a host.
+The host-runtime command provides various checks of a host's runtime state. It
+corresponds to `--select runtime` in check\_vmware\_esx when run against a host.
 
 ## Options
 
-Besides the [general options](../../general-options/) this command supports the following
+Besides the [general options](../../general-options/), this command supports the following
 options:
 
 | option | description |

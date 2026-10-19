@@ -21,11 +21,11 @@
 
 # v0.3.20
 
-* fix some exception handling bug
+* fix an exception handling bug
 
 # v0.3.19
 
-* allow pyVmomi 9 as dependency
+* allow pyVmomi 9 as a dependency
 
 # v0.3.18
 
@@ -35,11 +35,11 @@
 
 # v0.3.17
 
-* improve vm-tools some more, VMS can be ignores by config.guestId
+* improve vm-tools further: VMs can be ignored based on config.guestId
 
 # v0.3.16
 
-* improve vm-tools: add --vihost argument to limit checks to a ESX host
+* improve vm-tools: add --vihost argument to limit checks to an ESX host
   and polish output a bit
 
 # v0.3.15
@@ -49,7 +49,7 @@
 
 # v0.3.14
 
-* report warning if we miss datastores we want to check
+* report a warning if datastores we want to check are missing
 
 # v0.3.13
 
@@ -62,12 +62,12 @@
 
 # v0.3.11
 
-* [BREAKING] add check for System.View permission to about cmd. use
+* [BREAKING] add a check for System.View permission to the about command. Use
   `--skip-permission` to skip this (old behavior).
 
 # v0.3.10
 
-* fix error in media with offline vms
+* fix an error in media with offline VMs
 
 # v0.3.9
 
@@ -75,12 +75,12 @@
 
 # v0.3.8
 
-* depend on 8.0.3.0.1 because of the vsan command, the extra non free bindings
-  are now included in pyVmomi and don't exist anymore as a separate project
+* depend on 8.0.3.0.1 because of the vsan command: the extra non-free bindings
+  are now included in pyVmomi and no longer exist as a separate project
 
 # v0.3.7
 
-* limit number in plugin output to 8 significant digits
+* limit numbers in plugin output to 8 significant digits
 
 # v0.3.6
 
@@ -108,7 +108,7 @@
 
 # v0.3.0
 
-* BREAKING CHANGE: avoid check_multi compatible performance data. pnp4nagios has it's issues with that
+* BREAKING CHANGE: avoid check_multi compatible performance data. pnp4nagios has issues with it
 * improve powerstate
 
 # v0.2.3

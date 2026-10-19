@@ -4,12 +4,12 @@ title: datastores
 
 ## Description
 
-This command checks remaining capacity on the datastores, and if they are
-accessible.  This is known as `--select volumes` from check\_vmware\_esx.
+This command checks the remaining capacity of datastores and whether they are
+accessible. This corresponds to `--select volumes` in check\_vmware\_esx.
 
 ## Options
 
-Besides the [general options](../../general-options/) this command supports the following
+Besides the [general options](../../general-options/), this command supports the following
 options:
 
 | options | description |
@@ -22,8 +22,8 @@ options:
 | `--warning WARNING`     | warning threshold, see [common options](../../general-options/#common-options) |
 | `--metric METRIC`     | the name of the metric to check, can be one of `usage`, `used`, `free`. <br>`used` and `free` can be suffixed by a unit (B, kB, MB, GB), like `free_MB` or `used_GB`. <br>if omitted it defaults to `usage`, which is (100 * used/capacity) |
 
-In case of `--vimtype HostSystem` it may be useful to omit the `--vimname` when
-you run this command directly against the HostSystem (not through the vcenter).
+With `--vimtype HostSystem`, it may be useful to omit `--vimname` when
+you run this command directly against the HostSystem (not through vCenter).
 
 ## Examples
 

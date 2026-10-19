@@ -4,11 +4,11 @@ title: power-state
 
 ## Description
 
-This command checks the powerState of all hosts in a vcenter.
+This command checks the power state of all hosts in vCenter.
 
 ## Options
 
-Besides the [general options](../../general-options/) this command supports the following
+Besides the [general options](../../general-options/), this command supports the following
 options:
 
 | options | description |
@@ -20,8 +20,8 @@ options:
 | `--warning THRESHOLD` | (optional) warning threshold, see [common options](../../general-options/#common-options) |
 | `--critical THRESHOLD` | (optional) critical threshold, see [common options](../../general-options/#common-options) |
 
-if no thresholds are given the exit the check is basically equal to
-`power-state --critical 1 --metric down`. Just the output is a bit different.
+If no thresholds are given, the check behaves like
+`power-state --critical 1 --metric down`, but the output differs slightly.
 
 ## Examples
 
