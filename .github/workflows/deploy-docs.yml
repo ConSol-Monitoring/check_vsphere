@@ -15,12 +15,12 @@ jobs:
         SSH_DEPLOY_KEY: ${{ secrets.OMD_CONSOL_DE_KEY }}
       with:
         source-directory: 'docs/'
-        destination-github-username: 'ConSol'
+        destination-github-username: 'ConSol-Monitoring'
         destination-repository-name: 'omd-consol-de'
         target-directory: 'content/en/docs/plugins/check_vsphere'
         commit-message: |
           update check_vsphere docs
 
-          https://github.com/ConSol/check_vsphere/actions/workflows/deploy-docs.yml
+          https://github.com/ConSol-Monitoring/check_vsphere/actions/workflows/deploy-docs.yml
         user-email: 'devnull@consol.de'
-        user-name: '/dev/null'
+        user-name: 'github automation'
