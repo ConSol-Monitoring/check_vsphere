@@ -38,6 +38,11 @@ pip install checkvsphere
 
 The source code is available on [GitHub](https://github.com/ConSol-Monitoring/check_vsphere).
 
+## Changelog
+
+See the [changelog](https://github.com/ConSol-Monitoring/check_vsphere/blob/main/CHANGES.md)
+for release history.
+
 ## License
 
 Unless stated otherwise in a source file, check_vsphere is released under the
